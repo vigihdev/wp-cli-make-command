@@ -7,7 +7,7 @@ namespace Vigihdev\WpCliMake\Factory;
 use WP_Post;
 use Vigihdev\WpCliMake\DTOs\{PostDataResultDto, PostCreateResultDto, PostUpdateResultDto, BulkCreateResultDto};
 use Vigihdev\WpCliMake\Contracts\{PostDataResultInterface, PostCreateResultInterface, PostUpdateResultInterface};
-
+use WP_User;
 
 final class PostFactory
 {
@@ -174,17 +174,30 @@ final class PostFactory
         );
     }
 
+    private static function findOneAuthor(): ?WP_User
+    {
+        $users = get_users([
+            'number'  => 1,
+            'orderby' => 'ID',
+            'order'   => 'ASC'
+        ]);
+
+        return !empty($users) ? $users[0] : null;
+    }
+
     /**
      * Prepare post data array (sama seperti sebelumnya)
      */
     private static function preparePostData(string $title, array $args): array
     {
+        $authorId = get_current_user_id() > 0 ? get_current_user_id() : (int)self::findOneAuthor()?->ID;
+
         $post_data = [
             'post_title'   => sanitize_text_field($title),
             'post_content' => wp_kses_post($args['content'] ?? ''),
             'post_status'  => self::validateStatus($args['status'] ?? 'draft'),
             'post_type'    => self::validateType($args['type'] ?? 'post'),
-            'post_author'  => self::validateAuthor($args['author'] ?? get_current_user_id()),
+            'post_author'  => self::validateAuthor($args['author'] ?? $authorId),
             'post_excerpt' => wp_kses_post($args['excerpt'] ?? ''),
             'post_date'    => self::validateDate($args['date'] ?? current_time('mysql')),
             'post_name'    => sanitize_title($args['slug'] ?? $title),
