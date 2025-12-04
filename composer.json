@@ -1,0 +1,61 @@
+{
+    "name": "vigihdev/wp-cli-make-command",
+    "description": "A WP-CLI Make command for managing various WordPress entities (posts, pages, custom post types, taxonomies, terms, users, comments) efficiently via the command line.",
+    "homepage": "https://github.com/vigihdev/wp-cli-make-command",
+    "keywords": [
+        "wp-cli",
+        "wordpress-cli",
+        "entity",
+        "custom-post-type",
+        "cpt",
+        "taxonomy",
+        "post-management",
+        "wordpress-development",
+        "command-line",
+        "developer-tools",
+        "content-management",
+        "post-type",
+        "term-management",
+        "efficiency-tools"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "authors": [
+        {
+            "name": "Vigih Dev",
+            "email": "vigihdev@gmail.com",
+            "role": "developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vigihdev\\WpCliMake\\": "src/"
+        },
+        "files": [
+            "make-command.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Vigihdev\\WpCliMake\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "process-timeout": 0
+    },
+    "extra": {
+        "commands": [
+            "make:post",
+            "make:category",
+            "make:menu"
+        ]
+    },
+    "scripts": {
+        "dev": "php -S localhost:3172 dev.php"
+    }
+}

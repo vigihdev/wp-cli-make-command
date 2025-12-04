@@ -1,0 +1,13 @@
+# exclude everything except directory
+
+.DS_Store
+.amazonq
+.cursor
+.git
+.vscode
+GEMINI.md
+composer.lock
+vendor/
+dev.php
+.lingma
+.grok/
