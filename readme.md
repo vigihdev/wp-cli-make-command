@@ -277,7 +277,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/vigihdev/wp-cli-make-command/blob/main/LICENCE) file for details.
 
 ## 🙏 Acknowledgments
 
@@ -287,7 +287,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/wp-cli-make-command/issues)
+- **Issues**: [GitHub Issues](https://github.com/vigihdev/wp-cli-make-command/issues)
 - **Email**: vigihdev@gmail.com
 
 ## 🚀 Roadmap
