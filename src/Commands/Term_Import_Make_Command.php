@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands;
 
+use Serializer\Factory\JsonTransformerFactory;
+use Vigihdev\WpCliMake\Contracts\TermInterface;
+use Vigihdev\WpCliMake\DTOs\TermDto;
 use Vigihdev\WpCliMake\Utils\FilepathResolver;
 use WP_CLI;
 use WP_CLI_Command;
@@ -46,11 +49,17 @@ final class Term_Import_Make_Command extends WP_CLI_Command
 
         if ($ext === 'csv') {
             $items = FilepathResolver::fromFileCsv($file);
+            $items = json_encode($items);
         } elseif ($ext === 'json') {
             $items = FilepathResolver::fromFileJson($file);
+            $items = json_encode($items);
         } else {
             WP_CLI::error("Format file tidak didukung. Gunakan CSV atau JSON.");
         }
+
+        // Transform JSON file to objects
+        $transformer = JsonTransformerFactory::create(TermDto::class);
+        $items = $transformer->transformArrayJson($items);
 
         $this->import_terms($items, $taxonomy);
     }
@@ -62,24 +71,26 @@ final class Term_Import_Make_Command extends WP_CLI_Command
         WP_CLI::log("📦 Mulai import {$count} term...");
 
         foreach ($items as $item) {
-            $name = trim($item['name']);
-            $slug = $item['slug'] ? sanitize_title($item['slug']) : sanitize_title($name);
+            if ($item instanceof TermInterface) {
+                $name = trim($item->getName());
+                $slug = $item->getSlug() ? sanitize_title($$item->getSlug()) : sanitize_title($name);
 
-            if (term_exists($name, $taxonomy)) {
-                WP_CLI::warning("Lewati: '{$name}' sudah ada.");
-                continue;
+                if (term_exists($name, $taxonomy)) {
+                    WP_CLI::warning("Lewati: '{$name}' sudah ada.");
+                    continue;
+                }
+
+                $result = wp_insert_term($name, $taxonomy, [
+                    'slug' => $slug,
+                ]);
+
+                if (is_wp_error($result)) {
+                    WP_CLI::warning("Gagal '{$name}': " . $result->get_error_message());
+                    continue;
+                }
+
+                WP_CLI::success("Tambah term: {$name}");
             }
-
-            $result = wp_insert_term($name, $taxonomy, [
-                'slug' => $slug,
-            ]);
-
-            if (is_wp_error($result)) {
-                WP_CLI::warning("Gagal '{$name}': " . $result->get_error_message());
-                continue;
-            }
-
-            WP_CLI::success("Tambah term: {$name}");
         }
 
         WP_CLI::success("🎉 Selesai import!");
