@@ -67,4 +67,29 @@ final class ContentFetchException extends BaseException
             code: self::CODE_STDIN_ERROR
         );
     }
+
+    public static function unreadableFile(string $filepath): self
+    {
+        return new self(sprintf('File is not readable: %s', $filepath));
+    }
+
+    public static function invalidJson(string $filepath): self
+    {
+        return new self(sprintf('Invalid JSON format in file: %s', $filepath));
+    }
+
+    public static function invalidCsv(string $filepath): self
+    {
+        return new self(sprintf('Invalid CSV format or failed to parse: %s', $filepath));
+    }
+
+    public static function emptyFile(string $filepath): self
+    {
+        return new self(sprintf('File is empty: %s', $filepath));
+    }
+
+    public static function cannotRead(string $filepath): self
+    {
+        return new self("Tidak dapat membaca file: {$filepath}");
+    }
 }
