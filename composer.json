@@ -56,8 +56,12 @@
     "extra": {
         "commands": [
             "make:post",
-            "make:category",
-            "make:menu"
+            "make:post-import",
+            "make:menu",
+            "make:term",
+            "make:term-import",
+            "make:user",
+            "make:taxonomy"
         ]
     },
     "scripts": {
