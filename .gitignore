@@ -12,3 +12,4 @@ dev.php
 .lingma
 .grok/
 .phpunit.cache/
+coverage/

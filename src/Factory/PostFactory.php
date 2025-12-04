@@ -206,6 +206,7 @@ final class PostFactory
             'ping_status'    => $args['ping_status'] ?? get_option('default_ping_status', 'open'),
         ];
 
+
         // Remove empty values
         return array_filter($post_data, function ($value) {
             return $value !== '' && $value !== null;

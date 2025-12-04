@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Tests\Unit\Utils;
 
+use PHPUnit\Framework\Attributes\Test;
 use Vigihdev\WpCliMake\Exceptions\ContentFetchException;
 use Vigihdev\WpCliMake\Tests\TestCase;
 use Vigihdev\WpCliMake\Utils\ContentResolver;
 
-class ContentResolverTest extends TestCase
+final class ContentResolverTest extends TestCase
 {
     private string $tempFile;
 
     protected function setUp(): void
     {
         parent::setUp();
-        // Create a temporary file for testing
         $this->tempFile = tempnam(sys_get_temp_dir(), 'test_content');
         if ($this->tempFile === false) {
             $this->fail('Failed to create temporary file.');
@@ -24,119 +24,135 @@ class ContentResolverTest extends TestCase
 
     protected function tearDown(): void
     {
-        // Clean up the temporary file
         if (file_exists($this->tempFile)) {
             unlink($this->tempFile);
         }
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_resolves_content_from_a_valid_file(): void
+    #[Test]
+    public function it_resolves_direct_content(): void
     {
-        $content = 'Hello, World!';
-        file_put_contents($this->tempFile, $content);
+        $args = ['content' => 'Test content'];
+        $result = ContentResolver::resolve($args);
 
-        $resolvedContent = ContentResolver::resolveFromFile($this->tempFile);
-
-        $this->assertSame($content, $resolvedContent);
+        $this->assertSame('Test content', $result);
     }
 
-    /** @test */
-    public function it_throws_exception_if_file_not_found(): void
+    #[Test]
+    public function it_resolves_from_file(): void
+    {
+        file_put_contents($this->tempFile, 'File content');
+        $args = ['content-file' => $this->tempFile];
+        $result = ContentResolver::resolve($args);
+
+        $this->assertSame('File content', $result);
+    }
+
+    #[Test]
+    public function it_throws_exception_when_file_not_found(): void
     {
         $this->expectException(ContentFetchException::class);
-        $this->expectExceptionMessage('File not found: /non/existent/file.txt'); // Changed to match actual exception message
+        $this->expectExceptionMessage('File not found');
 
-        ContentResolver::resolveFromFile('/non/existent/file.txt');
+        $args = ['content-file' => '/nonexistent/file.txt'];
+        ContentResolver::resolve($args);
     }
 
-    /** @test */
-    public function it_throws_exception_for_invalid_url(): void
+    #[Test]
+    public function it_returns_default_content_when_no_source(): void
     {
-        $this->expectException(ContentFetchException::class);
-        $this->expectExceptionMessage('Invalid URL: invalid-url'); // Updated to match the actual exception message
+        $result = ContentResolver::resolve([], 'Default content');
 
-        ContentResolver::resolveFromUrl('invalid-url');
+        $this->assertSame('Default content', $result);
     }
 
-    /*
-     * The following tests for resolveFromUrl are commented out because
-     * they rely on global WordPress functions (wp_safe_remote_get, is_wp_error, etc.)
-     * which are difficult to mock properly within standard PHPUnit without a dedicated
-     * WordPress mocking library (e.g., Brain/Monkey) or a refactored ContentResolver
-     * that uses dependency injection for its HTTP client.
-     * 
-     * To properly test resolveFromUrl, consider:
-     * 1. Introducing a HTTP client interface and injecting it into ContentResolver.
-     * 2. Using a WordPress testing framework like Brain/Monkey if available or installable.
-     */
-    // /** @test */
-    // public function it_resolves_content_from_a_valid_url_on_success(): void
-    // {
-    //     // Mocking WordPress functions
-    //     if (!function_exists('is_wp_error')) {
-    //         function is_wp_error($thing): bool
-    //         {
-    //             return false;
-    //         }
-    //     }
-    //     if (!function_exists('wp_remote_retrieve_response_code')) {
-    //         function wp_remote_retrieve_response_code($response): int
-    //         {
-    //             return 200;
-    //         }
-    //     }
-    //     if (!function_exists('wp_remote_retrieve_body')) {
-    //         function wp_remote_retrieve_body($response): string
-    //         {
-    //             return '{"success": true}';
-    //         }
-    //     }
-    //     if (!function_exists('wp_safe_remote_get')) {
-    //         function wp_safe_remote_get($url, $args)
-    //         {
-    //             return ['body' => '{"success": true}', 'response' => ['code' => 200]];
-    //         }
-    //     }
+    #[Test]
+    public function it_generates_content_when_requested(): void
+    {
+        $args = ['generate-content' => true, 'title' => 'Test Title'];
+        $result = ContentResolver::resolve($args);
 
-    //     $content = ContentResolver::resolveFromUrl('https://example.com/api/content');
-    //     $this->assertSame('{"success": true}', $content);
-    // }
+        $this->assertStringContainsString('Test Title', $result);
+        $this->assertStringContainsString('Lorem ipsum', $result);
+    }
 
-    // /** @test */
-    // public function it_throws_exception_on_http_error(): void
-    // {
-    //     $this->expectException(ContentFetchException::class);\
-    //     $this->expectExceptionMessage('HTTP Error for URL https://example.com/api/error: Not Found');
+    #[Test]
+    public function it_detects_direct_source_type(): void
+    {
+        $args = ['content' => 'Test'];
+        $type = ContentResolver::detectSourceType($args);
 
-    //     // Mocking WordPress functions for error
-    //     if (!function_exists('is_wp_error')) {
-    //         function is_wp_error($thing): bool
-    //         {
-    //             return false;
-    //         }
-    //     }
-    //     if (!function_exists('wp_remote_retrieve_response_code')) {
-    //         function wp_remote_retrieve_response_code($response): int
-    //         {
-    //             return 404;
-    //         }
-    //     }
-    //     if (!function_exists('wp_remote_retrieve_response_message')) {
-    //         function wp_remote_retrieve_response_message($response): string
-    //         {
-    //             return 'Not Found';
-    //         }
-    //     }
-    //     if (!function_exists('wp_safe_remote_get')) {
-    //         function wp_safe_remote_get($url, $args)
-    //         {
-    //             return ['response' => ['code' => 404, 'message' => 'Not Found']];
-    //         }
-    //     }
+        $this->assertSame('direct', $type);
+    }
 
+    #[Test]
+    public function it_detects_stdin_source_type(): void
+    {
+        $args = ['content' => '-'];
+        $type = ContentResolver::detectSourceType($args);
 
-    //     ContentResolver::resolveFromUrl('https://example.com/api/error');
-    // }
+        $this->assertSame('stdin', $type);
+    }
+
+    #[Test]
+    public function it_detects_file_source_type(): void
+    {
+        $args = ['content-file' => 'file.txt'];
+        $type = ContentResolver::detectSourceType($args);
+
+        $this->assertSame('file', $type);
+    }
+
+    #[Test]
+    public function it_detects_url_source_type(): void
+    {
+        $args = ['content-url' => 'https://example.com'];
+        $type = ContentResolver::detectSourceType($args);
+
+        $this->assertSame('url', $type);
+    }
+
+    #[Test]
+    public function it_detects_generated_source_type(): void
+    {
+        $args = ['generate-content' => true];
+        $type = ContentResolver::detectSourceType($args);
+
+        $this->assertSame('generated', $type);
+    }
+
+    #[Test]
+    public function it_detects_none_source_type(): void
+    {
+        $type = ContentResolver::detectSourceType([]);
+
+        $this->assertSame('none', $type);
+    }
+
+    #[Test]
+    public function it_prioritizes_direct_content_over_file(): void
+    {
+        file_put_contents($this->tempFile, 'File content');
+        $args = [
+            'content' => 'Direct content',
+            'content-file' => $this->tempFile,
+        ];
+        $result = ContentResolver::resolve($args);
+
+        $this->assertSame('Direct content', $result);
+    }
+
+    #[Test]
+    public function it_prioritizes_file_over_generated(): void
+    {
+        file_put_contents($this->tempFile, 'File content');
+        $args = [
+            'content-file' => $this->tempFile,
+            'generate-content' => true,
+        ];
+        $result = ContentResolver::resolve($args);
+
+        $this->assertSame('File content', $result);
+    }
 }
