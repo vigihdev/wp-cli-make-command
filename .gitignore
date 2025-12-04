@@ -11,3 +11,4 @@ vendor/
 dev.php
 .lingma
 .grok/
+.phpunit.cache/
