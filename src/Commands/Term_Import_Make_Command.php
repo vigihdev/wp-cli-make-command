@@ -73,7 +73,7 @@ final class Term_Import_Make_Command extends WP_CLI_Command
         foreach ($items as $item) {
             if ($item instanceof TermInterface) {
                 $name = trim($item->getName());
-                $slug = $item->getSlug() ? sanitize_title($$item->getSlug()) : sanitize_title($name);
+                $slug = $item->getSlug() ? sanitize_title($item->getSlug()) : sanitize_title($name);
 
                 if (term_exists($name, $taxonomy)) {
                     WP_CLI::warning("Lewati: '{$name}' sudah ada.");
