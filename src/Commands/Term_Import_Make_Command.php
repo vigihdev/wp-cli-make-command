@@ -25,7 +25,7 @@ final class Term_Import_Make_Command extends WP_CLI_Command
      * <file>
      * : Path to CSV or JSON file.
      *
-     * --taxonomy=<taxonomy>
+     * [--taxonomy=<taxonomy>]
      * : The taxonomy to import terms into.
      *
      * ## EXAMPLES
