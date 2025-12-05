@@ -1,6 +1,6 @@
 <?php
 
-use Vigihdev\WpCliMake\Commands\{Menu_Make_Command, Post_Import_Make_Command, Post_Make_Command, Taxonomy_Make_Command, Term_Import_Make_Command, Term_Make_Command, User_Make_Command};
+use Vigihdev\WpCliMake\Commands\{Menu_Item_Make_Command, Menu_Make_Command, Post_Import_Make_Command, Post_Make_Command, Taxonomy_Make_Command, Term_Import_Make_Command, Term_Make_Command, User_Make_Command};
 
 if (! class_exists('WP_CLI')) {
     return;
@@ -14,6 +14,7 @@ if (file_exists($autoloader)) {
 WP_CLI::add_command('make:post', new Post_Make_Command());
 WP_CLI::add_command('make:post-import', new Post_Import_Make_Command());
 WP_CLI::add_command('make:menu', new Menu_Make_Command());
+WP_CLI::add_command('make:menu-item', new Menu_Item_Make_Command());
 WP_CLI::add_command('make:taxonomy', new Taxonomy_Make_Command());
 WP_CLI::add_command('make:term', new Term_Make_Command());
 WP_CLI::add_command('make:term-import', new Term_Import_Make_Command());
