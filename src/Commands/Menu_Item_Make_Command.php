@@ -58,37 +58,55 @@ final class Menu_Item_Make_Command extends WP_CLI_Command
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-        // Default success message
-        if (empty($args)) {
-            WP_CLI::success(
-                sprintf('Execute Command from class %s', self::class)
-            );
-            WP_CLI::log('Usage: wp make:menu-item <menu-id> <title> <url>');
-            return;
-        }
-
-        // Contoh implementasi membuat menu item
         if (count($args) < 3) {
-            WP_CLI::error('Please provide: menu-id, title, and url');
+            WP_CLI::error('Usage: wp make:menu-item <menu-id> <title> <url>');
+            WP_CLI::log('Example: wp make:menu-item primary "Google" "https://google.com"');
             return;
         }
 
-        list($menu_id, $title, $url) = $args;
+        list($menu_identifier, $title, $url) = $args;
 
-        $item_data = [
-            'menu-item-title' => $title,
-            'menu-item-url' => $url,
-            'menu-item-status' => 'publish'
-        ];
+        // Get menu object (by ID or slug)
+        $menu = null;
+        if (is_numeric($menu_identifier)) {
+            $menu = wp_get_nav_menu_object((int) $menu_identifier);
+        } else {
+            $menu = wp_get_nav_menu_object($menu_identifier);
+        }
 
-        $item_id = wp_update_nav_menu_item($menu_id, 0, $item_data);
+        if (!$menu) {
+            WP_CLI::error("Menu not found: '{$menu_identifier}'");
+            WP_CLI::log("Available menus:");
+            WP_CLI::run_command(['menu', 'list']);
+            return;
+        }
+
+        WP_CLI::log("Adding item to menu: '{$menu->name}' (ID: {$menu->term_id})");
+
+        // Create menu item
+        $item_id = wp_update_nav_menu_item($menu->term_id, 0, [
+            'menu-item-title' => sanitize_text_field($title),
+            'menu-item-url' => esc_url_raw($url),
+            'menu-item-status' => 'publish',
+            'menu-item-type' => 'custom',
+        ]);
 
         if (is_wp_error($item_id)) {
             WP_CLI::error('Failed to create menu item: ' . $item_id->get_error_message());
             return;
         }
 
-        WP_CLI::success("Menu item '{$title}' created successfully (ID: {$item_id})");
+        // Verify
+        $menu_items = wp_get_nav_menu_items($menu->term_id);
+        $new_item = get_post($item_id);
+
+        WP_CLI::success("✅ Menu item created successfully!");
+        WP_CLI::log("  Item ID: {$item_id}");
+        WP_CLI::log("  Menu ID: {$menu->term_id}");
+        WP_CLI::log("  Total items in menu: " . count($menu_items));
+
+        // Show the new item
+        WP_CLI::run_command(['menu', 'item', 'list', $menu->term_id]);
     }
 
     /**
