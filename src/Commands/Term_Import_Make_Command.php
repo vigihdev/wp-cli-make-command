@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands;
 
-use Serializer\Factory\JsonTransformerFactory;
 use Vigihdev\WpCliMake\Contracts\TermInterface;
 use Vigihdev\WpCliMake\DTOs\TermDto;
-use Vigihdev\WpCliMake\Utils\FilepathResolver;
+use Vigihdev\WpCliMake\Utils\FilepathTransformerDto;
 use WP_CLI;
 use WP_CLI_Command;
 
 final class Term_Import_Make_Command extends WP_CLI_Command
 {
+    private const ALLOW_EXTENSION = [
+        'csv',
+        'json'
+    ];
+
     /**
      * Import terms from CSV or JSON file.
      *
@@ -47,25 +51,31 @@ final class Term_Import_Make_Command extends WP_CLI_Command
 
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
-        if ($ext === 'csv') {
-            $items = FilepathResolver::fromFileCsv($file);
-            $items = json_encode($items);
-        } elseif ($ext === 'json') {
-            $items = FilepathResolver::fromFileJson($file);
-            $items = json_encode($items);
-        } else {
-            WP_CLI::error("Format file tidak didukung. Gunakan CSV atau JSON.");
+        if (! in_array($ext, self::ALLOW_EXTENSION)) {
+            $extString = implode(', ', self::ALLOW_EXTENSION);
+            WP_CLI::error("Format file tidak didukung. Gunakan {$extString}.");
         }
 
-        // Transform JSON file to objects
-        $transformer = JsonTransformerFactory::create(TermDto::class);
-        $items = $transformer->transformArrayJson($items);
+        $items = [];
+        if ($ext === 'csv') {
+            $items = FilepathTransformerDto::fromFileCsv($file, TermDto::class);
+        }
+
+        if ($ext === 'json') {
+            $itemDto = FilepathTransformerDto::fromFileJson($file, TermDto::class);
+            $items = is_object($itemDto) ? [$itemDto] : $itemDto;
+        }
 
         $this->import_terms($items, $taxonomy);
     }
 
-
-    private function import_terms($items, $taxonomy)
+    /**
+     *
+     * @param TermDto[] $items
+     * @param string $taxonomy
+     * @return void
+     */
+    private function import_terms(array $items, string $taxonomy)
     {
         $count = count($items);
         WP_CLI::log("📦 Mulai import {$count} term...");
@@ -82,6 +92,8 @@ final class Term_Import_Make_Command extends WP_CLI_Command
 
                 $result = wp_insert_term($name, $taxonomy, [
                     'slug' => $slug,
+                    'description' => $item->getDescription(),
+                    'parent' => $item->getParent(),
                 ]);
 
                 if (is_wp_error($result)) {

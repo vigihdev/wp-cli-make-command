@@ -23,14 +23,14 @@ interface TermInterface
      *
      * @return string Slug term
      */
-    public function getSlug(): string;
+    public function getSlug(): ?string;
 
     /**
      * Mendapatkan deskripsi term WordPress
      *
      * @return string Deskripsi term
      */
-    public function getDescription(): string;
+    public function getDescription(): ?string;
 
     /**
      * Mendapatkan parent term WordPress

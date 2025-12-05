@@ -23,9 +23,9 @@ final class TermDto implements TermInterface
      */
     public function __construct(
         private readonly string $name,
-        private readonly string $slug,
-        private readonly string $description,
-        private readonly int $parent,
+        private readonly ?string $slug,
+        private readonly ?string $description,
+        private readonly int $parent = 0,
     ) {}
 
     /**
@@ -43,7 +43,7 @@ final class TermDto implements TermInterface
      *
      * @return string Slug term
      */
-    public function getSlug(): string
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
@@ -53,7 +53,7 @@ final class TermDto implements TermInterface
      *
      * @return string Deskripsi term
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
