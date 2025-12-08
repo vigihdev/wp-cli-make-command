@@ -25,9 +25,6 @@ final class Menu_Item_Import_Make_Command extends WP_CLI_Command
      * <file>
      * : Path ke file JSON atau CSV yang berisi konfigurasi item menu
      *
-     * <menu-id>
-     * : ID atau slug menu tempat item akan ditambahkan
-     *
      * ## EXAMPLES
      *
      *     # Membuat item menu dari file JSON
