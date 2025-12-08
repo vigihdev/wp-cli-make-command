@@ -7,7 +7,7 @@ namespace Vigihdev\WpCliMake\Commands;
 use WP_CLI;
 use WP_CLI_Command;
 
-final class Taxonomy_Make_Command extends WP_CLI_Command
+final class User_Import_Make_Command extends WP_CLI_Command
 {
     /**
      * @param array $args

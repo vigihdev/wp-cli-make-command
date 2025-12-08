@@ -13,3 +13,4 @@ dev.php
 .grok/
 .phpunit.cache/
 coverage/
+features/
