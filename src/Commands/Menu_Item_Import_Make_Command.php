@@ -64,7 +64,7 @@ final class Menu_Item_Import_Make_Command extends WP_CLI_Command
 
         // Validasi file dapat dibaca
         if (!is_readable($filepath)) {
-            WP_CLI::error(sprintf('File "%s" tidak dapat dibaca.', $filepath));
+            WP_CLI::error(sprintf('File %y"%s"%n tidak dapat dibaca.', $filepath));
             return;
         }
 
