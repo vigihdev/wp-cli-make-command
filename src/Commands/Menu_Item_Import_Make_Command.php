@@ -6,6 +6,7 @@ namespace Vigihdev\WpCliMake\Commands;
 
 use Vigihdev\WpCliMake\Contracts\MenuItemInterface;
 use Vigihdev\WpCliMake\DTOs\MenuItemDto;
+use Vigihdev\WpCliModels\UI\Styler;
 use Vigihdev\WpCliMake\Utils\FilepathTransformerDto;
 use WP_CLI;
 use WP_CLI_Command;
@@ -57,7 +58,7 @@ final class Menu_Item_Import_Make_Command extends WP_CLI_Command
 
         // Validasi file ada
         if (!file_exists($filepath)) {
-            WP_CLI::error(sprintf('File "%s" tidak ditemukan.', $filepath));
+            WP_CLI::error(sprintf('❌ File "%s" tidak ditemukan.', $filepath));
             return;
         }
 
