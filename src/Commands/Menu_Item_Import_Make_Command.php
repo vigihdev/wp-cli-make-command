@@ -58,7 +58,7 @@ final class Menu_Item_Import_Make_Command extends WP_CLI_Command
 
         // Validasi file ada
         if (!file_exists($filepath)) {
-            WP_CLI::error(sprintf('❌ File "%s" tidak ditemukan.', $filepath));
+            WP_CLI::error(sprintf('❌ File %y"%s"%n tidak ditemukan.', $filepath));
             return;
         }
 
