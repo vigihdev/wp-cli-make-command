@@ -25,13 +25,10 @@ final class Term_Import_Make_Command extends WP_CLI_Command
      * <file>
      * : Path to CSV or JSON file.
      *
-     * [--taxonomy=<taxonomy>]
-     * : The taxonomy to import terms into.
-     *
      * ## EXAMPLES
      *
-     *     wp make:term-import kota.csv --taxonomy=kota_category
-     *     wp make:term-import kota.json --taxonomy=kota_category
+     *     wp make:term-import kota.csv
+     *     wp make:term-import kota.json
      *
      * @when after_wp_load
      */

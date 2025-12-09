@@ -6,6 +6,8 @@ use Vigihdev\WpCliMake\Commands\{
     Menu_Make_Command,
     Post_Import_Make_Command,
     Post_Make_Command,
+    Post_Type_Import_Make_Command,
+    Post_Type_Make_Command,
     Term_Import_Make_Command,
     Term_Make_Command,
     User_Import_Make_Command,
@@ -23,6 +25,9 @@ if (file_exists($autoloader)) {
 
 WP_CLI::add_command('make:post', new Post_Make_Command());
 WP_CLI::add_command('make:post-import', new Post_Import_Make_Command());
+
+WP_CLI::add_command('make:post-type', new Post_Type_Make_Command());
+WP_CLI::add_command('make:post-type-import', new Post_Type_Import_Make_Command());
 
 WP_CLI::add_command('make:menu-item', new Menu_Item_Make_Command());
 WP_CLI::add_command('make:menu-item-import', new Menu_Item_Import_Make_Command());
