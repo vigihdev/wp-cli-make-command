@@ -27,7 +27,9 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
             WP_CLI::error('❌ Path file harus disediakan.');
         }
 
-        $filepath = Path::normalize(Path::join(getcwd() ?? '', $filepath));
+        $filepath = Path::isRelative($filepath) ?
+            Path::normalize(Path::join(getcwd() ?? '', $filepath))
+            : $filepath;
 
         // Validasi file ada
         if (!file_exists($filepath)) {
