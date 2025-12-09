@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands;
 
-use RuntimeException;
 use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliModels\DTOs\Fields\DefaultPostFieldDto;
 use Vigihdev\WpCliModels\DTOs\Fields\PostTypeFieldDto;
@@ -12,7 +11,6 @@ use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\WpCliModels\Support\Transformers\FilepathDtoTransformer;
 use Vigihdev\WpCliModels\UI\CliStyle;
 use WP_CLI;
-use WP_CLI\Utils;
 use WP_CLI_Command;
 use WP_Query;
 
@@ -20,15 +18,14 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
 {
 
     /**
-     * Import posts from JSON file.
+     * Import posts from a JSON file.
+     *
+     * Requires a <file> argument pointing to a JSON file.
      *
      * ## OPTIONS
-     * 
-     * <file>
-     * : Path to JSON file containing post data
      *
      * [--dry-run]
-     * : Preview data without importing
+     * : Preview data without importing.
      *
      * ## EXAMPLES
      *
