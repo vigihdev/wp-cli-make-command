@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands;
 
+use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliModels\UI\CliStyle;
 use WP_CLI;
+use WP_CLI\Utils;
 use WP_CLI_Command;
 
 final class Post_Type_Import_Make_Command extends WP_CLI_Command
@@ -24,6 +26,8 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
         if (!$filepath) {
             WP_CLI::error('❌ Path file harus disediakan.');
         }
+
+        $filepath = Path::normalize(Path::join(getcwd() ?? '', $filepath));
 
         // Validasi file ada
         if (!file_exists($filepath)) {
