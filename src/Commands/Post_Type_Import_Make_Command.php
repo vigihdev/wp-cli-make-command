@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands;
 
+use RuntimeException;
 use Symfony\Component\Filesystem\Path;
+use Vigihdev\WpCliModels\DTOs\Fields\PostTypeFieldDto;
+use Vigihdev\WpCliModels\Support\Transformers\FilepathDtoTransformer;
 use Vigihdev\WpCliModels\UI\CliStyle;
 use WP_CLI;
 use WP_CLI\Utils;
@@ -48,5 +51,23 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
         WP_CLI::success(
             sprintf('Execute Command from class %s', self::class)
         );
+    }
+
+    /**
+     * @return PostTypeFieldDto[]
+     */
+    private function getPostFieldDto(string $filepath): array
+    {
+        try {
+            $data = FilepathDtoTransformer::fromFileJson($filepath, PostTypeFieldDto::class);
+            return is_array($data) ? $data : [$data];
+        } catch (\Throwable $e) {
+            throw new RuntimeException($e->getMessage());
+        }
+    }
+
+    private function proccess($filepath)
+    {
+        $postDtos = FilepathDtoTransformer::fromFileJson($filepath, PostTypeFieldDto::class);
     }
 }
