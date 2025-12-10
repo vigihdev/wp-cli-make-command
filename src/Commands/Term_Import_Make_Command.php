@@ -13,6 +13,7 @@ use WP_CLI;
 
 final class Term_Import_Make_Command extends Base_Import_Command
 {
+
     private const ALLOW_EXTENSION = [
         'csv',
         'json'

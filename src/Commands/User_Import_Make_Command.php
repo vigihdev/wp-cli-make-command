@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands;
 
-use WP_CLI;
-use WP_CLI_Command;
+use Vigihdev\WpCliModels\UI\CliStyle;
 
-final class User_Import_Make_Command extends WP_CLI_Command
+final class User_Import_Make_Command extends Base_Import_Command
 {
     /**
      * @param array $args
@@ -16,8 +15,11 @@ final class User_Import_Make_Command extends WP_CLI_Command
     public function __invoke(array $args, array $assoc_args): void
     {
 
-        WP_CLI::success(
-            sprintf('Execute Command from class %s', self::class)
-        );
+        $filepath = isset($args[0]) ? $args[0] : null;
+        $io = new CliStyle();
+
+        $this->validateFilePath($filepath, $io);
+        $filepath = $this->normalizeFilePath($filepath);
+        $this->validateFileJson($filepath, $io);
     }
 }
