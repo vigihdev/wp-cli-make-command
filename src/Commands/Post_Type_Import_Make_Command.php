@@ -20,10 +20,12 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
     /**
      * Import posts from a JSON file.
      *
-     * Requires a <file> argument pointing to a JSON file.
      *
      * ## OPTIONS
-     *
+     * 
+     * [--file=<path>]
+     *  : opsi file JSON
+     * 
      * [--dry-run]
      * : Preview data without importing.
      *
