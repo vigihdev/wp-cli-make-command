@@ -18,17 +18,16 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
 {
 
     /**
-     * Import posts from a JSON file.
-     *
+     * Import Post Type dari file JSON.
      *
      * ## OPTIONS
-     * 
-     * [--file=<path>]
-     *  : opsi file JSON
+     *
+     * [<file>]
+     * : Jalankan tanpa perubahan database.
      * 
      * [--dry-run]
-     * : Preview data without importing.
-     *
+     * : Jalankan tanpa perubahan database.
+     * 
      * ## EXAMPLES
      *
      *     wp make:post-type-import /path/to/posts.json
@@ -65,6 +64,14 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
         if (!is_readable($filepath)) {
             WP_CLI::error(
                 sprintf('❌ File %s tidak dapat dibaca.', $io->textError($filepath))
+            );
+        }
+
+        // Validasi file type
+        $ext = pathinfo($filepath, PATHINFO_EXTENSION);
+        if ($ext !== 'json') {
+            WP_CLI::error(
+                sprintf('❌ Extension file %s bukan json', $io->textError($filepath))
             );
         }
 
