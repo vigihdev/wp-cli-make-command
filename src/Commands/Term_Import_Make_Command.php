@@ -62,10 +62,10 @@ final class Term_Import_Make_Command extends Base_Import_Command
         try {
             $collection = $this->loadDataDto($filepath, $io, TermFieldDto::class);
             if ($dryRun) {
-                $this->proccessDryRun($filepath, $collection, $io);
+                $this->processDryRun($filepath, $collection, $io);
                 return;
             }
-            $this->proccessImport($filepath, $collection, $io);
+            $this->processImport($filepath, $collection, $io);
         } catch (\Exception $e) {
             $io->errorWithIcon('❌ Error load data import: ' . $e->getMessage());
             WP_CLI::error($e);
@@ -73,7 +73,7 @@ final class Term_Import_Make_Command extends Base_Import_Command
     }
 
 
-    private function proccessDryRun(string $filepath, Collection $collection, CliStyle $io)
+    private function processDryRun(string $filepath, Collection $collection, CliStyle $io)
     {
         $dryRun = new DryRunPresetImport($io, $filepath, 'Term', $collection->count());
         $rows = [];
@@ -84,7 +84,7 @@ final class Term_Import_Make_Command extends Base_Import_Command
         $dryRun->renderCompact($rows, ['No', 'name', 'taxonomy', 'slug']);
     }
 
-    private function proccessImport(string $filepath, Collection $collection, CliStyle $io)
+    private function processImport(string $filepath, Collection $collection, CliStyle $io)
     {
         $io->title('🚀 Memulai Import Posts');
         $io->note('Mode: EXECUTE - Data akan dimasukkan ke database');

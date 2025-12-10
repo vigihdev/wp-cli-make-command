@@ -106,16 +106,16 @@ final class Post_Type_Import_Make_Command extends Base_Command
         try {
             $collection = $this->loadData($filepath, $io);
             if ($dryRun) {
-                $this->proccessDryRun($filepath, $collection, $io);
+                $this->processDryRun($filepath, $collection, $io);
                 return;
             }
-            $this->proccessImport($filepath, $collection, $io);
+            $this->processImport($filepath, $collection, $io);
         } catch (\Exception $e) {
             $io->errorWithIcon('❌ Error load data import: ' . $e->getMessage());
         }
     }
 
-    private function proccessDryRun(string $filepath, Collection $collection, CliStyle $io)
+    private function processDryRun(string $filepath, Collection $collection, CliStyle $io)
     {
         $io->title('🔍 DRY RUN - Preview Data Import');
         $io->note('Tidak ada perubahan ke database');
@@ -158,7 +158,7 @@ final class Post_Type_Import_Make_Command extends Base_Command
         $io->block('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.', 'note');
     }
 
-    private function proccessImport(string $filepath, Collection $collection, CliStyle $io)
+    private function processImport(string $filepath, Collection $collection, CliStyle $io)
     {
         $io->title('🚀 Memulai Import Posts');
         $io->note('Mode: EXECUTE - Data akan dimasukkan ke database');
