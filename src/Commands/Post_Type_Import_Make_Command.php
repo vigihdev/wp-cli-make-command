@@ -13,6 +13,7 @@ use Vigihdev\WpCliModels\Support\Transformers\FilepathDtoTransformer;
 use Vigihdev\WpCliModels\UI\CliStyle;
 use Vigihdev\WpCliModels\Validators\Support\FileValidator;
 use WP_CLI;
+use WP_CLI\Utils;
 use WP_CLI_Command;
 use WP_Query;
 
@@ -44,6 +45,7 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
     {
 
         $filepath = isset($args[0]) ? $args[0] : null;
+        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run');
         $io = new CliStyle();
 
         // Validasi file path
@@ -63,7 +65,11 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
                 ->mustBeJson()
                 ->validateForImport();
 
-            $this->dryRun($filepath, $io);
+            if ($dryRun) {
+                $this->dryRun($filepath, $io);
+                return;
+            }
+            $this->executeImport($filepath, $io);
         } catch (FileException $e) {
             $errorMsg = sprintf(
                 "❌ %s\n   📁 %s\n   💡 %s",
@@ -75,8 +81,6 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
             WP_CLI::error($errorMsg);
         }
 
-
-        $this->dryRun($filepath, $io);
 
         // WP_CLI::success(
         //     sprintf('Execute Command from class %s', self::class)
