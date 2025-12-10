@@ -24,7 +24,7 @@ final class Menu_Item_Import_Make_Command extends Base_Import_Command
      * : Path ke file JSON atau CSV yang berisi konfigurasi item menu
      * 
      * [--dry-run]
-     *  : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun. 
+     * : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun. 
      *  
      * ## EXAMPLES
      *

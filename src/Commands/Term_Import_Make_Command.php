@@ -33,7 +33,10 @@ final class Term_Import_Make_Command extends Base_Import_Command
      *
      * <file>
      * : Path to CSV or JSON file.
-     *
+     * 
+     * [--dry-run]
+     * : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun. 
+     *  
      * ## EXAMPLES
      *
      *     wp make:term-import kota.csv
