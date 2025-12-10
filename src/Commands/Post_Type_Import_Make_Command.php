@@ -8,8 +8,10 @@ use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliModels\DTOs\Fields\DefaultPostFieldDto;
 use Vigihdev\WpCliModels\DTOs\Fields\PostTypeFieldDto;
 use Vigihdev\WpCliModels\Entities\PostEntity;
+use Vigihdev\WpCliModels\Exceptions\FileException;
 use Vigihdev\WpCliModels\Support\Transformers\FilepathDtoTransformer;
 use Vigihdev\WpCliModels\UI\CliStyle;
+use Vigihdev\WpCliModels\Validators\Support\FileValidator;
 use WP_CLI;
 use WP_CLI_Command;
 use WP_Query;
@@ -53,27 +55,26 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
             Path::normalize(Path::join(getcwd() ?? '', $filepath))
             : $filepath;
 
-        // Validasi file ada
-        if (!file_exists($filepath)) {
-            WP_CLI::error(
-                sprintf('❌ File %s tidak ditemukan.', $io->textError($filepath))
+        try {
+            $validator = new FileValidator($filepath);
+            $filepath = $validator
+                ->mustBeFile()
+                ->mustExist()
+                ->mustBeJson()
+                ->validateForImport();
+
+            $this->dryRun($filepath, $io);
+        } catch (FileException $e) {
+            $errorMsg = sprintf(
+                "❌ %s\n   📁 %s\n   💡 %s",
+                $e->getMessage(),
+                $e->getFilePath(),
+                $e->getSuggestion()
             );
+
+            WP_CLI::error($errorMsg);
         }
 
-        // Validasi file dapat dibaca
-        if (!is_readable($filepath)) {
-            WP_CLI::error(
-                sprintf('❌ File %s tidak dapat dibaca.', $io->textError($filepath))
-            );
-        }
-
-        // Validasi file type
-        $ext = pathinfo($filepath, PATHINFO_EXTENSION);
-        if ($ext !== 'json') {
-            WP_CLI::error(
-                sprintf('❌ Extension file %s bukan json', $io->textError($filepath))
-            );
-        }
 
         $this->dryRun($filepath, $io);
 
