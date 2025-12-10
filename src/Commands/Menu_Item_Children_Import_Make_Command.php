@@ -4,65 +4,60 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands;
 
-use Vigihdev\Support\Collection;
-use Vigihdev\WpCliModels\DTOs\Fields\MenuItemFieldDto;
 use Vigihdev\WpCliModels\UI\CliStyle;
+use Vigihdev\Support\Collection;
+use Vigihdev\WpCliModels\DTOs\Fields\MenuItemChildrenFieldDto;
+use Vigihdev\WpCliModels\Entities\MenuEntity;
+use Vigihdev\WpCliModels\Entities\MenuItemEntity;
 use Vigihdev\WpCliModels\UI\Components\{DryRunPresetImport, ProcessImportPreset};
 use WP_CLI\Utils;
 use WP_CLI;
+use WP_Term;
 
-final class Menu_Item_Import_Make_Command extends Base_Import_Command
+final class Menu_Item_Children_Import_Make_Command extends Base_Import_Command
 {
 
     public function __construct()
     {
-        parent::__construct(name: 'make:menu-item-import');
+        parent::__construct(name: 'make:menu-item-children-import');
     }
 
     /**
-     * Membuat item menu WordPress dari file JSON atau CSV
+     * Import Menu Item Children from JSON file.
      *
      * ## OPTIONS
      *
      * <file>
-     * : Path ke file JSON atau CSV yang berisi konfigurasi item menu
+     * : Path to JSON file.
      * 
      * [--dry-run]
      * : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun. 
      *  
      * ## EXAMPLES
      *
-     *     # Membuat item menu dari file JSON
-     *     wp make:menu-item-import menu-items.json
-     * 
-     *     wp make:menu-item-import menu-items.json --dry-run
+     *     $ wp make:menu-item-children-import menu-children.json
      *
-     *     # Membuat item menu dari file CSV
-     *     wp make:menu-item-import menu-items.csv
-     *     wp make:menu-item-import menu-items.csv --dry-run
-     *
-     * @when after_wp_load
-     * 
-     * @param array $args Argumen
-     * @param array $assoc_args Argumen asosiatif
+     * @param array $args
+     * @param array $assoc_args Associative arguments
      * @return void
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-
         $filepath = isset($args[0]) ? $args[0] : null;
         $io = new CliStyle();
 
         $this->validateFilePath($filepath, $io);
         $filepath = $this->normalizeFilePath($filepath);
         $this->validateFileJson($filepath, $io);
+
+        $this->executeCommand($filepath, $assoc_args, $io);
     }
 
     protected function executeCommand(string $filepath, array $assoc_args, CliStyle $io): void
     {
         $dryRun = Utils\get_flag_value($assoc_args, 'dry-run');
         try {
-            $collection = $this->loadDataDto($filepath, $io, MenuItemFieldDto::class);
+            $collection = $this->loadDataDto($filepath, $io, MenuItemChildrenFieldDto::class);
             if ($dryRun) {
                 $this->processDryRun($filepath, $collection, $io);
                 return;
@@ -78,7 +73,7 @@ final class Menu_Item_Import_Make_Command extends Base_Import_Command
         $dryRun = new DryRunPresetImport($io, $filepath, 'Term', $collection->count());
         $rows = [];
         foreach ($collection->getIterator() as $index => $menu) {
-            /** @var MenuItemFieldDto $menu */
+            /** @var MenuItemChildrenFieldDto $menu */
 
             $rows[] = [
                 $index + 1,
@@ -100,7 +95,7 @@ final class Menu_Item_Import_Make_Command extends Base_Import_Command
         $preset->startRender();
 
         foreach ($collection->getIterator() as $index => $menu) {
-            /** @var MenuItemFieldDto $menu */
+            /** @var MenuItemChildrenFieldDto $menu */
             $preset->getProgressLog()->processing($menu->getLabel());
 
             // $name = $term->getName();

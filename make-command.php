@@ -1,6 +1,8 @@
 <?php
 
 use Vigihdev\WpCliMake\Commands\{
+    Menu_Item_Children_Import_Make_Command,
+    Menu_Item_Children_Make_Command,
     Menu_Item_Import_Make_Command,
     Menu_Item_Make_Command,
     Menu_Make_Command,
@@ -31,6 +33,9 @@ WP_CLI::add_command('make:post-type-import', new Post_Type_Import_Make_Command()
 
 WP_CLI::add_command('make:menu-item', new Menu_Item_Make_Command());
 WP_CLI::add_command('make:menu-item-import', new Menu_Item_Import_Make_Command());
+
+WP_CLI::add_command('make:menu-item-children', new Menu_Item_Children_Make_Command());
+WP_CLI::add_command('make:menu-item-children-import', new Menu_Item_Children_Import_Make_Command());
 
 WP_CLI::add_command('make:term', new Term_Make_Command());
 WP_CLI::add_command('make:term-import', new Term_Import_Make_Command());
