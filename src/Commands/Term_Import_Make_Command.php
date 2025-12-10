@@ -6,19 +6,15 @@ namespace Vigihdev\WpCliMake\Commands;
 
 use Vigihdev\Support\Collection;
 use Vigihdev\WpCliModels\DTOs\Fields\TermFieldDto;
+use Vigihdev\WpCliModels\Entities\TermEntity;
 use Vigihdev\WpCliModels\UI\CliStyle;
-use Vigihdev\WpCliModels\UI\Components\{DryRunPresetImport, ImportSummary, ProgressLog};
+use Vigihdev\WpCliModels\UI\Components\{DryRunPresetImport, ProcessImportPreset};
 use WP_CLI\Utils;
 use WP_CLI;
+use WP_Term;
 
 final class Term_Import_Make_Command extends Base_Import_Command
 {
-
-    private const ALLOW_EXTENSION = [
-        'csv',
-        'json'
-    ];
-
 
     public function __construct()
     {
@@ -79,30 +75,54 @@ final class Term_Import_Make_Command extends Base_Import_Command
         $rows = [];
         foreach ($collection->getIterator() as $index => $term) {
             /** @var TermFieldDto $term */
-            $rows[] = [$index + 1, $term->getName(), $term->getTaxonomy(), $term->getSlug() ?? ''];
+            $rows[] = [
+                $index + 1,
+                $term->getName(),
+                $term->getTaxonomy(),
+                $term->getSlug() ?? ''
+            ];
         }
         $dryRun->renderCompact($rows, ['No', 'name', 'taxonomy', 'slug']);
     }
 
     private function processImport(string $filepath, Collection $collection, CliStyle $io)
     {
-        $io->title('🚀 Memulai Import Posts');
-        $io->note('Mode: EXECUTE - Data akan dimasukkan ke database');
-        $io->hr();
-        $start_time = microtime(true);
+        $preset = new ProcessImportPreset(
+            io: $io,
+            filepath: $filepath,
+            startTime: microtime(true),
+            name: 'Term',
+            total: $collection->count()
+        );
 
-        $log = new ProgressLog(io: $io, total: $collection->count());
+        $preset->startRender();
 
-        $io->info("📊 Menemukan {$collection->count()} post(s) untuk diimport.");
-        $io->newLine();
-        $log->start();
-
-        $summary = new ImportSummary();
-        foreach ($collection->getIterator() as $term) {
+        foreach ($collection->getIterator() as $index => $term) {
             /** @var TermFieldDto $term */
-        }
-        $log->end();
+            $preset->getProgressLog()->processing($term->getName());
 
-        $summary->renderCompact($io, $filepath, (microtime(true) - $start_time));
+            $name = $term->getName();
+            $taxonomy = $term->getTaxonomy();
+            $args = array_filter($term->toArray(), fn($k) => !in_array($k, ['name', 'taxonomy']), ARRAY_FILTER_USE_KEY);
+
+            $exist = TermEntity::findByName($name, $taxonomy);
+            if ($exist instanceof WP_Term) {
+                $preset->getProgressLog()->warning("Term '{$name}' sudah ada, dilewati.");
+                $preset->getSummary()->addSkipped();
+                continue;
+            }
+
+            $create = TermEntity::create($name, $taxonomy, $args);
+            if (is_wp_error($create)) {
+                $io->errorWithIcon("Gagal create '{$name}': " . $create->get_error_message());
+                $preset->getSummary()->addFailed();
+            } else {
+                $io->successWithIcon("Berhasil create term_id {$create['term_id']}");
+                $preset->getSummary()->addSuccess();
+            }
+        }
+
+        $preset->getProgressLog()->end();
+        $preset->getSummary()->renderCompact($io, $filepath, (microtime(true) -  $preset->getStartTime()));
     }
 }
