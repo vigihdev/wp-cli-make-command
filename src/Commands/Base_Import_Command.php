@@ -72,7 +72,7 @@ abstract class Base_Import_Command extends WP_CLI_Command
 
             return new Collection(data: $postDtos);
         } catch (\Exception $e) {
-            $io->errorWithIcon('❌ Error load data import: ' . $e->getMessage());
+            $io->errorWithIcon('Error load data dto import: ' . $e->getMessage());
             return new Collection(data: []);
         }
     }
