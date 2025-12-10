@@ -7,7 +7,7 @@ namespace Vigihdev\WpCliMake\Commands;
 use Vigihdev\Support\Collection;
 use Vigihdev\WpCliModels\DTOs\Fields\TermFieldDto;
 use Vigihdev\WpCliModels\UI\CliStyle;
-use Vigihdev\WpCliModels\UI\Components\{ImportSummary, ProgressLog};
+use Vigihdev\WpCliModels\UI\Components\{DryRunPresetImport, ImportSummary, ProgressLog};
 use WP_CLI\Utils;
 use WP_CLI;
 
@@ -75,31 +75,13 @@ final class Term_Import_Make_Command extends Base_Import_Command
 
     private function proccessDryRun(string $filepath, Collection $collection, CliStyle $io)
     {
-        $io->title('🔍 DRY RUN - Preview Data Import');
-        $io->note('Tidak ada perubahan ke database');
-
-        // Display table
-        $headers = ['No', 'Title', 'Type', 'Status', 'Author', 'Taxonomies'];
+        $dryRun = new DryRunPresetImport($io, $filepath, 'Term', $collection->count());
         $rows = [];
-
         foreach ($collection->getIterator() as $index => $term) {
-            $rows[] = [];
+            /** @var TermFieldDto $term */
+            $rows[] = [$index + 1, $term->getName(), $term->getTaxonomy(), $term->getSlug() ?? ''];
         }
-
-        $io->table($rows, $headers);
-
-        // Summary dengan definition list
-        $io->newLine();
-        $io->hr('-', 75);
-        $io->definitionList([
-            'Total Posts' => (string) $collection->count(),
-            'Mode' => 'Dry Run',
-            'File' => basename($filepath)
-        ]);
-        $io->hr('-', 75);
-
-        $io->successWithIcon('Dry run selesai!');
-        $io->block('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.', 'note');
+        $dryRun->renderCompact($rows, ['No', 'name', 'taxonomy', 'slug']);
     }
 
     private function proccessImport(string $filepath, Collection $collection, CliStyle $io)
