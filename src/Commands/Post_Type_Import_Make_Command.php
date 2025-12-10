@@ -24,7 +24,7 @@ final class Post_Type_Import_Make_Command extends Base_Command
         parent::__construct(name: 'wp make:post-type-import');
     }
 
-    private function validateFilePath(?string $filepath, CliStyle $io): void
+    private function validateFilePath(?string $filepath): void
     {
         if (!$filepath) {
             WP_CLI::error('❌ Path file harus disediakan.');
@@ -54,7 +54,7 @@ final class Post_Type_Import_Make_Command extends Base_Command
         }
     }
 
-    private function handleFileError(FileException $e, CliStyle $io): void
+    private function handleFileError(FileException $e): void
     {
         $errorMsg = sprintf(
             "❌ %s\n   📁 %s\n   💡 %s",
