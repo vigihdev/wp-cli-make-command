@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliMake\Commands;
 
 use Symfony\Component\Filesystem\Path;
+use Vigihdev\Support\Collection;
 use Vigihdev\WpCliModels\DTOs\Fields\DefaultPostFieldDto;
 use Vigihdev\WpCliModels\DTOs\Fields\PostTypeFieldDto;
 use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\WpCliModels\Exceptions\FileException;
 use Vigihdev\WpCliModels\Support\Transformers\FilepathDtoTransformer;
 use Vigihdev\WpCliModels\UI\CliStyle;
+use Vigihdev\WpCliModels\UI\Components\{ImportSummary, ProgressLog};
 use Vigihdev\WpCliModels\Validators\Support\FileValidator;
 use WP_CLI;
 use WP_CLI\Utils;
@@ -151,7 +153,14 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
 
         $start_time = microtime(true);
 
+        $colection = new Collection(data: $this->getPostTypeDto($filepath, $io));
+        $io->info("📊 Menemukan {$colection->count()} post(s) untuk diimport.");
+
+        foreach ($colection->getIterator() as $post) {
+        }
+
         try {
+
             /** @var PostTypeFieldDto[] $postDtos */
             $postDtos = FilepathDtoTransformer::fromFileJson(
                 $filepath,
@@ -166,113 +175,75 @@ final class Post_Type_Import_Make_Command extends WP_CLI_Command
                 return;
             }
 
-            $successCount = 0;
-            $skipCount = 0;
-            $errorCount = 0;
-
+            $summary = new ImportSummary();
+            $log = new ProgressLog(io: $io, total: count($postDtos));
             $io->newLine();
-            $io->text("⏳ Memproses...");
+            $log->start();
+
 
             foreach ($postDtos as $index => $post) {
                 $current = $index + 1;
                 $title = $post->getTitle();
-                $post_type = $post->getType();
 
                 $io->text("[{$current}/{$total}] 📝 Processing: {$title}");
 
                 // Check if post already exists
-                $exists = false;
-
-                // Coba dengan method yang ada di PostEntity
-                if (method_exists(PostEntity::class, 'existsByName')) {
-                    $exists = PostEntity::existsByName(sanitize_title($title));
-                }
-
-                if (!$exists && method_exists(PostEntity::class, 'existsByTitle')) {
-                    $exists = PostEntity::existsByTitle($title);
-                }
-
-                // Fallback: cek dengan WP_Query
-                if (!$exists) {
-                    $query = new WP_Query([
-                        'title' => $title,
-                        'post_type' => $post_type,
-                        'post_status' => 'any',
-                        'posts_per_page' => 1
-                    ]);
-                    $exists = $query->have_posts();
-                    wp_reset_postdata();
-                }
+                $exists = PostEntity::existsByName(sanitize_title($title));
+                $exists = !$exists ? PostEntity::existsByTitle($title) : $exists;
 
                 if ($exists) {
-                    $io->warning("  ⏭️  Post '{$title}' sudah ada, dilewati.");
-                    $skipCount++;
+                    $log->warn("Post '{$title}' sudah ada, dilewati.");
+                    $summary->addSkipped();
                     continue;
                 }
 
                 // Prepare post data
                 $postData = $this->preparePostData($post, $io);
-
                 if (empty($postData)) {
-                    $io->warning("  ⚠️  Data post kosong, dilewati.");
-                    $skipCount++;
+                    $io->warning("⚠️  Data post kosong, dilewati.");
                     continue;
                 }
 
                 // Create post
                 $create = PostEntity::create($postData);
-
                 if (is_wp_error($create)) {
                     $io->errorLog("  ❌ Gagal create '{$title}': " . $create->get_error_message());
-                    $errorCount++;
+                    $summary->addFailed();
                 } else {
                     $io->success("  ✅ Berhasil create post ID {$create}");
-                    $successCount++;
+                    $summary->addSuccess();
                 }
             }
 
-            // Calculate execution time
-            $execution_time = number_format(microtime(true) - $start_time, 2);
-
-            // Display summary
-            $io->newLine(2);
-            $io->title('📋 SUMMARY IMPORT');
-            $io->hr();
-
-            $summary = [
-                ['Status', 'Count', 'Percentage'],
-                ['✅ Berhasil', $successCount, $total > 0 ? round(($successCount / $total) * 100) . '%' : '0%'],
-                ['⏭️  Dilewati', $skipCount, $total > 0 ? round(($skipCount / $total) * 100) . '%' : '0%'],
-                ['❌ Gagal', $errorCount, $total > 0 ? round(($errorCount / $total) * 100) . '%' : '0%'],
-                ['Total', $total, '100%'],
-            ];
-
-            $io->table(
-                array_map(fn($row) => array_slice($row, 0, 2), array_slice($summary, 1, 3)),
-                ['Status', 'Count']
-            );
-
-            $io->newLine();
-            $io->definitionList([
-                '⏱️  Waktu Eksekusi' => "{$execution_time} detik",
-                '📁 File Source' => basename($filepath),
-                '📅 Tanggal' => date('Y-m-d H:i:s')
-            ]);
-
-            if ($errorCount === 0 && $successCount > 0) {
-                $io->newLine();
-                $io->block('🎉 Import selesai dengan sukses! Semua data berhasil dimasukkan.', 'success');
-            } elseif ($successCount > 0) {
-                $io->newLine();
-                $io->block("⚠️  Import selesai dengan {$errorCount} error.", 'warning');
-            } else {
-                $io->newLine();
-                $io->block('ℹ️  Tidak ada data yang diimport.', 'info');
-            }
+            $summary->render($io, $filepath, (microtime(true) - $start_time));
         } catch (\Exception $e) {
             $io->errorWithIcon('❌ Error selama import: ' . $e->getMessage());
         }
     }
+
+    private function getPostTypeDto(string $filepath, CliStyle $io): array
+    {
+        try {
+
+            /** @var PostTypeFieldDto[] $postDtos */
+            $postDtos = FilepathDtoTransformer::fromFileJson(
+                $filepath,
+                PostTypeFieldDto::class
+            );
+
+            $postDtos = !is_array($postDtos) ? [$postDtos] : $postDtos;
+
+            if (empty($postDtos)) {
+                $io->warning('Tidak ada data untuk diimport.');
+                return [];
+            }
+            return $postDtos;
+        } catch (\Exception $e) {
+            $io->errorWithIcon('❌ Error selama import: ' . $e->getMessage());
+            return [];
+        }
+    }
+
 
     /**
      * Helper: Prepare post data from DTO
