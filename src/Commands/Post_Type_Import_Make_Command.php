@@ -189,6 +189,16 @@ final class Post_Type_Import_Make_Command extends Base_Command
                 $summary->addSkipped();
                 continue;
             }
+
+            // Create post
+            $create = PostEntity::create($postData);
+            if (is_wp_error($create)) {
+                $io->errorLog("  ❌ Gagal create '{$title}': " . $create->get_error_message());
+                $summary->addFailed();
+            } else {
+                $io->success("  ✅ Berhasil create post ID {$create}");
+                $summary->addSuccess();
+            }
         }
         $log->end();
 
