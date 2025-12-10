@@ -21,7 +21,7 @@ final class Post_Type_Import_Make_Command extends Base_Command
 
     public function __construct()
     {
-        parent::__construct(name: 'wp make:post-type-import');
+        parent::__construct(name: 'make:post-type-import');
     }
 
     private function validateFilePath(?string $filepath): void

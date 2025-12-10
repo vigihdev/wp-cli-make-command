@@ -22,7 +22,7 @@ final class Term_Import_Make_Command extends Base_Import_Command
 
     public function __construct()
     {
-        parent::__construct(name: 'wp make:term-import');
+        parent::__construct(name: 'make:term-import');
     }
 
 

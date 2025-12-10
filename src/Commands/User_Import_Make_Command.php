@@ -8,6 +8,12 @@ use Vigihdev\WpCliModels\UI\CliStyle;
 
 final class User_Import_Make_Command extends Base_Import_Command
 {
+
+    public function __construct()
+    {
+        parent::__construct(name: 'make:user-import');
+    }
+
     /**
      * @param array $args
      * @param array $assoc_args
