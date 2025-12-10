@@ -75,6 +75,7 @@
     "scripts": {
         "test": "phpunit",
         "test:coverage": "phpunit --coverage-html coverage",
+        "build": "console git:push && console satis:build && cd $HOME/.wp-cli/packages && console composer:update vigihdev/wp-cli-make-command && cd $HOME/WordpressCli/wp-cli-make-command",
         "dev": "php -S localhost:3172 dev.php"
     }
 }
