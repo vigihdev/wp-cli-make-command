@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands;
 
-use Vigihdev\WpCliModels\UI\CliStyle;
 use WP_CLI;
 use WP_CLI_Command;
 
@@ -16,6 +15,4 @@ abstract class Base_Command extends WP_CLI_Command
     ) {
         return parent::__construct();
     }
-
-    abstract protected function executeCommand(array $args, array $assoc_args, CliStyle $io): void;
 }
