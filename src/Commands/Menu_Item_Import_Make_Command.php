@@ -48,45 +48,8 @@ final class Menu_Item_Import_Make_Command extends WP_CLI_Command
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-        $filepath = isset($args[0]) ? $args[0] : null;
-
-        // Validasi file path
-        if (!$filepath) {
-            WP_CLI::error('❌ Path file harus disediakan.');
-        }
-
-        // Validasi file ada
-        if (!file_exists($filepath)) {
-            WP_CLI::error(
-                sprintf('❌ File "%s" tidak ditemukan.', WP_CLI::colorize("%Y{$filepath}%n"))
-            );
-        }
-
-        // Validasi file dapat dibaca
-        if (!is_readable($filepath)) {
-            WP_CLI::error(
-                sprintf('❌ File "%s" tidak dapat dibaca.', WP_CLI::colorize("%Y{$filepath}%n"))
-            );
-        }
-    }
-
-    private function validate() {}
-
-    private function summary()
-    {
-        WP_CLI::log('📊 Ringkasan Impor:');
-        WP_CLI::log(sprintf('  ✅ Berhasil: %d', 22));
-        WP_CLI::log(sprintf('  ❌ Gagal:    %d', 0));
-        WP_CLI::log(sprintf('  📦 Total:    %d', 2));
-        WP_CLI::success('🎉 Selesai impor!');
-        WP_CLI::error('Impor gagal! Tidak ada item yang berhasil diimpor.');
         WP_CLI::success(
-            sprintf('Tambah item menu: %s', '')
-        );
-        WP_CLI::log(
-            sprintf('📦 Mulai impor %d item menu...', 20)
+            sprintf('Execute Command from class %s', self::class)
         );
     }
-
-    private function proccess() {}
 }

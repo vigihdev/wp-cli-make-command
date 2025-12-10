@@ -73,53 +73,8 @@ final class Menu_Make_Command extends WP_CLI_Command
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-
-        // WP_CLI::success(
-        //     sprintf('Execute Command from class %s', self::class)
-        // );
-
-        if (empty($args[0])) {
-            WP_CLI::error('Please provide a menu name');
-            return;
-        }
-
-        $menu_name = sanitize_text_field($args[0]);
-        $description = $assoc_args['description'] ?? '';
-        $location = $assoc_args['location'] ?? '';
-
-        // Cek apakah menu sudah ada
-        $menus = wp_get_nav_menus();
-        foreach ($menus as $menu) {
-            if ($menu->name === $menu_name) {
-                WP_CLI::error("Menu '{$menu_name}' already exists (ID: {$menu->term_id})");
-                return;
-            }
-        }
-
-        // Buat menu
-        $menu_id = wp_create_nav_menu($menu_name);
-
-        if (is_wp_error($menu_id)) {
-            WP_CLI::error($menu_id->get_error_message());
-            return;
-        }
-
-        // Update description jika ada
-        if ($description) {
-            wp_update_nav_menu_object($menu_id, ['description' => $description]);
-        }
-
-        // Assign location jika ada
-        if ($location) {
-            $locations = get_theme_mod('nav_menu_locations');
-            $locations[$location] = $menu_id;
-            set_theme_mod('nav_menu_locations', $locations);
-        }
-
-        WP_CLI::success("✅ Menu '{$menu_name}' created successfully!");
-        WP_CLI::log("  ID: {$menu_id}");
-        if ($location) {
-            WP_CLI::log("  Location: {$location}");
-        }
+        WP_CLI::success(
+            sprintf('Execute Command from class %s', self::class)
+        );
     }
 }
