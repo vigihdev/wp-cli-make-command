@@ -53,7 +53,7 @@ final class Term_Import_Make_Command extends Base_Import_Command
         $filepath = $this->normalizeFilePath($filepath);
         $this->validateFileJson($filepath, $io);
 
-        // $this->executeCommand($filepath, $assoc_args, $io);
+        $this->executeCommand($filepath, $assoc_args, $io);
     }
 
     protected function executeCommand(string $filepath, array $assoc_args, CliStyle $io): void
