@@ -146,11 +146,13 @@ final class Post_Type_Import_Make_Command extends Base_Command
 
         // Summary dengan definition list
         $io->newLine();
+        $io->hr('-', 75);
         $io->definitionList([
             'Total Posts' => (string) $collection->count(),
             'Mode' => 'Dry Run',
             'File' => basename($filepath)
         ]);
+        $io->hr('-', 75);
 
         $io->successWithIcon('Dry run selesai!');
         $io->block('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.', 'note');
@@ -188,6 +190,7 @@ final class Post_Type_Import_Make_Command extends Base_Command
                 continue;
             }
         }
+        $log->end();
 
         $summary->renderCompact($io, $filepath, (microtime(true) - $start_time));
     }
