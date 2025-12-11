@@ -4,60 +4,83 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands;
 
-use Vigihdev\WpCliModels\UI\CliStyle;
 use Vigihdev\Support\Collection;
-use Vigihdev\WpCliModels\DTOs\Fields\MenuItemChildrenFieldDto;
+use Vigihdev\WpCliModels\DTOs\Fields\MenuItemFieldDto;
 use Vigihdev\WpCliModels\Entities\MenuEntity;
 use Vigihdev\WpCliModels\Entities\MenuItemEntity;
+use Vigihdev\WpCliModels\Enums\MenuItemType;
+use Vigihdev\WpCliModels\UI\CliStyle;
 use Vigihdev\WpCliModels\UI\Components\{DryRunPresetImport, ProcessImportPreset};
 use WP_CLI\Utils;
 use WP_CLI;
-use WP_Term;
 
 final class Menu_Item_Children_Import_Make_Command extends Base_Import_Command
 {
-
+    private string $menuName;
+    private string $parentId;
     public function __construct()
     {
         parent::__construct(name: 'make:menu-item-children-import');
     }
 
     /**
-     * Import Menu Item Children from JSON file.
+     * Membuat item menu WordPress dari file JSON
      *
      * ## OPTIONS
-     *
+     * 
+     * <menu-name>
+     * : Name menu yang menjadi rujukan item menu
+     * 
+     * <parent-id>
+     * : Parent name item menu yang menjadi rujukan item children menu
+     * 
      * <file>
-     * : Path to JSON file.
+     * : Path ke file JSON yang berisi konfigurasi item menu
      * 
      * [--dry-run]
      * : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun. 
      *  
      * ## EXAMPLES
      *
-     *     $ wp make:menu-item-children-import menu-children.json
+     *     # Membuat item menu dari file JSON
+     *     wp make:menu-item-children-import primary blog menu-items.json
+     * 
+     *     wp make:menu-item-children-import primary blog menu-items.json --dry-run
      *
-     * @param array $args
-     * @param array $assoc_args Associative arguments
+     * @when after_wp_load
+     * 
+     * @param array $args Argumen
+     * @param array $assoc_args Argumen asosiatif
      * @return void
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-        $filepath = isset($args[0]) ? $args[0] : null;
+
+        $this->menuName = $args[0] ?? null;
+        $this->parentId = $args[1] ?? null;
+        $filepath = $args[2] ?? null;
         $io = new CliStyle();
+
+        if (!$this->menuName) {
+            $io->errorWithIcon("Nama menu wajib di tentukan.");
+        }
+
+        if (! MenuEntity::exists($this->menuName)) {
+            $io->errorWithIcon("Menu {$io->textError($this->menuName)} tidak tersedia.");
+        }
 
         $this->validateFilePath($filepath, $io);
         $filepath = $this->normalizeFilePath($filepath);
         $this->validateFileJson($filepath, $io);
 
-        $this->executeCommand($filepath, $assoc_args, $io);
+        // $this->executeCommand($filepath, $assoc_args, $io);
     }
 
     protected function executeCommand(string $filepath, array $assoc_args, CliStyle $io): void
     {
         $dryRun = Utils\get_flag_value($assoc_args, 'dry-run');
         try {
-            $collection = $this->loadDataDto($filepath, $io, MenuItemChildrenFieldDto::class);
+            $collection = $this->loadDataDto($filepath, $io, MenuItemFieldDto::class);
             if ($dryRun) {
                 $this->processDryRun($filepath, $collection, $io);
                 return;
@@ -70,53 +93,67 @@ final class Menu_Item_Children_Import_Make_Command extends Base_Import_Command
 
     private function processDryRun(string $filepath, Collection $collection, CliStyle $io)
     {
-        $dryRun = new DryRunPresetImport($io, $filepath, 'Term', $collection->count());
+        $dryRun = new DryRunPresetImport($io, $filepath, 'Menu Item', $collection->count());
         $rows = [];
         foreach ($collection->getIterator() as $index => $menu) {
-            /** @var MenuItemChildrenFieldDto $menu */
+            /** @var MenuItemFieldDto $menu */
 
             $rows[] = [
                 $index + 1,
+                $this->menuName,
+                $menu->getType(),
+                $menu->getTitle(),
+                $menu->getUrl()
             ];
         }
-        $dryRun->renderCompact($rows, ['No', 'name', 'taxonomy', 'slug']);
+        $dryRun->renderCompact($rows, ['No', 'menu', 'type', 'title', 'url']);
     }
 
     private function processImport(string $filepath, Collection $collection, CliStyle $io)
     {
+
+        $menuName = $this->menuName;
         $preset = new ProcessImportPreset(
             io: $io,
             filepath: $filepath,
             startTime: microtime(true),
-            name: 'Term',
+            name: 'Menu Item',
             total: $collection->count()
         );
 
         $preset->startRender();
 
-        foreach ($collection->getIterator() as $index => $menu) {
-            /** @var MenuItemChildrenFieldDto $menu */
-            $preset->getProgressLog()->processing($menu->getLabel());
+        foreach ($collection->getIterator() as $index => $item) {
+            /** @var MenuItemFieldDto $item */
+            $preset->getProgressLog()->processing($item->getTitle());
 
-            // $name = $term->getName();
-            // $taxonomy = $term->getTaxonomy();
-            // $args = array_filter($term->toArray(), fn($k) => !in_array($k, ['name', 'taxonomy']), ARRAY_FILTER_USE_KEY);
+            if (!MenuEntity::exists($menuName)) {
+                $preset->getProgressLog()->warning("Menu {$menuName} tidak tersedia");
+                continue;
+            }
 
-            // $exist = TermEntity::findByName($name, $taxonomy);
-            // if ($exist instanceof WP_Term) {
-            //     $preset->getProgressLog()->warning("Term '{$name}' sudah ada, dilewati.");
-            //     $preset->getSummary()->addSkipped();
-            //     continue;
-            // }
+            $suportTypes = array_column(MenuItemType::cases(), 'value');
+            if (! in_array($item->getType(), $suportTypes)) {
+                $preset->getProgressLog()->warning("Menu type {$item->getType()} tidak support");
+                $preset->getSummary()->addSkipped();
+                continue;
+            }
 
-            // $create = MenuEntity::create($name, $taxonomy, $args);
-            // if (is_wp_error($create)) {
-            //     $io->errorWithIcon("Gagal create '{$name}': " . $create->get_error_message());
-            //     $preset->getSummary()->addFailed();
-            // } else {
-            //     $io->successWithIcon("Berhasil create term_id {$create['term_id']}");
-            //     $preset->getSummary()->addSuccess();
-            // }
+            $exist = MenuItemEntity::existByTitle($menuName, $item->getType(), $item->getTitle());
+            if ($exist) {
+                $preset->getProgressLog()->warning("Menu title : {$item->getTitle()} type : {$item->getType()} sudah di gunakan");
+                $preset->getSummary()->addSkipped();
+                continue;
+            }
+
+            $create = MenuItemEntity::create($menuName, $item->toWpFormat());
+            if (is_wp_error($create)) {
+                $io->errorWithIcon("Gagal create menu title {$item->getTitle()} {$create->get_error_message()}");
+                $preset->getSummary()->addFailed();
+            } else {
+                $io->successWithIcon("Berhasil create menu item post ID {$create}");
+                $preset->getSummary()->addSuccess();
+            }
         }
 
         $preset->getProgressLog()->end();
