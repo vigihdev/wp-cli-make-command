@@ -129,7 +129,6 @@ final class Menu_Item_Children_Import_Make_Command extends Base_Import_Command
     private function processImport(string $filepath, Collection $collection, CliStyle $io)
     {
 
-        die();
         $menuName = $this->menuName;
         $preset = new ProcessImportPreset(
             io: $io,
@@ -164,7 +163,8 @@ final class Menu_Item_Children_Import_Make_Command extends Base_Import_Command
                 continue;
             }
 
-            $create = MenuItemEntity::create($menuName, $item->toWpFormat());
+            $itemChildren = array_merge(['menu-item-parent-id' => $this->parentId], $item->toWpFormat());
+            $create = MenuItemEntity::create($menuName, $itemChildren);
             if (is_wp_error($create)) {
                 $io->errorWithIcon("Gagal create menu title {$item->getTitle()} {$create->get_error_message()}");
                 $preset->getSummary()->addFailed();
