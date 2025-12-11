@@ -96,12 +96,13 @@ final class Menu_Item_Import_Make_Command extends Base_Import_Command
 
             $rows[] = [
                 $index + 1,
+                $this->menuName,
                 $menu->getType(),
                 $menu->getTitle(),
                 $menu->getUrl()
             ];
         }
-        $dryRun->renderCompact($rows, ['No', 'type', 'title', 'url']);
+        $dryRun->renderCompact($rows, ['No', 'menu', 'type', 'title', 'url']);
     }
 
     private function processImport(string $filepath, Collection $collection, CliStyle $io)
