@@ -9,15 +9,20 @@ use Vigihdev\WpCliModels\DTOs\Fields\MenuItemFieldDto;
 use Vigihdev\WpCliModels\Entities\MenuEntity;
 use Vigihdev\WpCliModels\Entities\MenuItemEntity;
 use Vigihdev\WpCliModels\Enums\MenuItemType;
+use Vigihdev\WpCliModels\Exceptions\MenuException;
+use Vigihdev\WpCliModels\Exceptions\MenuItemException;
 use Vigihdev\WpCliModels\UI\CliStyle;
 use Vigihdev\WpCliModels\UI\Components\{DryRunPresetImport, ProcessImportPreset};
+use Vigihdev\WpCliModels\Validators\Entity\MenuItemValidator;
+use Vigihdev\WpCliModels\Validators\Entity\MenuValidator;
 use WP_CLI\Utils;
 use WP_CLI;
 
 final class Menu_Item_Children_Import_Make_Command extends Base_Import_Command
 {
-    private string $menuName;
-    private string $parentId;
+    private ?string $menuName = null;
+    private int $parentId = 0;
+
     public function __construct()
     {
         parent::__construct(name: 'make:menu-item-children-import');
@@ -57,23 +62,33 @@ final class Menu_Item_Children_Import_Make_Command extends Base_Import_Command
     {
 
         $this->menuName = $args[0] ?? null;
-        $this->parentId = $args[1] ?? null;
+        $this->parentId = isset($args[1]) ? (int) $args[1] : null;
         $filepath = $args[2] ?? null;
         $io = new CliStyle();
 
-        if (!$this->menuName) {
-            $io->errorWithIcon("Nama menu wajib di tentukan.");
+        try {
+
+            $menu = MenuValidator::validate($this->menuName)
+                ->mustExist();
+
+            $parentItem = MenuItemValidator::validate($this->parentId)
+                ->mustExist()
+                ->mustBeMenuItem()
+                ->mustBelongToMenu(MenuEntity::get($this->menuName)->getTermId())
+                ->mustBeParentItem()
+                ->mustBePublished()
+                ->getMenuItem();
+
+            $this->validateFilePath($filepath, $io);
+            $filepath = $this->normalizeFilePath($filepath);
+            $this->validateFileJson($filepath, $io);
+
+            $this->executeCommand($filepath, $assoc_args, $io);
+        } catch (MenuException $e) {
+            $io->errorWithIcon($e->getMessage());
+        } catch (MenuItemException $e) {
+            $io->errorWithIcon($e->getMessage());
         }
-
-        if (! MenuEntity::exists($this->menuName)) {
-            $io->errorWithIcon("Menu {$io->textError($this->menuName)} tidak tersedia.");
-        }
-
-        $this->validateFilePath($filepath, $io);
-        $filepath = $this->normalizeFilePath($filepath);
-        $this->validateFileJson($filepath, $io);
-
-        // $this->executeCommand($filepath, $assoc_args, $io);
     }
 
     protected function executeCommand(string $filepath, array $assoc_args, CliStyle $io): void
@@ -93,7 +108,8 @@ final class Menu_Item_Children_Import_Make_Command extends Base_Import_Command
 
     private function processDryRun(string $filepath, Collection $collection, CliStyle $io)
     {
-        $dryRun = new DryRunPresetImport($io, $filepath, 'Menu Item', $collection->count());
+        $dryRun = new DryRunPresetImport($io, $filepath, 'Menu Item Children', $collection->count());
+        $post = get_post($this->parentId);
         $rows = [];
         foreach ($collection->getIterator() as $index => $menu) {
             /** @var MenuItemFieldDto $menu */
@@ -101,23 +117,25 @@ final class Menu_Item_Children_Import_Make_Command extends Base_Import_Command
             $rows[] = [
                 $index + 1,
                 $this->menuName,
+                $post->post_title,
                 $menu->getType(),
                 $menu->getTitle(),
                 $menu->getUrl()
             ];
         }
-        $dryRun->renderCompact($rows, ['No', 'menu', 'type', 'title', 'url']);
+        $dryRun->renderCompact($rows, ['No', 'menu', 'parent', 'type', 'title', 'url']);
     }
 
     private function processImport(string $filepath, Collection $collection, CliStyle $io)
     {
 
+        die();
         $menuName = $this->menuName;
         $preset = new ProcessImportPreset(
             io: $io,
             filepath: $filepath,
             startTime: microtime(true),
-            name: 'Menu Item',
+            name: 'Menu Item Children',
             total: $collection->count()
         );
 
