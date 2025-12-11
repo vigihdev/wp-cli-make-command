@@ -24,15 +24,15 @@ final class Menu_Item_Import_Make_Command extends Base_Import_Command
     }
 
     /**
-     * Membuat item menu WordPress dari file JSON atau CSV
+     * Membuat item menu WordPress dari file JSON
      *
      * ## OPTIONS
      * 
      * <menu-name>
-     * : Name menu
+     * : Name menu yang menjadi rujukan item menu
      * 
      * <file>
-     * : Path ke file JSON atau CSV yang berisi konfigurasi item menu
+     * : Path ke file JSON yang berisi konfigurasi item menu
      * 
      * [--dry-run]
      * : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun. 
@@ -40,13 +40,9 @@ final class Menu_Item_Import_Make_Command extends Base_Import_Command
      * ## EXAMPLES
      *
      *     # Membuat item menu dari file JSON
-     *     wp make:menu-item-import menu-items.json
+     *     wp make:menu-item-import primary menu-items.json
      * 
-     *     wp make:menu-item-import menu-items.json --dry-run
-     *
-     *     # Membuat item menu dari file CSV
-     *     wp make:menu-item-import menu-items.csv
-     *     wp make:menu-item-import menu-items.csv --dry-run
+     *     wp make:menu-item-import primary menu-items.json --dry-run
      *
      * @when after_wp_load
      * 
@@ -57,13 +53,23 @@ final class Menu_Item_Import_Make_Command extends Base_Import_Command
     public function __invoke(array $args, array $assoc_args): void
     {
 
-        $filepath = isset($args[0]) ? $args[0] : null;
-        // $this->menuName = Utils\get_flag_value($assoc_args, 'dry-run');
+        $this->menuName = $args[0] ?? null;
+        $filepath = $args[1] ?? null;
         $io = new CliStyle();
+
+        if (!$this->menuName) {
+            $io->errorWithIcon("Nama menu wajib di tentukan.");
+        }
+
+        if (! MenuEntity::exists($this->menuName)) {
+            $io->errorWithIcon("Menu {$io->textError($this->menuName)} tidak tersedia.");
+        }
 
         $this->validateFilePath($filepath, $io);
         $filepath = $this->normalizeFilePath($filepath);
         $this->validateFileJson($filepath, $io);
+
+        $this->executeCommand($filepath, $assoc_args, $io);
     }
 
     protected function executeCommand(string $filepath, array $assoc_args, CliStyle $io): void
@@ -100,6 +106,8 @@ final class Menu_Item_Import_Make_Command extends Base_Import_Command
 
     private function processImport(string $filepath, Collection $collection, CliStyle $io)
     {
+
+        $menuName = $this->menuName;
         $preset = new ProcessImportPreset(
             io: $io,
             filepath: $filepath,
@@ -113,50 +121,34 @@ final class Menu_Item_Import_Make_Command extends Base_Import_Command
         foreach ($collection->getIterator() as $index => $item) {
             /** @var MenuItemFieldDto $item */
             $preset->getProgressLog()->processing($item->getTitle());
-            $menuName = $this->menuName ?? '';
+
             if (!MenuEntity::exists($menuName)) {
-                echo "⚠️ Menu {$menuName} tidak tersedia <br>";
+                $preset->getProgressLog()->warning("Menu {$menuName} tidak tersedia");
                 continue;
             }
 
             $suportTypes = array_column(MenuItemType::cases(), 'value');
             if (! in_array($item->getType(), $suportTypes)) {
-                echo "⚠️ Menu type {$item->getType()} tidak support <br>";
+                $preset->getProgressLog()->warning("Menu type {$item->getType()} tidak support");
+                $preset->getSummary()->addSkipped();
                 continue;
             }
 
             $exist = MenuItemEntity::existByTitle($menuName, $item->getType(), $item->getTitle());
             if ($exist) {
-                echo "⚠️ Menu title : {$item->getTitle()} type : {$item->getType()} sudah di gunakan <br>";
+                $preset->getProgressLog()->warning("Menu title : {$item->getTitle()} type : {$item->getType()} sudah di gunakan");
+                $preset->getSummary()->addSkipped();
                 continue;
             }
 
             $create = MenuItemEntity::create($menuName, $item->toWpFormat());
             if (is_wp_error($create)) {
-                echo "❌ Gagal create {$create->get_error_message()} <br>";
+                $io->errorWithIcon("Gagal create menu title {$item->getTitle()} {$create->get_error_message()}");
+                $preset->getSummary()->addFailed();
             } else {
-                echo "✅ Success create menu item post ID {$create} <br>";
+                $io->successWithIcon("Berhasil create menu item post ID {$create}");
+                $preset->getSummary()->addSuccess();
             }
-
-            // $name = $term->getName();
-            // $taxonomy = $term->getTaxonomy();
-            // $args = array_filter($term->toArray(), fn($k) => !in_array($k, ['name', 'taxonomy']), ARRAY_FILTER_USE_KEY);
-
-            // $exist = TermEntity::findByName($name, $taxonomy);
-            // if ($exist instanceof WP_Term) {
-            //     $preset->getProgressLog()->warning("Term '{$name}' sudah ada, dilewati.");
-            //     $preset->getSummary()->addSkipped();
-            //     continue;
-            // }
-
-            // $create = MenuEntity::create($name, $taxonomy, $args);
-            // if (is_wp_error($create)) {
-            //     $io->errorWithIcon("Gagal create '{$name}': " . $create->get_error_message());
-            //     $preset->getSummary()->addFailed();
-            // } else {
-            //     $io->successWithIcon("Berhasil create term_id {$create['term_id']}");
-            //     $preset->getSummary()->addSuccess();
-            // }
         }
 
         $preset->getProgressLog()->end();
