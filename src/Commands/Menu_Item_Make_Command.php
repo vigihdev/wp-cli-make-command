@@ -4,11 +4,19 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands;
 
+use Throwable;
 use WP_CLI;
-use WP_CLI_Command;
+use WP_CLI\Utils;
+use Vigihdev\WpCliModels\UI\CliStyle;
 
-final class Menu_Item_Make_Command extends WP_CLI_Command
+final class Menu_Item_Make_Command extends Base_Command
 {
+
+    public function __construct()
+    {
+        parent::__construct(name: 'make:menu-item');
+    }
+
     /**
      * Add an item to a navigation menu
      *
@@ -40,7 +48,10 @@ final class Menu_Item_Make_Command extends WP_CLI_Command
      *
      * [--attr-title=<attr-title>]
      * : Title attribute for the link
-     *
+     * 
+     * [--dry-run]
+     * : Preview changes without actually creating the menu item.
+     * 
      * ## EXAMPLES
      *
      *     # Add a home link
@@ -58,8 +69,14 @@ final class Menu_Item_Make_Command extends WP_CLI_Command
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-        WP_CLI::success(
-            sprintf('Execute Command from class %s', self::class)
-        );
+        $io = new CliStyle();
+        try {
+        } catch (Throwable $e) {
+            $this->exceptionHandler->handle($io, $e);
+        }
     }
+
+    private function processDryRun(CliStyle $io) {}
+
+    private function process(CliStyle $io, array $data) {}
 }

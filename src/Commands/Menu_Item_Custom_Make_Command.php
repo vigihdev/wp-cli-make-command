@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliMake\Commands;
 
 use Throwable;
-use Vigihdev\WpCliModels\DTOs\Entities\Menu\MenuItemEntityDto;
+use Vigihdev\WpCliModels\DTOs\Entities\Menu\MenuEntityDto;
 use Vigihdev\WpCliModels\Entities\{MenuEntity, MenuItemEntity};
 use Vigihdev\WpCliModels\UI\CliStyle;
 use Vigihdev\WpCliModels\Validators\MenuItemValidator;
@@ -13,9 +13,10 @@ use Vigihdev\WpCliModels\Fields\MenuItemCustomField;
 use WP_CLI\Utils;
 
 
-final class Menu_Item_Children_Make_Command extends Base_Command
+final class Menu_Item_Custom_Make_Command extends Base_Command
 {
-    private ?MenuItemEntityDto $parentMenuItem = null;
+
+    private ?MenuEntityDto $menuDto = null;
 
     private ?MenuItemCustomField $fieldItem = null;
 
@@ -25,62 +26,57 @@ final class Menu_Item_Children_Make_Command extends Base_Command
 
     private string $link = '';
 
-    private int $parentId = 0;
-
     public function __construct()
     {
-        parent::__construct(name: 'make:menu-item-children');
+        parent::__construct(name: 'make:menu-item-custom');
         $this->fieldItem = new MenuItemCustomField();
     }
 
     /**
-     * Membuat item menu children WordPress
-     * 
+     * Membuat item menu custom WordPress
+     *
      * ## OPTIONS
      * 
+     * <menu>
+     * : The name, slug, or term ID for the menu.
+     * required: true
+     * 
      * <title>
-     * : Title for the link children.
+     * : Title for the link.
      * required: true
      * 
      * <link>
-     * : Target URL for the link children.
+     * : Target URL for the link.
      * required: true
-     * 
-     * --menu=<menu>
-     * : Name menu yang menjadi rujukan item menu
-     * required: true
-     * ---
-     * 
-     * --parent-id=<parent-id>
-     * : ID parent menu item dari Post ID yang akan menjadi parent
-     * required: true
-     * ---
      * 
      * [--description=<description>]
-     * : Set a custom description for the menu item children.
+     * : Set a custom description for the menu item.
      * 
      * [--attr-title=<attr-title>]
-     * : Set a custom title attribute for the menu item children.
+     * : Set a custom title attribute for the menu item.
      * 
      * [--target=<target>]
-     * : Set a custom link target for the menu item children.
+     * : Set a custom link target for the menu item.
      * 
      * [--classes=<classes>]
-     * : Set a custom link classes for the menu item children.
+     * : Set a custom link classes for the menu item.
      * 
      * [--position=<position>]
-     * : Specify the position of this menu item children.
+     * : Specify the position of this menu item.
+     * 
+     * [--parent-id=<parent-id>]
+     * : Make this menu item a child of another menu item.
      * 
      * [--dry-run]
      * : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun. 
      *  
      * ## EXAMPLES
+     *
+     *     # Membuat item menu custom dari argumen
+     *     wp make:menu-item-custom primary Example https://example.com
      * 
-     *     # Membuat item menu children custom dari argumen
-     *     wp make:menu-item-children Example https://example.com --menu=primary --parent-id=123
-     * 
-     *     # Membuat item menu children custom dari argumen dengan dry run
-     *     wp make:menu-item-children Example https://example.com --menu=primary --parent-id=123 --dry-run
+     *     # Membuat item menu custom dari argumen dengan dry run
+     *     wp make:menu-item-custom primary Example https://example.com --dry-run
      *
      * @when after_wp_load
      * 
@@ -92,25 +88,19 @@ final class Menu_Item_Children_Make_Command extends Base_Command
     {
 
         $io = new CliStyle();
-        $this->title = $args[0] ?? null;
-        $this->link = $args[1] ?? null;
-        $this->parentId = (int) Utils\get_flag_value($assoc_args, 'parent-id', 0);
-        $this->menu = Utils\get_flag_value($assoc_args, 'menu', '');
+        $this->menu = $args[0] ?? '';
+        $this->title = $args[1] ?? '';
+        $this->link = $args[2] ?? '';
 
         $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         try {
-            MenuItemValidator::validate($this->parentId, $this->menu)
-                ->mustExist()
-                ->mustBeMenuItemBelongToMenu()
+            MenuItemValidator::validate(postId: null, menuId: $this->menu)
+                ->mustMenuExist()
                 ->mustBeUniqueCustomItem($this->title, $this->link);
 
-            $this->parentMenuItem = MenuItemEntity::findOne($this->parentId, $this->menu);
-            $assoc_args = array_merge($assoc_args, [
-                'type' => $this->parentMenuItem->getType(),
-                'parent-id' => $this->parentId,
-                'status' => 'publish'
-            ]);
+            $this->menuDto = MenuEntity::get($this->menu);
+            $assoc_args = array_merge($assoc_args, ['type' => 'custom', 'status' => 'publish']);
 
             if ($dryRun) {
                 $this->processDryRun($io, $assoc_args);
@@ -126,23 +116,20 @@ final class Menu_Item_Children_Make_Command extends Base_Command
 
     private function processDryRun(CliStyle $io, array $assoc_args)
     {
-        $parentMenu = $this->parentMenuItem;
         $assoc_args = array_filter($assoc_args, function ($key) {
             return !in_array($key, ['dry-run'], true);
         }, ARRAY_FILTER_USE_KEY);
 
         $menuItemData = array_merge([
-            'parent-title' => $parentMenu->getTitle(),
-            'parent-link' => $parentMenu->getUrl(),
-            'parent-type' => $parentMenu->getType(),
-            'menu-item-title' => $this->title,
-            'menu-item-link' => $this->link,
+            'menu_name' => $this->menuDto->getSlug(),
+            'title' => $this->title,
+            'url' => $this->link,
         ], $assoc_args);
 
-        $dryRun = $io->renderDryRunPreset("New Menu Item Children");
+        $dryRun = $io->renderDryRunPreset("New Menu Item Custom");
         $dryRun
             ->addDefinition($menuItemData)
-            ->addInfo("1 Menu Item Children akan dibuat")
+            ->addInfo("1 Menu Item Custom akan dibuat")
             ->render();
     }
 
@@ -152,8 +139,8 @@ final class Menu_Item_Children_Make_Command extends Base_Command
         $assoc_args = array_merge(['title' => $this->title, 'url' => $this->link], $assoc_args);
 
         $menuItemData = $this->fieldItem->transform($assoc_args);
-        $menu = MenuEntity::get($this->menu);
-        $insert = MenuItemEntity::create($menu->getName(), $menuItemData);
+        $insert = MenuItemEntity::create($this->menuDto->getName(), $menuItemData);
+
         if (is_wp_error($insert)) {
             $io->renderBlock("Error insert menu item custom: " . $insert->get_error_message())->error();
             return;

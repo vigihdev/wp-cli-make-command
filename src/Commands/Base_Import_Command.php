@@ -9,7 +9,7 @@ use Vigihdev\Support\Collection;
 use Vigihdev\WpCliModels\Exceptions\FileException;
 use Vigihdev\WpCliModels\Support\Transformers\FilepathDtoTransformer;
 use Vigihdev\WpCliModels\UI\CliStyle;
-use Vigihdev\WpCliModels\Validators\Support\FileValidator;
+use Vigihdev\WpCliModels\Validators\FileValidator;
 use WP_CLI;
 use WP_CLI_Command;
 
@@ -57,8 +57,7 @@ abstract class Base_Import_Command extends WP_CLI_Command
         $errorMsg = sprintf(
             "❌ %s\n   📁 %s\n   💡 %s",
             $e->getMessage(),
-            $e->getFilePath(),
-            $e->getSuggestion()
+            implode(', ', $e->getContext()),
         );
 
         WP_CLI::error($errorMsg);
