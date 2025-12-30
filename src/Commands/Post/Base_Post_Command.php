@@ -27,21 +27,20 @@ abstract class Base_Post_Command extends WP_CLI_Command
 
     protected FieldInterface $field;
 
-    protected ?WpCliStyle $io = null;
+    protected WpCliStyle $io;
 
     protected MakeHandlerExceptionInterface $exceptionHandler;
 
     public function __construct(
-        protected readonly string $name
+        private readonly string $name
     ) {
 
-        parent::__construct();
+        $this->io = new WpCliStyle();
         $this->exceptionHandler = new MakeHandlerException();
-
-        if ($this->io === null) {
-            $this->io = new WpCliStyle();
-        }
+        parent::__construct();
     }
+
+    private function init() {}
 
     protected function normalizeFilePath(): self
     {

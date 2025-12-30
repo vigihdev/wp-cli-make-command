@@ -2,18 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Vigihdev\WpCliMake\Commands;
+namespace Vigihdev\WpCliMake\Commands\Menu\Item;
 
-use Throwable;
-use WP_CLI\Utils;
-use Vigihdev\WpCliModels\UI\CliStyle;
-use Vigihdev\WpCliModels\Validators\MenuValidator;
-use WP_CLI;
-use WP_CLI_Command;
 
-final class Menu_Make_Command extends Base_Command
+final class Menu_Make_Command extends Base_Menu_Item_Command
 {
-    private ?string $menuName = null;
 
     public function __construct()
     {
@@ -64,19 +57,9 @@ final class Menu_Make_Command extends Base_Command
      * @return void
      *
      */
-    public function __invoke(array $args, array $assoc_args): void
-    {
-        $this->menuName = $args[0] ?? null;
-        $io = new CliStyle();
-        try {
-            MenuValidator::validate($this->menuName)
-                ->mustExist();
-        } catch (Throwable $e) {
-            $this->exceptionHandler->handle($io, $e);
-        }
-    }
+    public function __invoke(array $args, array $assoc_args): void {}
 
-    private function processDryRun(CliStyle $io) {}
+    private function dryRun() {}
 
-    private function process(CliStyle $io) {}
+    private function process() {}
 }

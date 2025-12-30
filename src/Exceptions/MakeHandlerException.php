@@ -14,9 +14,7 @@ final class MakeHandlerException implements MakeHandlerExceptionInterface
 
     public function __construct()
     {
-        if ($this->io === null) {
-            $this->io = new WpCliStyle();
-        }
+        $this->io = new WpCliStyle();
     }
 
     /**

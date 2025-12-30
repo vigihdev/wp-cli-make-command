@@ -2,14 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Vigihdev\WpCliMake\Commands;
+namespace Vigihdev\WpCliMake\Commands\Menu\Item;
 
-use Throwable;
-use WP_CLI;
-use WP_CLI\Utils;
-use Vigihdev\WpCliModels\UI\CliStyle;
 
-final class Menu_Item_Make_Command extends Base_Command
+final class Menu_Item_Make_Command extends Base_Menu_Item_Command
 {
 
     public function __construct()
@@ -67,16 +63,9 @@ final class Menu_Item_Make_Command extends Base_Command
      * @param array $assoc_args Associative arguments for menu item options
      * @return void
      */
-    public function __invoke(array $args, array $assoc_args): void
-    {
-        $io = new CliStyle();
-        try {
-        } catch (Throwable $e) {
-            $this->exceptionHandler->handle($io, $e);
-        }
-    }
+    public function __invoke(array $args, array $assoc_args): void {}
 
-    private function processDryRun(CliStyle $io) {}
+    private function dryRun() {}
 
-    private function process(CliStyle $io, array $data) {}
+    private function process() {}
 }
