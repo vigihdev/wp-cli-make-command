@@ -7,7 +7,6 @@ use Vigihdev\WpCliMake\Commands\{
     User_Make_Command
 };
 
-
 use Vigihdev\WpCliMake\Commands\Menu\Item\{
     Menu_Item_Children_Import_Make_Command,
     Menu_Item_Children_Make_Command,
@@ -18,7 +17,16 @@ use Vigihdev\WpCliMake\Commands\Menu\Item\{
     Menu_Make_Command,
 };
 
-use Vigihdev\WpCliMake\Commands\Post\{Post_Make_Command, Post_Import_Make_Command, Post_Type_Make_Command, Post_Type_Import_Make_Command};
+use Vigihdev\WpCliMake\Commands\Post\{
+    Post_Make_Command,
+    Post_Import_Make_Command,
+    Post_Type_Make_Command,
+    Post_Type_Import_Make_Command
+};
+
+use Vigihdev\WpCliMake\Commands\Post\Page\{
+    Post_Page_Make_Command
+};
 
 if (! class_exists('WP_CLI')) {
     return;
@@ -31,6 +39,7 @@ if (file_exists($autoloader)) {
 
 // Block Post
 WP_CLI::add_command('make:post', new Post_Make_Command());
+WP_CLI::add_command('make:post-page', new Post_Page_Make_Command());
 WP_CLI::add_command('make:post-import', new Post_Import_Make_Command());
 WP_CLI::add_command('make:post-type', new Post_Type_Make_Command());
 WP_CLI::add_command('make:post-type-import', new Post_Type_Import_Make_Command());

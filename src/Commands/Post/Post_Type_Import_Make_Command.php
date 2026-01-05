@@ -11,6 +11,11 @@ use WP_CLI\Utils;
 final class Post_Type_Import_Make_Command extends Base_Post_Command
 {
 
+    /**
+     * @var Collection<PostTypeFieldDto> $collection
+     */
+    private Collection $collection;
+
     public function __construct()
     {
         parent::__construct(name: 'make:post-type-import');
@@ -48,6 +53,8 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
             $this->normalizeFilePath();
 
             $this->validateFilepathJson(); // Memastikan file yang di import adalah file JSON
+            $this->collection = $this->transformDto(PostTypeFieldDto::class);
+
             if ($dryRun) {
                 $this->dryRun();
                 return;
@@ -61,13 +68,43 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
     private function dryRun(): void
     {
         $io = $this->io;
+        $io->newLine();
+        $io->title('🔍 DRY RUN - Preview Data Import');
+        $io->note('Tidak ada perubahan ke database');
+        $collection = $this->collection;
+
+        $io->table(
+            headers: ['Author', 'Type', 'Title', 'Status', 'Taxonomy'],
+            rows: $collection->map(function (PostTypeFieldDto $post) {
+                return [
+                    $post->getAuthor(),
+                    $post->getType(),
+                    $post->getTitle(),
+                    $post->getStatus(),
+                    implode(', ', $post->getTaxInput()),
+                    // $post->getContent(),
+                ];
+            })->toArray()
+        );
+
+        $io->newLine();
+        $io->definitionList(
+            '📊 Summary',
+            [
+                'Total Posts' => (string) $collection->count(),
+                'Mode' => 'Dry Run',
+                'File' => basename($this->filepath)
+            ]
+        );
+
+        $io->success('Dry run selesai!');
+        $io->note('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.');
     }
 
     private function process(): void
     {
         $io = $this->io;
-        /** @var Collection<PostTypeFieldDto[]> $collection */
-        $collection = $this->transformDto(PostTypeFieldDto::class);
+        $collection = $this->collection;
         $io->title("Start Import Post Type");
 
         foreach ($collection->getIterator() as $index => $post) {
@@ -75,6 +112,10 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
             $author = $post->getAuthor();
             $type = $post->getType();
             $title = $post->getTitle();
+            $status = $post->getStatus();
+            $taxInput = $post->getTaxInput();
+            $content = $post->getContent();
+
 
             $io->spinnerStart("<fg=yellow;options=bold>Process {$title}</>");
             if (in_array($type, ['post', 'page'])) {
@@ -86,8 +127,11 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
                 continue;
             }
 
+            // validate author
             // validate title
             // validate post type
+            // validate content
+            // validate taxInput
             $io->spinnerStop("<fg=green;options=bold>✔ {$post->getTitle()} done</>");
         }
     }
