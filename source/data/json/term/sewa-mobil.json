@@ -1,0 +1,80 @@
+[
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "MPV Keluarga",
+        "slug": "mpv-keluarga",
+        "description": "Mobil 7-8 seater untuk keluarga, nyaman dan hemat"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "SUV & 4x4",
+        "slug": "suv-4x4",
+        "description": "Mobil sport utility vehicle dan 4x4 untuk adventure"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Sedan & City Car",
+        "slug": "sedan-city-car",
+        "description": "Mobil untuk perjalanan kota dan bisnis"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Minibus Shuttle",
+        "slug": "minibus-shuttle",
+        "description": "Kendaraan 14-17 seat untuk kelompok kecil"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Big Bus",
+        "slug": "big-bus",
+        "description": "Bus besar kapasitas 28-59 seat untuk tour/wisata"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Mobil Mewah VIP",
+        "slug": "mobil-mewah-vip",
+        "description": "Kendaraan eksklusif untuk kebutuhan VIP"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Utility & Niaga",
+        "slug": "utility-niaga",
+        "description": "Kendaraan komersial untuk keperluan usaha"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Wedding Special",
+        "slug": "wedding-special",
+        "description": "Mobil khusus untuk acara pernikahan"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Sport & Supercar",
+        "slug": "sport-supercar",
+        "description": "Mobil sport dan supercar mewah"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Hyundai Series",
+        "slug": "hyundai-series",
+        "description": "Seri mobil Hyundai (Stargazer, Creta, Santa Fe)"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Toyota Series",
+        "slug": "toyota-series",
+        "description": "Seri mobil Toyota (Avanza, Innova, Hiace, Alphard)"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Honda Series",
+        "slug": "honda-series",
+        "description": "Seri mobil Honda (Mobilio, City, Jazz, CR-V)"
+    },
+    {
+        "taxonomy": "sewa_mobil_category",
+        "term": "Daihatsu Series",
+        "slug": "daihatsu-series",
+        "description": "Seri mobil Daihatsu (Xenia, Sigra, Terios)"
+    }
+]

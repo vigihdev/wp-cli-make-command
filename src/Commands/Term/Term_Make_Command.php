@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands\Term;
 
+use Vigihdev\WpCliMake\Validators\TermValidator;
+use Vigihdev\WpCliModels\Entities\TermEntity;
 use WP_CLI\Utils;
+
 
 final class Term_Make_Command extends Base_Term_Command
 {
@@ -38,7 +41,6 @@ final class Term_Make_Command extends Base_Term_Command
      * [--dry-run]
      * : Preview data without creating
      * default: false
-     * ---
      * 
      * ## EXAMPLES
      *
@@ -53,14 +55,17 @@ final class Term_Make_Command extends Base_Term_Command
     public function __invoke($args, $assoc_args)
     {
         parent::__invoke($args, $assoc_args);
-        $this->term = $args[0] ?? null;
+        $this->term = $args[0];
         $this->taxonomy = Utils\get_flag_value($assoc_args, 'taxonomy');
         $this->slug = Utils\get_flag_value($assoc_args, 'slug');
         $this->description = Utils\get_flag_value($assoc_args, 'description');
         $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
-        try {
 
-            // $this->collection = DtoJsonTransformer::fromFile($this->filepath, PostDto::class);
+        try {
+            $this->setSlug();
+
+            TermValidator::validate($this->getTermDto())
+                ->validateCreate();
             if ($dryRun) {
                 $this->dryRun();
                 return;
@@ -76,24 +81,47 @@ final class Term_Make_Command extends Base_Term_Command
     {
 
         $io = $this->io;
-
         $io->newLine();
-        $io->title("🔍 DRY RUN - Preview Data Insert Post Type");
+        $io->title("🔍 DRY RUN - Preview Data Term");
         $io->note('Tidak ada perubahan ke database');
 
-        // $io->write(['<fg=cyan>Source File:</>', "<fg=yellow>{$this->filepath}</>"]);
-        // $io->write(['<fg=cyan>Total Items Post:</>', "<fg=yellow>{$collection->count()}</>"]);
         $io->newLine();
+        $io->definitionList(
+            'Term Detail',
+            [
+                'Term' => $this->term ?? 'N/A',
+                'Taxonomy' => $this->taxonomy ?? 'N/A',
+                'Slug' => $this->slug ?? 'N/A',
+                'Description' => $this->description ?? 'N/A',
+            ]
+        );
 
         $io->success('Dry run selesai!');
         $io->infoBlock('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.');
+        $io->newLine();
     }
 
+    /**
+     * Process the term creation
+     * 
+     * @return void
+     */
     private function process()
     {
         $io = $this->io;
         $io->newLine();
-        $io->title("🔧 Process - Insert Post Type");
-        $io->note('Membuat post type di database');
+        $io->section("🔧 Process - Insert Term");
+
+        $term = $this->getTermDto();
+        $insert = TermEntity::create($term->getTerm(), $term->getTaxonomy(), $term->toArray());
+
+        if (is_wp_error($insert)) {
+            $io->errorBlock("Error insert term: " . $insert->get_error_message());
+            return;
+        }
+
+        $io->successBlock(
+            sprintf("Term created successfully with term_id: %s and name: %s", (string) $insert['term_id'], $term->getTerm())
+        );
     }
 }
