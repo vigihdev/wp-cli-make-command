@@ -1,0 +1,10 @@
+[
+    {
+        "type": "sewa_mobil",
+        "taxInput": {
+            "sewa_mobil_category": [
+                "avanza"
+            ]
+        }
+    }
+]

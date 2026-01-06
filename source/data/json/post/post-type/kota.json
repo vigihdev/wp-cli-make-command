@@ -1,0 +1,10 @@
+[
+    {
+        "type": "kota",
+        "taxInput": {
+            "kota_category": [
+                "malang"
+            ]
+        }
+    }
+]
