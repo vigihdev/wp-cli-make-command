@@ -9,15 +9,24 @@ use Vigihdev\Support\Collection;
 use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliMake\Exceptions\{MakeHandlerException, MakeHandlerExceptionInterface};
 use Vigihdev\WpCliModels\Contracts\Fields\FieldInterface;
+use Vigihdev\WpCliModels\Entities\UserEntity;
 use Vigihdev\WpCliModels\Support\Transformers\FilepathDtoTransformer;
 use Vigihdev\WpCliModels\UI\WpCliStyle;
 use Vigihdev\WpCliTools\Validators\FileValidator;
 use WP_CLI_Command;
+use WP_Query;
+use WP_User;
 
 abstract class Base_Post_Command extends WP_CLI_Command
 {
 
     protected const ALLOW_EXTENSION_EXPORT = ['json'];
+
+    protected int $author = 0;
+
+    protected string $title;
+
+    protected array $postData = [];
 
     protected string $filepath = '';
 
@@ -35,9 +44,14 @@ abstract class Base_Post_Command extends WP_CLI_Command
         private readonly string $name
     ) {
 
+        parent::__construct();
         $this->io = new WpCliStyle();
         $this->exceptionHandler = new MakeHandlerException();
-        parent::__construct();
+    }
+
+    public function __invoke(array $args, array $assoc_args)
+    {
+        $this->author = UserEntity::findOne()?->getId() ?? 0;
     }
 
     private function init() {}
@@ -59,6 +73,7 @@ abstract class Base_Post_Command extends WP_CLI_Command
             ->mustBeValidJson();
     }
 
+
     /**
      *
      * @param string $dtoClass
@@ -75,4 +90,9 @@ abstract class Base_Post_Command extends WP_CLI_Command
             return new Collection([]);
         }
     }
+
+    private function getOneAuthor() {}
+    private function hasDuplicateTitle() {}
+    private function hasDuplicateUrl() {}
+    private function hasDuplicateName() {}
 }
