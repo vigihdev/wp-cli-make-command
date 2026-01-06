@@ -7,13 +7,14 @@ namespace Vigihdev\WpCliMake\Commands\Post\PostType;
 use Vigihdev\Support\Collection;
 use Vigihdev\WpCliMake\Commands\Post\Base_Post_Command;
 use Vigihdev\WpCliMake\DTOs\Posts\PostDto;
+use Vigihdev\WpCliMake\Support\DtoJsonTransformer;
+use Vigihdev\WpCliMake\Validators\PostTypeValidator;
 use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\WpCliModels\Enums\PostType;
-use Vigihdev\WpCliModels\Validators\PostCreationValidator;
+use WP_CLI\Utils;
 
 final class Post_Type_Import_Make_Command extends Base_Post_Command
 {
-
 
     /**
      * @var Collection<PostDto> $collection
@@ -44,7 +45,28 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
      * @param array $args array index
      * @param array $assoc_args array of associative arguments
      */
-    public function __invoke(array $args, array $assoc_args): void {}
+    public function __invoke(array $args, array $assoc_args): void
+    {
+        parent::__invoke($args, $assoc_args);
+        $this->filepath = $args[0];
+        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
+
+        $io = $this->io;
+        try {
+
+            $this->normalizeFilePath();
+            $this->validateFilepathJson();
+            $this->collection = DtoJsonTransformer::fromFile($this->filepath, PostDto::class);
+            if ($dryRun) {
+                $this->dryRun();
+                return;
+            }
+
+            $this->process();
+        } catch (\Throwable $e) {
+            $this->exceptionHandler->handle($e);
+        }
+    }
 
     private function dryRun(): void
     {
@@ -84,6 +106,7 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
         // Task
         $io->newLine();
         $io->section("Start Insert Post Page: {$collection->count()} items");
+
         foreach ($collection->getIterator() as $index => $post) {
             $postData = $this->mapPostData($post);
 
@@ -93,9 +116,14 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
 
             usleep(2000000);
             try {
-                PostCreationValidator::validate($post->toArray())
-                    ->mustHaveUniqueTitle($post->getTitle(), [PostType::NAV_MENU_ITEM->value]);
-
+                PostTypeValidator::validate($post)
+                    ->mustHaveRegisteredPostType()
+                    ->mustHaveExistingTerms()
+                    ->mustAllowTaxonomiesForPostType();
+                $io->spinnerStop(
+                    "<fg=white;bg=red>   FAILED  </><fg=red;options=bold> {$post->getTitle()} : not valid</>"
+                );
+                return;
                 $insert = PostEntity::create($postData);
                 if (is_wp_error($insert)) {
                     $io->spinnerStop(

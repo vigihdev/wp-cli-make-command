@@ -1,0 +1,12 @@
+[
+    {
+        "title": "Panduan Belajar PHP Modern",
+        "content": "Artikel ini membahas konsep-konsep dasar PHP modern termasuk constructor property promotion dan readonly properties.",
+        "type": "kota",
+        "taxInput": {
+            "kota_category": [
+                "malangsss"
+            ]
+        }
+    }
+]

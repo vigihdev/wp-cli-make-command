@@ -1,0 +1,39 @@
+[
+    {
+        "title": "Panduan Belajar PHP Modern",
+        "content": "Artikel ini membahas konsep-konsep dasar PHP modern termasuk constructor property promotion dan readonly properties.",
+        "status": "publish",
+        "type": "post",
+        "author": 123,
+        "taxInput": [
+            "php",
+            "tutorial",
+            "backend"
+        ]
+    },
+    {
+        "title": "Mengenal Laravel 11",
+        "content": "Laravel 11 membawa banyak fitur baru dan peningkatan performa. Simak ulasan lengkapnya di sini.",
+        "status": "draft",
+        "type": "post",
+        "author": 456,
+        "taxInput": [
+            "laravel",
+            "php",
+            "framework"
+        ]
+    },
+    {
+        "title": "Cara Menulis Unit Test di PHP",
+        "content": "Unit testing sangat penting untuk menjaga kualitas kode. Pelajari cara menulis unit test yang efektif menggunakan PHPUnit.",
+        "status": "publish",
+        "type": "tutorial",
+        "author": 789,
+        "taxInput": [
+            "php",
+            "testing",
+            "phpunit",
+            "best-practices"
+        ]
+    }
+]

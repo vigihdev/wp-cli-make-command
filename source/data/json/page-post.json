@@ -1,0 +1,26 @@
+[
+    {
+        "title": "Harga sewa Bus Pariwisata",
+        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras congue enim ut rutrum euismod. Morbi enim lorem, aliquet id bibendum non, luctus quis mauris. Donec volutpat venenatis elit, ornare malesuada augue dignissim id. Phasellus quis gravida turpis. Curabitur fringilla augue a convallis laoreet. In facilisis, magna sit amet bibendum interdum, sem sem scelerisque sapien, vestibulum bibendum erat odio at elit. Aenean quis pretium ex. Praesent iaculis ligula ac tincidunt rhoncus. Quisque risus elit, posuere id elementum vel, dictum quis orci. Vivamus iaculis metus dui, quis tincidunt sem fringilla nec. Aenean efficitur blandit fermentum. Nunc vitae mi vitae lorem viverra efficitur.\n Phasellus consectetur imperdiet lacus at vulputate. Suspendisse dignissim placerat odio, nec dictum orci vestibulum vel. Etiam a dui quis sem rhoncus dignissim. Curabitur ullamcorper fringilla lectus, quis pulvinar ante viverra vitae. Aliquam erat volutpat. Fusce non ornare turpis. Ut ornare tellus vel dolor mattis faucibus. Morbi ut orci eget nunc auctor sagittis nec sed purus. Aliquam erat volutpat. Integer id aliquet magna. Fusce tempor ipsum id libero varius, sollicitudin laoreet metus faucibus. Duis molestie nisi sed facilisis interdum. Aliquam erat volutpat. Donec sit amet tempus erat. Nam id ligula nec quam vulputate sodales vitae ut tellus.",
+        "metaInput": {
+            "_wp_page_template": "parts/daftar-harga.php",
+            "_wp_page_query": "bus_pariwisata"
+        }
+    },
+    {
+        "title": "Harga sewa yess Bus Pariwisata",
+        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras congue enim ut rutrum euismod. Morbi enim lorem, aliquet id bibendum non, luctus quis mauris. Donec volutpat venenatis elit, ornare malesuada augue dignissim id. Phasellus quis gravida turpis. Curabitur fringilla augue a convallis laoreet. In facilisis, magna sit amet bibendum interdum, sem sem scelerisque sapien, vestibulum bibendum erat odio at elit. Aenean quis pretium ex. Praesent iaculis ligula ac tincidunt rhoncus. Quisque risus elit, posuere id elementum vel, dictum quis orci. Vivamus iaculis metus dui, quis tincidunt sem fringilla nec. Aenean efficitur blandit fermentum. Nunc vitae mi vitae lorem viverra efficitur.\n Phasellus consectetur imperdiet lacus at vulputate. Suspendisse dignissim placerat odio, nec dictum orci vestibulum vel. Etiam a dui quis sem rhoncus dignissim. Curabitur ullamcorper fringilla lectus, quis pulvinar ante viverra vitae. Aliquam erat volutpat. Fusce non ornare turpis. Ut ornare tellus vel dolor mattis faucibus. Morbi ut orci eget nunc auctor sagittis nec sed purus. Aliquam erat volutpat. Integer id aliquet magna. Fusce tempor ipsum id libero varius, sollicitudin laoreet metus faucibus. Duis molestie nisi sed facilisis interdum. Aliquam erat volutpat. Donec sit amet tempus erat. Nam id ligula nec quam vulputate sodales vitae ut tellus.",
+        "metaInput": {
+            "_wp_page_template": "parts/daftar-harga.php",
+            "_wp_page_query": "bus_pariwisata"
+        }
+    },
+    {
+        "title": "Harga sewa Bus Pariwisata",
+        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras congue enim ut rutrum euismod. Morbi enim lorem, aliquet id bibendum non, luctus quis mauris. Donec volutpat venenatis elit, ornare malesuada augue dignissim id. Phasellus quis gravida turpis. Curabitur fringilla augue a convallis laoreet. In facilisis, magna sit amet bibendum interdum, sem sem scelerisque sapien, vestibulum bibendum erat odio at elit. Aenean quis pretium ex. Praesent iaculis ligula ac tincidunt rhoncus. Quisque risus elit, posuere id elementum vel, dictum quis orci. Vivamus iaculis metus dui, quis tincidunt sem fringilla nec. Aenean efficitur blandit fermentum. Nunc vitae mi vitae lorem viverra efficitur.\n Phasellus consectetur imperdiet lacus at vulputate. Suspendisse dignissim placerat odio, nec dictum orci vestibulum vel. Etiam a dui quis sem rhoncus dignissim. Curabitur ullamcorper fringilla lectus, quis pulvinar ante viverra vitae. Aliquam erat volutpat. Fusce non ornare turpis. Ut ornare tellus vel dolor mattis faucibus. Morbi ut orci eget nunc auctor sagittis nec sed purus. Aliquam erat volutpat. Integer id aliquet magna. Fusce tempor ipsum id libero varius, sollicitudin laoreet metus faucibus. Duis molestie nisi sed facilisis interdum. Aliquam erat volutpat. Donec sit amet tempus erat. Nam id ligula nec quam vulputate sodales vitae ut tellus.",
+        "metaInput": {
+            "_wp_page_template": "parts/daftar-harga.php",
+            "_wp_page_query": "bus_pariwisata"
+        }
+    }
+]

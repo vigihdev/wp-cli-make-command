@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Vigihdev\WpCliMake\Commands\Post;
+namespace Vigihdev\WpCliMake\Commands\Post\Post;
+
+use Vigihdev\WpCliMake\Commands\Post\Base_Post_Command;
 
 final class Post_Import_Make_Command extends Base_Post_Command
 {

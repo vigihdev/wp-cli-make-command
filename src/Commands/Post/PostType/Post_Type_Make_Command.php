@@ -28,9 +28,13 @@ final class Post_Type_Make_Command extends Base_Post_Command
      * <title>
      * : Judul post type
      * 
-     * [--post_content=<post_content>]
+     * -post_content=<post_content>
      * : Isi konten post
      * required: true
+     * 
+     * --taxonomies=<taxonomies>
+     * : Taxonomies yang akan ditambahkan ke post type
+     * default: category,post_tag
      * 
      * [--dry-run]
      * : Run the command in dry-run mode
