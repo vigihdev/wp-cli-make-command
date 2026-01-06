@@ -12,4 +12,6 @@ interface PostInterface
     public function getContent(): string;
 
     public function getTaxInput(): array;
+
+    public function getMetaInput(): array;
 }

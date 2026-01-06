@@ -226,12 +226,12 @@ Aenean vehicula, purus sed cursus sodales, diam est consequat arcu, ut dictum sa
         $io = $this->io;
         $io->success(sprintf('Dry run: %s', $this->title));
     }
+
     /**
      * Process the post creation.
      *
      * @return void
      */
-
     private function process(): void
     {
         $io = $this->io;

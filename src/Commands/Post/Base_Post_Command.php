@@ -9,13 +9,13 @@ use Vigihdev\Support\Collection;
 use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliMake\Exceptions\{MakeHandlerException, MakeHandlerExceptionInterface};
 use Vigihdev\WpCliModels\Contracts\Fields\FieldInterface;
+use Vigihdev\WpCliModels\DTOs\Fields\DefaultPostFieldDto;
 use Vigihdev\WpCliModels\Entities\UserEntity;
+use Vigihdev\WpCliModels\Enums\PostStatus;
 use Vigihdev\WpCliModels\Support\Transformers\FilepathDtoTransformer;
 use Vigihdev\WpCliModels\UI\WpCliStyle;
 use Vigihdev\WpCliTools\Validators\FileValidator;
 use WP_CLI_Command;
-use WP_Query;
-use WP_User;
 
 abstract class Base_Post_Command extends WP_CLI_Command
 {
@@ -54,8 +54,6 @@ abstract class Base_Post_Command extends WP_CLI_Command
         $this->author = UserEntity::findOne()?->getId() ?? 0;
     }
 
-    private function init() {}
-
     protected function normalizeFilePath(): self
     {
 
@@ -73,6 +71,13 @@ abstract class Base_Post_Command extends WP_CLI_Command
             ->mustBeValidJson();
     }
 
+    protected function validateFilepathTxt(): void
+    {
+        FileValidator::validate($this->filepath)
+            ->mustExist()
+            ->mustBeExtension('txt')
+            ->mustBeReadable();
+    }
 
     /**
      *
@@ -89,6 +94,19 @@ abstract class Base_Post_Command extends WP_CLI_Command
             $this->exceptionHandler->handle($e);
             return new Collection([]);
         }
+    }
+
+    protected function loadDefaultPost(string $title)
+    {
+        return new DefaultPostFieldDto(title: $title);
+    }
+
+    protected function loadAuthorStatus(): array
+    {
+        return [
+            'post_author' => $this->author,
+            'post_status' => PostStatus::PUBLISH->value,
+        ];
     }
 
     private function getOneAuthor() {}
