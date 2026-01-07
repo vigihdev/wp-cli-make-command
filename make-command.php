@@ -1,6 +1,6 @@
 <?php
 
-use Vigihdev\WpCliMake\Commands\{
+use Vigihdev\WpCliMake\Commands\User\{
     User_Import_Make_Command,
     User_Make_Command
 };

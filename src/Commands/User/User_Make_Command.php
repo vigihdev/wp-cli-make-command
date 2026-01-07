@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Vigihdev\WpCliMake\Commands;
+namespace Vigihdev\WpCliMake\Commands\User;
 
 use Throwable;
 use Vigihdev\WpCliModels\Entities\UserEntity;
@@ -10,7 +10,7 @@ use WP_CLI\Utils;
 use Vigihdev\WpCliModels\UI\CliStyle;
 use Vigihdev\WpCliModels\Validators\UserValidator;
 
-final class User_Make_Command extends Base_Command
+final class User_Make_Command extends Base_User_Command
 {
     private ?string $username = null;
     private ?string $email = null;

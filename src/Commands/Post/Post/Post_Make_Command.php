@@ -8,6 +8,8 @@ use Vigihdev\WpCliMake\Commands\Post\Base_Post_Command;
 use Vigihdev\Support\Collection;
 use Vigihdev\WpCliMake\DTOs\PostDto;
 use Vigihdev\WpCliMake\Support\DtoJsonTransformer;
+use Vigihdev\WpCliMake\Validators\CategoryValidator;
+use Vigihdev\WpCliMake\Validators\PostFactoryValidator;
 use Vigihdev\WpCliMake\Validators\PostTypeValidator;
 use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\WpCliModels\Enums\PostStatus;
@@ -158,7 +160,8 @@ final class Post_Make_Command extends Base_Post_Command
             $data = ['post_title' => $this->title, 'post_content' => $this->post_content];
             $this->postData = array_merge($this->mapPostData(), $assoc_args, $data);
 
-            // $this->collection = DtoJsonTransformer::fromFile($this->filepath, PostDto::class);
+            PostFactoryValidator::validate($this->postData)->validateCreate();
+            array_map(fn($value) => CategoryValidator::validate($value)->mustExist(), $this->post_category);
             if ($dryRun) {
                 $this->dryRun();
                 return;
@@ -202,13 +205,14 @@ final class Post_Make_Command extends Base_Post_Command
         // Task
         $io->newLine();
         $io->section("Start Insert Post");
-        return;
         $postData = $this->postData;
         $insert = PostEntity::create($postData);
-        if (is_wp_error($insert) && $insert instanceof \WP_Error) {
-            $io->errorBlock($insert->get_error_message());
+        if (is_wp_error($insert)) {
+            $io->errorBlock(
+                sprintf("Failed Post created with title: %s, error: %s", $this->title, $insert->get_error_message())
+            );
         } else {
-            $io->successBlock(sprintf("Post created with ID: %d", $insert));
+            $io->successBlock(sprintf("Success Post created with ID: %d and title: %s", $insert, $this->title));
         }
         $io->newLine();
     }
