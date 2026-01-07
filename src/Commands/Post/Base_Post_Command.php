@@ -6,6 +6,8 @@ namespace Vigihdev\WpCliMake\Commands\Post;
 
 use RuntimeException;
 use Throwable;
+use WP_CLI_Command;
+use WP_CLI\Utils;
 use Vigihdev\Support\Collection;
 use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliMake\Exceptions\{MakeHandlerException, MakeHandlerExceptionInterface};
@@ -17,7 +19,6 @@ use Vigihdev\WpCliModels\Enums\PostStatus;
 use Vigihdev\WpCliModels\Support\Transformers\FilepathDtoTransformer;
 use Vigihdev\WpCliModels\UI\WpCliStyle;
 use Vigihdev\WpCliTools\Validators\FileValidator;
-use WP_CLI_Command;
 
 abstract class Base_Post_Command extends WP_CLI_Command
 {
@@ -31,6 +32,8 @@ abstract class Base_Post_Command extends WP_CLI_Command
     protected string $post_content;
 
     protected array $postData = [];
+
+    protected array $post_category = [];
 
     protected string $filepath = '';
 
@@ -59,6 +62,9 @@ abstract class Base_Post_Command extends WP_CLI_Command
     public function __invoke(array $args, array $assoc_args)
     {
         $this->author = UserEntity::findOne()?->getId() ?? 0;
+        $post_category = Utils\get_flag_value($assoc_args, 'post_category');
+        $this->post_category = $post_category ?
+            array_map(fn($value) => $value, explode(',', $post_category)) : [];
     }
 
     protected function normalizeFilePath(): self

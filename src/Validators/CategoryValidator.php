@@ -12,6 +12,7 @@ final class CategoryValidator
         private readonly int|string|null $term,
     ) {}
 
+
     public static function validate(int|string|null $term): self
     {
         return new self($term);

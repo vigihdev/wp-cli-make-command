@@ -128,6 +128,14 @@ final class Post_Make_Command extends Base_Post_Command
      * [--dry-run]
      * : Preview data insert post without actual execution
      * 
+     * ## EXAMPLES
+     *
+     *     # Create a new post with the title "My Post".
+     *     $ wp make:post "My Post"
+     * 
+     *     # Create a new post with the title "My Post" and content "Hello World!".
+     *     $ wp make:post "My Post" --post_content="Hello World!"
+     * 
      * @when after_wp_load
      * 
      * @param array $args Argumen posisi

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliMake\Commands\Post\Page;
 
 use Vigihdev\WpCliMake\Commands\Post\Base_Post_Command;
-use Vigihdev\WpCliModels\DTOs\Fields\DefaultPostFieldDto;
-use Vigihdev\WpCliModels\Entities\UserEntity;
+use Vigihdev\WpCliMake\Validators\CategoryValidator;
+use Vigihdev\WpCliMake\Validators\PostFactoryValidator;
+use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\WpCliModels\Enums\PostStatus;
 use Vigihdev\WpCliModels\Enums\PostType;
-use Vigihdev\WpCliModels\Validators\PostCreationValidator;
 use WP_CLI\Utils;
 
 final class Post_Page_Make_Command extends Base_Post_Command
@@ -22,193 +22,134 @@ final class Post_Page_Make_Command extends Base_Post_Command
 
 
     /**
-     * Membuat post halaman baru di WordPress.
-     *
+     * Create a new post page.
+     * 
      * ## OPTIONS
      *
      * <title>
-     * : Judul post yang akan dibuat
-     * required: true
+     * : The title of the post page.
      * 
-     * [--post_author=<post_author>]
-     * : ID pengguna yang akan menjadi author post (default: 1)
-     * default: 1
+     * --post_content=<post_content>
+     * : The content of the post page.
      * 
-     * [--post_date=<post_date>] 
-     * : Waktu pembuatan post dalam format MySQL (default: sekarang)
-     * default: ''
-     * 
-     * [--post_date_gmt=<post_date_gmt>] 
-     * : Waktu pembuatan post dalam format GMT (default: sekarang)
-     * default: ''
-     * 
-     * [--post_content=<post_content>]
-     * : Isi konten post (default: "")
-     * required: true
-     * 
-     * [--post_content_filtered=<post_content_filtered>]
-     * : Isi konten post yang difilter (default: "")
-     * default: ''
-     * 
-     * [--post_excerpt=<post_excerpt>]
-     * : Ringkasan post (default: "")
-     * default: ''
+     * [--post_name=<post_name>]
+     * : The post name. Default is the sanitized post title when creating a new post.
      * 
      * [--post_status=<post_status>]
-     * : Status post (default: "publish")
-     * default: publish
-     * options: 
-     *  - publish
-     *  - draft
-     *  - pending
-     *  - private
+     * : Status of the post (default: publish)
      * 
-     * [--post_type=<post_type>] 
-     * : Tipe post (default: "post")
-     * default: post
+     * [--post_author=<post_author>]
+     * : The ID of the user who added the post. Default is the current user ID.
      * 
-     * [--comment_status=<comment_status>] 
-     * : Status komentar (default: "open")
-     * default: open
+     * [--post_date=<post_date>]
+     * : The date of the post. Default is the current time.
      * 
-     * [--ping_status=<ping_status>] 
-     * : Status pingback (default: "open")
-     * default: open
+     * [--post_date_gmt=<post_date_gmt>]
+     * : The date of the post in the GMT timezone. Default is the value of $post_date.
      * 
-     * [--post_password=<post_password>] 
-     * : Password post (default: "")
-     * default: ''
+     * [--post_content_filtered=<post_content_filtered>]
+     * : The filtered post content. Default empty.
      * 
-     * [--post_name=<post_name>] 
-     * : Slug post (default: "")
-     * default: ''
+     * [--post_title=<post_title>]
+     * : The post title. Default empty.
+     * 
+     * [--post_excerpt=<post_excerpt>]
+     * : The post excerpt. Default empty.
+     * 
+     * [--post_status=<post_status>]
+     * : The post status. Default 'draft'.
+     * 
+     * [--post_type=<post_type>]
+     * : The post type. Default 'post'.
+     * 
+     * [--comment_status=<comment_status>]
+     * : Whether the post can accept comments. Accepts 'open' or 'closed'. Default is the value of 'default_comment_status' option.
+     * 
+     * [--ping_status=<ping_status>]
+     * : Whether the post can accept pings. Accepts 'open' or 'closed'. Default is the value of 'default_ping_status' option.
+     * 
+     * [--post_password=<post_password>]
+     * : The password to access the post. Default empty.
+     * 
+     * [--post_name=<post_name>]
+     * : The post name. Default is the sanitized post title when creating a new post.
      * 
      * [--from-post=<post_id>]
-     * : ID post yang akan dicloning (default: 0)
-     * default: 0
+     * : Post id of a post to be duplicated.
      * 
-     * [--to_ping=<to_ping>] 
-     * : Daftar URL yang akan diping (default: "")
-     * default: ''
+     * [--to_ping=<to_ping>]
+     * : Space or carriage return-separated list of URLs to ping. Default empty.
      * 
-     * [--pinged=<pinged>] 
-     * : Daftar URL yang sudah diping (default: "")
-     * default: ''
+     * [--pinged=<pinged>]
+     * : Space or carriage return-separated list of URLs that have been pinged. Default empty.
      * 
      * [--post_modified=<post_modified>]
-     * : Waktu modifikasi post dalam format MySQL (default: sekarang)
-     * default: ''
-     * 
-     * [--post_modified_gmt=<post_modified_gmt>] 
-     * : Waktu modifikasi post dalam format GMT (default: sekarang)
-     * default: ''
+     * : The date when the post was last modified. Default is the current time.
      * 
      * [--post_modified_gmt=<post_modified_gmt>]
-     * : Waktu modifikasi post dalam format GMT (default: sekarang)
-     * default: ''
+     * : The date when the post was last modified in the GMT timezone. Default is the current time.
      * 
      * [--post_parent=<post_parent>]
-     * : ID post parent (default: 0)
-     * default: 0
+     * : Set this for the post it belongs to, if any. Default 0.
      * 
-     * [--menu_order=<menu_order>] 
-     * : Urutan menu (default: 0)
-     * default: 0
+     * [--menu_order=<menu_order>]
+     * : The order the post should be displayed in. Default 0.
      * 
-     * [--post_mime_type=<post_mime_type>] 
-     * : Tipe MIME post (default: "")
-     * default: ''
+     * [--post_mime_type=<post_mime_type>]
+     * : The mime type of the post. Default empty.
      * 
-     * [--guid=<guid>] 
-     * : GUID post (default: "")
-     * default: ''
+     * [--guid=<guid>]
+     * : Global Unique ID for referencing the post. Default empty.
      * 
-     * [--post_category=<post_category>] 
-     * : Daftar kategori post (default: "")
-     * default: ''
+     * [--post_category=<post_category>]
+     * : Array of category names, slugs, or IDs. Defaults to value of the 'default_category' option.
      * 
-     * [--tags_input=<tags_input>] 
-     * : Daftar tag post (default: "")
-     * default: ''
+     * [--tags_input=<tags_input>]
+     * : Array of tag names, slugs, or IDs. Default empty.
      * 
-     * [--tax_input=<tax_input>] 
-     * : Daftar taxonomi post (default: "")
-     * default: ''
+     * [--tax_input=<tax_input>]
+     * : Array of taxonomy terms keyed by their taxonomy name. Default empty.
      * 
-     * [--meta_input=<meta_input>] 
-     * : Daftar meta post (default: "")
-     * default: ''
-     * 
-     * [--<field>=<value>] 
-     * : Field tambahan post (default: "")
-     * default: ''
-     * 
-     * [--edit] 
-     * : Apakah post akan diedit setelah dibuat (default: false)
-     * default: false
-     * 
-     * [--porcelain] 
-     * : Output dalam format yang dapat diproses oleh mesin (default: false)
-     * default: false
+     * [--meta_input=<meta_input>]
+     * : Array in JSON format of post meta values keyed by their post meta key. Default empty.
      * 
      * [--dry-run]
-     * : Melakukan simulasi tanpa benar-benar membuat post
-     * default: false
+     * : Preview data insert post without actual execution
      * 
      * ## EXAMPLES
      *
-     *     # Membuat post draft
-     *     $ wp make:post "Judul Post"
-     *
-     *     # Membuat halaman publik
-     *     $ wp make:post "Halaman About" --type=page --status=publish
-     *
-     *     # Membuat post dengan konten dan author tertentu
-     *     $ wp make:post "Post dengan Konten" --content="Ini isi post" --author=2
-     *
+     *     # Create a new post page with the title "My Post Page".
+     *     $ wp make:post-page "My Post Page"
+     * 
+     *     # Create a new post page with the title "My Post Page" and content "Hello World!".
+     *     $ wp make:post-page "My Post Page" --post_content="Hello World!"
+     * 
+     * @when after_wp_load
+     * 
      * @param array $args Argumen posisi
      * @param array $assoc_args Argumen opsional
      * @return void
      */
     public function __invoke(array $args, array $assoc_args): void
     {
+
         parent::__invoke($args, $assoc_args);
         $this->title = $args[0];
-
+        $this->post_content = Utils\get_flag_value($assoc_args, 'post_content');
         $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         $io = $this->io;
         try {
 
-            $this->postData = [
-                'post_title' => $this->title,
-                'post_type' => PostType::PAGE->value,
-                'post_status' => PostStatus::PUBLISH->value,
-                'post_author' => $this->author,
-                'meta_input' => [
-                    '_wp_page_template' => 'parts/daftar-harga.php',
-                    '_wp_page_query' => 'luar_kota',
+            // Process Data
+            $this->setPostContent();
 
-                ],
-                'post_content' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras congue enim ut rutrum euismod. Morbi enim lorem, aliquet id bibendum non, luctus quis mauris. Donec volutpat venenatis elit, ornare malesuada augue dignissim id. Phasellus quis gravida turpis. Curabitur fringilla augue a convallis laoreet. In facilisis, magna sit amet bibendum interdum, sem sem scelerisque sapien, vestibulum bibendum erat odio at elit. Aenean quis pretium ex. Praesent iaculis ligula ac tincidunt rhoncus. Quisque risus elit, posuere id elementum vel, dictum quis orci. Vivamus iaculis metus dui, quis tincidunt sem fringilla nec. Aenean efficitur blandit fermentum. Nunc vitae mi vitae lorem viverra efficitur.
+            $this->postData = array_merge($this->postData, $this->mapPostData(), $assoc_args, [
+                'post_content' => $this->post_content,
+            ]);
 
-Phasellus consectetur imperdiet lacus at vulputate. Suspendisse dignissim placerat odio, nec dictum orci vestibulum vel. Etiam a dui quis sem rhoncus dignissim. Curabitur ullamcorper fringilla lectus, quis pulvinar ante viverra vitae. Aliquam erat volutpat. Fusce non ornare turpis. Ut ornare tellus vel dolor mattis faucibus. Morbi ut orci eget nunc auctor sagittis nec sed purus. Aliquam erat volutpat. Integer id aliquet magna. Fusce tempor ipsum id libero varius, sollicitudin laoreet metus faucibus. Duis molestie nisi sed facilisis interdum. Aliquam erat volutpat. Donec sit amet tempus erat. Nam id ligula nec quam vulputate sodales vitae ut tellus.
-
-Cras efficitur diam ut vulputate accumsan. Cras lacinia massa consequat nulla pellentesque volutpat nec quis odio. Integer et commodo sapien. Vestibulum fermentum cursus pulvinar. Vivamus enim lacus, feugiat non aliquet in, fermentum id dui. Vestibulum ac pellentesque sem. In ut feugiat turpis. Maecenas elementum massa quis dolor efficitur, in tincidunt ex eleifend. Etiam feugiat eleifend sapien, eget vestibulum urna sagittis ut.
-
-Nunc malesuada porta tincidunt. Donec semper, mi non hendrerit malesuada, tellus quam auctor augue, id euismod ipsum risus quis metus. Sed nec nisi id neque ullamcorper sollicitudin. Integer venenatis, mauris at tincidunt ullamcorper, lacus ligula ultrices sapien, a eleifend massa nisi eget mauris. Pellentesque non arcu a justo mattis lobortis at id sapien. Aenean a diam sit amet dolor eleifend congue. Aenean ut hendrerit ipsum. Donec placerat sapien eget quam condimentum volutpat. Ut eu pellentesque leo, et accumsan nisi. Fusce sodales egestas urna et tempus. Duis tempus ornare leo nec pellentesque. Nulla interdum, mauris vel pulvinar facilisis, tortor lectus accumsan turpis, quis accumsan ante tortor nec ligula.
-
-Aenean vehicula, purus sed cursus sodales, diam est consequat arcu, ut dictum sapien ligula non purus. Etiam sit amet odio ullamcorper, pellentesque dui eget, vestibulum lacus. Sed bibendum quam id hendrerit egestas. In felis lorem, suscipit quis lectus id, imperdiet consequat magna. Integer risus nisl, vulputate sed gravida ultricies, pharetra a velit. Cras consequat eget felis tincidunt gravida. Duis id congue nisl. Ut quis ante pulvinar, efficitur erat id, bibendum eros. Nam cursus varius neque vel porttitor. Proin vel semper nisi, eget mattis est.",
-            ];
-
-            $defaultPost = new DefaultPostFieldDto(title: $this->title);
-            $this->postData = array_merge($this->postData, $defaultPost->toArray(), $assoc_args);
-
-            PostCreationValidator::validate($this->postData)
-                ->mustHaveUniqueTitle($this->title)
-                ->mustHaveUniqueName(sanitize_title($this->title))
-                ->mustBeValidAuthor($this->author)
-                ->mustBeCreatable();
+            PostFactoryValidator::validate($this->postData)->validateCreate();
+            array_map(fn($value) => CategoryValidator::validate($value)->mustExist(), $this->post_category);
 
             if ($dryRun) {
                 $this->dryRun();
@@ -224,7 +165,22 @@ Aenean vehicula, purus sed cursus sodales, diam est consequat arcu, ut dictum sa
     private function dryRun(): void
     {
         $io = $this->io;
-        $io->success(sprintf('Dry run: %s', $this->title));
+
+        $io->newLine();
+        $io->title("🔍 DRY RUN - Preview Data Insert Post Page");
+        $io->note('Tidak ada perubahan ke database');
+
+        $io->newLine();
+        $io->definitionList("Detail Post Page", [
+            'Title' => $this->title,
+            'Status' => $this->postData['post_status'] ?? 'N/A',
+            'Type' => $this->postData['post_type'] ?? 'N/A',
+            'Author' => $this->postData['post_author'] ?? 'N/A',
+        ]);
+
+        $io->success('Dry run selesai!');
+        $io->infoBlock('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.');
+        $io->newLine();
     }
 
     /**
@@ -236,11 +192,25 @@ Aenean vehicula, purus sed cursus sodales, diam est consequat arcu, ut dictum sa
     {
         $io = $this->io;
 
-        $insert = wp_insert_post($this->postData);
-        if (is_wp_error($insert) && $insert instanceof \WP_Error) {
-            $io->errorBlock($insert->get_error_message());
+        $insert = PostEntity::create($this->postData);
+        if (is_wp_error($insert)) {
+            $io->errorBlock(sprintf("Failed created post page with title: %s : %s", $this->title, $insert->get_error_message()));
         } else {
-            $io->successBlock(sprintf("Post created with ID: %d", $insert));
+            $io->successBlock(sprintf("Success created post page with ID: %d and title: %s", $insert, $this->title));
         }
+    }
+
+    private function mapPostData(): array
+    {
+        $postDefault = $this->loadDefaultPost($this->title);
+        $postData = array_merge(
+            $postDefault->toArray(),
+            [
+                'post_author' => $this->author,
+                'post_status'  => PostStatus::PUBLISH->value,
+                'post_type'    => PostType::PAGE->value,
+            ]
+        );
+        return $postData;
     }
 }

@@ -6,6 +6,9 @@ namespace Vigihdev\WpCliMake\Validators;
 
 use Vigihdev\WpCliMake\Exceptions\PostFactoryException;
 use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
+use Vigihdev\WpCliModels\Entities\PostEntity;
+use Vigihdev\WpCliModels\Entities\UserEntity;
+use Vigihdev\WpCliModels\Enums\{PostStatus, PostType};
 
 final class PostFactoryValidator
 {
@@ -15,25 +18,27 @@ final class PostFactoryValidator
     public function __construct(
         private readonly array $data
     ) {
-        $this->post = PostEntityDto::fromArray($data);
+        $this->post = PostEntityDto::fromArray(array_merge($data, ['ID' => 0]));
     }
-
 
     public static function validate(array $data): self
     {
         return new self($data);
     }
 
-    public function validateAll(): self
+    public function validateCreate(): self
     {
         return $this
-            ->mustBeValidId()
             ->mustBeValidAuthor()
             ->mustHaveValidDateFormat()
             ->mustHaveTitle()
+            ->mustBeUniqueTitle()
+            ->mustHaveValidType()
             ->mustHaveContent()
             ->mustHaveStatus()
             ->mustBeValidStatus()
+            ->mustHaveName()
+            ->mustBeUniqueName()
             ->hasValidDateGmtFormat();
     }
 
@@ -57,6 +62,10 @@ final class PostFactoryValidator
         if ($author !== null && !is_numeric($author)) {
             throw PostFactoryException::invalidAuthorFormat();
         }
+        $exist = UserEntity::get((int)$author);
+        if ($exist === null) {
+            throw PostFactoryException::authorNotFound((int)$author);
+        }
         return $this;
     }
 
@@ -78,13 +87,25 @@ final class PostFactoryValidator
         if ($title === null || trim($title) === '') {
             throw PostFactoryException::missingTitle();
         }
+
         return $this;
     }
 
     public function mustBeUniqueTitle(): self
     {
-        // This would require database check to ensure uniqueness
-        // Implementation would depend on specific requirements
+        $this->mustHaveTitle();
+        $title = $this->post->getTitle();
+
+        if (PostEntity::existsByTitle($title)) {
+            $post = PostEntity::findByTitle($title);
+            if (!in_array($post->post_type, [
+                PostType::ATTACHMENT->value,
+                PostType::NAV_MENU_ITEM->value
+            ])) {
+                throw PostFactoryException::duplicatePostTitle($title, $post->post_type);
+            }
+            return $this;
+        }
         return $this;
     }
 
@@ -109,7 +130,15 @@ final class PostFactoryValidator
     public function mustBeValidStatus(): self
     {
         $status = $this->post->getStatus();
-        $validStatuses = ['draft', 'publish', 'pending', 'private', 'trash', 'auto-draft', 'inherit'];
+        $validStatuses = [
+            PostStatus::DRAFT->value,
+            PostStatus::PUBLISH->value,
+            PostStatus::PENDING->value,
+            PostStatus::PRIVATE->value,
+            PostStatus::TRASH->value,
+            PostStatus::AUTO_DRAFT->value,
+            PostStatus::INHERIT->value,
+        ];
 
         if ($status !== null && !in_array($status, $validStatuses, true)) {
             throw PostFactoryException::invalidStatus();
@@ -117,16 +146,31 @@ final class PostFactoryValidator
         return $this;
     }
 
+    public function mustHaveValidType(): self
+    {
+        $type = $this->post->getType();
+        if ($type === null || trim($type) === '') {
+            throw PostFactoryException::missingType();
+        }
+        return $this;
+    }
+
     public function mustHaveName(): self
     {
-        // Add validation for post name if required
+        $name = $this->post->getName();
+        if ($name === null || trim($name) === '') {
+            throw PostFactoryException::missingName();
+        }
         return $this;
     }
 
     public function mustBeUniqueName(): self
     {
-        // This would require database check to ensure uniqueness
-        // Implementation would depend on specific requirements
+        $this->mustHaveName();
+        $name = $this->post->getName();
+        if (PostEntity::existsByName($name)) {
+            throw PostFactoryException::duplicatePostName($name);
+        }
         return $this;
     }
 
@@ -238,11 +282,6 @@ final class PostFactoryValidator
         return $this;
     }
 
-    private function mustHaveValidType(): self
-    {
-        // Add validation for post type if required
-        return $this;
-    }
 
     private function mustHaveMimeType(): self
     {

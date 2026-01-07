@@ -47,6 +47,17 @@ final class PostFactoryException extends \Exception
         );
     }
 
+    public static function authorNotFound(int $authorId): static
+    {
+        return new self(
+            message: sprintf('Author with ID "%d" not found.', $authorId),
+            context: ['authorId' => $authorId],
+            solutions: [
+                'Check if the author exists before creating the post'
+            ],
+        );
+    }
+
     public static function mustBeUniqueAuthor(): static
     {
         return new self(
@@ -83,6 +94,42 @@ final class PostFactoryException extends \Exception
         );
     }
 
+    public static function missingName(): static
+    {
+        return new self(
+            message: 'Post must have a name.',
+            context: [],
+            solutions: [
+                'Add a name to the post data',
+                'Ensure name field is not empty'
+            ],
+        );
+    }
+
+    public static function duplicatePostName(string $name): static
+    {
+        return new self(
+            message: sprintf('Post name "%s" already exists.', $name),
+            context: ['name' => $name],
+            solutions: [
+                'Use a unique name for the post',
+                'Check if the post already exists'
+            ],
+        );
+    }
+
+    public static function duplicatePostTitle(string $title, string $type): static
+    {
+        return new self(
+            message: sprintf('Post title "%s" already exists as a "%s" post.', $title, $type),
+            context: ['title' => $title, 'type' => $type],
+            solutions: [
+                'Use a unique title for the post',
+                'Check if the post already exists'
+            ],
+        );
+    }
+
     public static function missingContent(): static
     {
         return new self(
@@ -102,6 +149,18 @@ final class PostFactoryException extends \Exception
             context: [],
             solutions: [
                 'Set a valid post status (draft, publish, pending, private)'
+            ],
+        );
+    }
+
+    public static function missingType(): static
+    {
+        return new self(
+            message: 'Post must have a type.',
+            context: [],
+            solutions: [
+                'Add a type to the post data',
+                'Ensure type field is not empty'
             ],
         );
     }
