@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands\Post;
 
+use RuntimeException;
 use Throwable;
 use Vigihdev\Support\Collection;
 use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliMake\Exceptions\{MakeHandlerException, MakeHandlerExceptionInterface};
+use Vigihdev\WpCliMake\Support\ImportIoSpinner;
 use Vigihdev\WpCliModels\Contracts\Fields\FieldInterface;
 use Vigihdev\WpCliModels\DTOs\Fields\DefaultPostFieldDto;
 use Vigihdev\WpCliModels\Entities\UserEntity;
@@ -26,6 +28,8 @@ abstract class Base_Post_Command extends WP_CLI_Command
 
     protected string $title;
 
+    protected string $post_content;
+
     protected array $postData = [];
 
     protected string $filepath = '';
@@ -38,6 +42,8 @@ abstract class Base_Post_Command extends WP_CLI_Command
 
     protected WpCliStyle $io;
 
+    protected ImportIoSpinner $importIo;
+
     protected MakeHandlerExceptionInterface $exceptionHandler;
 
     public function __construct(
@@ -47,6 +53,7 @@ abstract class Base_Post_Command extends WP_CLI_Command
         parent::__construct();
         $this->io = new WpCliStyle();
         $this->exceptionHandler = new MakeHandlerException();
+        $this->importIo = new ImportIoSpinner($this->io);
     }
 
     public function __invoke(array $args, array $assoc_args)
@@ -77,6 +84,45 @@ abstract class Base_Post_Command extends WP_CLI_Command
             ->mustExist()
             ->mustBeExtension('txt')
             ->mustBeReadable();
+    }
+
+    protected function setPostContent(): void
+    {
+        $post_content = $this->post_content;
+        if (!$post_content) {
+            return;
+        }
+
+        if (str_starts_with($post_content, '@')) {
+            $this->post_content = $this->readFilePostContent($post_content);
+        }
+    }
+
+    protected function readFilePostContent(string $filepath): string
+    {
+
+        $post_content = '';
+        try {
+            $filepath = ltrim($filepath, '@');
+            $filepath = Path::isAbsolute($filepath) ? $filepath : Path::join(getcwd() ?? '', $filepath);
+
+            FileValidator::validate($filepath)
+                ->mustBeExtension('txt')
+                ->mustExist()
+                ->mustBeReadable();
+
+            $handle = fopen($filepath, "r");
+            if ($handle) {
+                while (($line = fgets($handle)) !== false) {
+                    $post_content .= $line;
+                }
+                fclose($handle);
+            }
+            return $post_content;
+        } catch (Throwable $e) {
+            throw new RuntimeException($e->getMessage());
+            return $post_content;
+        }
     }
 
     /**

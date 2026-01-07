@@ -123,5 +123,6 @@ final class Term_Make_Command extends Base_Term_Command
         $io->successBlock(
             sprintf("Term created successfully with term_id: %s and name: %s", (string) $insert['term_id'], $term->getTerm())
         );
+        $io->newLine();
     }
 }

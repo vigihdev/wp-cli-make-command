@@ -112,6 +112,7 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
 
         $io = $this->io;
         $collection = $this->collection;
+        $importIo = $this->importIo;
 
         // Task
         $io->newLine();
@@ -119,9 +120,7 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
         foreach ($collection->getIterator() as $index => $post) {
             $postData = $this->mapPostData($post);
 
-            $io->spinnerStart(
-                "<fg=yellow;options=bold>Process {$post->getTitle()}</>"
-            );
+            $importIo->start($post->getTitle());
 
             usleep(2000000);
             try {
@@ -130,19 +129,12 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
 
                 $insert = PostEntity::create($postData);
                 if (is_wp_error($insert)) {
-                    $io->spinnerStop(
-                        "<fg=white;bg=red>   FAILED  </><fg=red;options=bold> {$post->getTitle()} : not valid</>"
-                    );
+                    $importIo->failed(sprintf("%s : %s", $post->getTitle(), $insert->get_error_message()));
                     continue;
                 }
-
-                $io->spinnerStop(
-                    "<fg=white;bg=green;options=bold> ✔ SUCCESS </><fg=green;options=bold> {$post->getTitle()} : ID {$insert}</>"
-                );
+                $importIo->success(sprintf("%s : ID %d", $post->getTitle(), $insert));
             } catch (\Throwable $e) {
-                $io->spinnerStop(
-                    "<fg=white;bg=red>   FAILED  </><fg=red;options=bold> {$post->getTitle()} : {$e->getMessage()}</>"
-                );
+                $importIo->failed(sprintf("%s : %s", $post->getTitle(), $e->getMessage()));
             }
         }
     }

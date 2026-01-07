@@ -1,0 +1,84 @@
+<?php
+
+namespace Vigihdev\WpCliMake\Support;
+
+use Vigihdev\WpCliModels\UI\Helper\Helper;
+use Vigihdev\WpCliModels\UI\Helper\OutputWrapper;
+use Vigihdev\WpCliModels\UI\WpCliStyle;
+
+final class ImportIoSpinner
+{
+    private int $lineLength = 80;
+
+    private const TYPE_SUCCESS = ' ✔ SUCCESS ';
+    private const TYPE_FAILED = '  FAILED   ';
+
+    public function __construct(
+        private readonly WpCliStyle $io
+    ) {}
+
+    public function start(string $message): void
+    {
+        $this->io->spinnerStart("<fg=yellow;options=bold>Process {$message}</>");
+    }
+
+    public function success(string $message): void
+    {
+        $message = implode(\PHP_EOL, $this->createBlocks(
+            message: $message,
+            type: self::TYPE_SUCCESS,
+            style: 'fg=green;options=bold'
+        ));
+        $this->io->spinnerStop($message);
+    }
+
+    public function failed(string $message): void
+    {
+        $message = implode(\PHP_EOL, $this->createBlocks(
+            message: $message,
+            type: self::TYPE_FAILED,
+            style: 'fg=red;options=bold'
+        ));
+        $this->io->spinnerStop($message);
+    }
+
+    public function stop(string $message): void
+    {
+        $this->failed($message);
+    }
+
+    private function createBlocks(string $message, string $type, string $style): array
+    {
+
+        $lines = [];
+        $type = \sprintf('%s', $type);
+        $indentLength = Helper::width($type);
+        $lineIndentation = str_repeat(' ', $indentLength);
+
+        $outputWrapper = new OutputWrapper();
+        $lines = explode(\PHP_EOL, $outputWrapper->wrap(
+            $message,
+            $this->lineLength - $indentLength,
+            \PHP_EOL
+        ));
+
+        foreach ($lines as $i => &$line) {
+            if ($i === 0) {
+                $line = \sprintf('%s <%s>%s</>', $this->bgBlock($type), $style, $line);
+            } else {
+                $line = \sprintf(' <%s>%s</>', $style, $lineIndentation . $line);
+            }
+        }
+
+        return $lines;
+    }
+
+    private function bgBlock(string $type): string
+    {
+        $bg = [
+            self::TYPE_SUCCESS => \sprintf("<fg=white;bg=green;options=bold>%s</>", self::TYPE_SUCCESS),
+            self::TYPE_FAILED => \sprintf("<fg=white;bg=red>%s</>", self::TYPE_FAILED),
+        ];
+        return $bg[$type] ?? '';
+    }
+}

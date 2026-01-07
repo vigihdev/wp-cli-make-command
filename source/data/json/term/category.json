@@ -1,0 +1,56 @@
+[
+    {
+        "taxonomy": "category",
+        "term": "Nasional",
+        "slug": "nasional",
+        "description": "Berita dan informasi terkini dari dalam negeri"
+    },
+    {
+        "taxonomy": "category",
+        "term": "Internasional",
+        "slug": "internasional",
+        "description": "Berita dan informasi dari seluruh dunia"
+    },
+    {
+        "taxonomy": "category",
+        "term": "Ekonomi & Bisnis",
+        "slug": "ekonomi-bisnis",
+        "description": "Berita ekonomi, keuangan, dan bisnis terbaru"
+    },
+    {
+        "taxonomy": "category",
+        "term": "Teknologi",
+        "slug": "teknologi",
+        "description": "Informasi terbaru tentang teknologi dan inovasi"
+    },
+    {
+        "taxonomy": "category",
+        "term": "Olahraga",
+        "slug": "olahraga",
+        "description": "Berita dan update olahraga terkini"
+    },
+    {
+        "taxonomy": "category",
+        "term": "Hiburan",
+        "slug": "hiburan",
+        "description": "Berita selebriti, film, musik, dan hiburan lainnya"
+    },
+    {
+        "taxonomy": "category",
+        "term": "Gaya Hidup (Lifestyle)",
+        "slug": "gaya-hidup-lifestyle",
+        "description": "Tips dan berita gaya hidup dan tren terbaru"
+    },
+    {
+        "taxonomy": "category",
+        "term": "Kesehatan",
+        "slug": "kesehatan",
+        "description": "Informasi kesehatan dan gaya hidup sehat"
+    },
+    {
+        "taxonomy": "category",
+        "term": "Otomotif",
+        "slug": "otomotif",
+        "description": "Berita dan informasi otomotif terbaru"
+    }
+]
