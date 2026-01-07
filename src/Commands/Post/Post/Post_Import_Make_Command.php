@@ -6,7 +6,7 @@ namespace Vigihdev\WpCliMake\Commands\Post\Post;
 
 use Vigihdev\WpCliMake\Commands\Post\Base_Post_Command;
 use Vigihdev\Support\Collection;
-use Vigihdev\WpCliMake\DTOs\Posts\PostDto;
+use Vigihdev\WpCliMake\DTOs\PostDto;
 use Vigihdev\WpCliMake\Support\DtoJsonTransformer;
 use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\WpCliModels\Enums\PostStatus;

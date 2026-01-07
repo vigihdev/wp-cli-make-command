@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Validators;
 
-use Vigihdev\WpCliMake\Contracts\Posts\PostInterface;
+use Vigihdev\WpCliMake\Contracts\PostInterface;
 use Vigihdev\WpCliMake\Exceptions\PostTypeException;
 
 final class PostTypeValidator

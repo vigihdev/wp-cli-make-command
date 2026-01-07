@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Vigihdev\WpCliMake\DTOs\Posts;
+namespace Vigihdev\WpCliMake\DTOs;
 
 use Vigihdev\WpCliMake\Contracts\Able\ArrayAbleInterface;
-use Vigihdev\WpCliMake\Contracts\Posts\PostInterface;
+use Vigihdev\WpCliMake\Contracts\PostInterface;
 
 final class PostDto implements PostInterface, ArrayAbleInterface
 {

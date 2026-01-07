@@ -6,7 +6,7 @@ namespace Vigihdev\WpCliMake\Tests\Validators;
 
 use PHPUnit\Framework\Attributes\Test;
 use Vigihdev\WpCliMake\Tests\TestCase;
-use Vigihdev\WpCliMake\DTOs\Posts\PostDto;
+use Vigihdev\WpCliMake\DTOs\PostDto;
 use Vigihdev\WpCliMake\Validators\PostTypeValidator;
 use Vigihdev\WpCliMake\Exceptions\PostTypeException;
 

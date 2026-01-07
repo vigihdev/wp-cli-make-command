@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliMake\Commands\Post\Page;
 
 use Vigihdev\WpCliMake\Commands\Post\Base_Post_Command;
-use Vigihdev\WpCliMake\DTOs\Posts\PostDto;
+use Vigihdev\WpCliMake\DTOs\PostDto;
 use Vigihdev\WpCliMake\Support\DtoJsonTransformer;
 use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\Support\Collection;

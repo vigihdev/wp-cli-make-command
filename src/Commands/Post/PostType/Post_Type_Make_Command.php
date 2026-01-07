@@ -8,7 +8,7 @@ use Throwable;
 use WP_CLI\Utils;
 use Vigihdev\Support\Collection;
 use Vigihdev\WpCliMake\Commands\Post\Base_Post_Command;
-use Vigihdev\WpCliMake\DTOs\Posts\PostDto;
+use Vigihdev\WpCliMake\DTOs\PostDto;
 use Vigihdev\WpCliMake\Validators\PostFactoryValidator;
 use Vigihdev\WpCliMake\Validators\PostTypeValidator;
 use Vigihdev\WpCliMake\Validators\TaxonomyValidator;

@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Vigihdev\WpCliMake\Contracts\Posts;
+namespace Vigihdev\WpCliMake\Contracts;
 
 interface TaxInputInterface {}
