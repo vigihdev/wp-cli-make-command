@@ -12,18 +12,6 @@ final class StringException extends WpCliMakeException
 
     protected array $solutions = [];
 
-    public function __construct(
-        string $message,
-        array $context = [],
-        int $code = 0,
-        \Throwable $previous = null,
-        array $solutions = []
-    ) {
-        $this->context = $context;
-        $this->solutions = $solutions;
-        parent::__construct($message, $code, $previous);
-    }
-
     /**
      * Get the context data for this exception
      */
@@ -58,11 +46,11 @@ final class StringException extends WpCliMakeException
     /**
      * Create exception for string that is too short
      */
-    public static function tooShort(int $min, string $actual = ''): self
+    public static function tooShort(int $min, string $actual = '', string $attribute = ''): self
     {
         return new self(
-            message: 'String is too short',
-            context: ['min' => $min, 'actual' => strlen($actual), 'value' => $actual],
+            message: sprintf('String %s is too short. Minimum length is %d characters', $attribute, $min),
+            context: ['min' => $min, 'actual' => strlen($actual), 'attribute' => $attribute, 'value' => $actual],
             solutions: ['Extend the string to at least ' . $min . ' characters'],
         );
     }
@@ -73,7 +61,7 @@ final class StringException extends WpCliMakeException
     public static function tooLong(int $max, string $actual = ''): self
     {
         return new self(
-            message: 'String is too long',
+            message: sprintf('String is too long. Maximum length is %d characters', $max),
             context: ['max' => $max, 'actual' => strlen($actual), 'value' => $actual],
             solutions: ['Shorten the string to maximum ' . $max . ' characters'],
         );
@@ -85,7 +73,7 @@ final class StringException extends WpCliMakeException
     public static function notEqual(string $expected, string $actual): self
     {
         return new self(
-            message: 'String does not match the expected value',
+            message: sprintf('String does not match the expected value. Expected: %s', $expected),
             context: ['expected' => $expected, 'actual' => $actual],
             solutions: [
                 'Ensure the string matches the expected format: ' . $expected,
@@ -100,7 +88,7 @@ final class StringException extends WpCliMakeException
     public static function notMatch(string $pattern, string $actual): self
     {
         return new self(
-            message: 'String does not match the expected pattern',
+            message: sprintf('String does not match the expected pattern. Expected: %s', $pattern),
             context: ['pattern' => $pattern, 'actual' => $actual],
             solutions: [
                 'Ensure the string matches the pattern: ' . $pattern,
@@ -130,7 +118,7 @@ final class StringException extends WpCliMakeException
     public static function invalidCharacters(string $invalidChars, string $actual): self
     {
         return new self(
-            message: 'String contains invalid characters',
+            message: sprintf('String contains invalid characters. Invalid: %s', $invalidChars),
             context: ['invalid_chars' => $invalidChars, 'actual' => $actual],
             solutions: [
                 'Remove invalid characters: ' . $invalidChars,
@@ -145,7 +133,7 @@ final class StringException extends WpCliMakeException
     public static function missingRequiredCharacters(string $required, string $actual): self
     {
         return new self(
-            message: 'String does not contain required characters',
+            message: sprintf('String does not contain required characters. Required: %s', $required),
             context: ['required' => $required, 'actual' => $actual],
             solutions: [
                 'Add required characters: ' . $required,
@@ -160,7 +148,7 @@ final class StringException extends WpCliMakeException
     public static function failedValidation(string $rule, string $actual): self
     {
         return new self(
-            message: 'String failed validation rule',
+            message: sprintf('String failed validation rule. Rule: %s', $rule),
             context: ['rule' => $rule, 'actual' => $actual],
             solutions: [
                 'Review the validation rule: ' . $rule,
@@ -176,7 +164,7 @@ final class StringException extends WpCliMakeException
     {
         $allowedStr = implode(', ', $allowed);
         return new self(
-            message: 'String is not in the allowed list',
+            message: sprintf('String is not in the allowed list. Allowed: %s', $allowedStr),
             context: ['allowed' => $allowed, 'actual' => $actual],
             solutions: [
                 'Use one of the following values: ' . $allowedStr,
@@ -191,7 +179,7 @@ final class StringException extends WpCliMakeException
     public static function invalidEmail(string $email): self
     {
         return new self(
-            message: 'Invalid email address',
+            message: sprintf('Invalid email address. Email: %s', $email),
             context: ['email' => $email],
             solutions: [
                 'Ensure email format is correct (example@domain.com)',
@@ -206,7 +194,7 @@ final class StringException extends WpCliMakeException
     public static function invalidUrl(string $url): self
     {
         return new self(
-            message: 'Invalid URL',
+            message: sprintf('Invalid URL. URL: %s', $url),
             context: ['url' => $url],
             solutions: [
                 'Ensure URL has correct format (http:// or https://)',

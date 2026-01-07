@@ -88,6 +88,10 @@ final class PostFactoryValidator
             throw PostFactoryException::missingTitle();
         }
 
+        if (strlen($title) < 10) {
+            throw StringValidator::validate($title, 'post_title')->minLength(10);
+        }
+
         return $this;
     }
 

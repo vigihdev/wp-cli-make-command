@@ -1,6 +1,5 @@
 <?php
 
-use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Path;
 
 error_reporting(-1);
@@ -22,12 +21,5 @@ if (! file_exists($fileCliAutoLoad)) {
     throw new RuntimeException("Error File Load Not Found {$fileCliAutoLoad}");
 }
 
-require $fileWpInstallations;
-require $fileCliAutoLoad;
-
-// Dotenv 
-$dotEnv = new Dotenv();
-$dotEnv->usePutenv(true);
-$dotEnv->load(
-    Path::join(__DIR__, '..', '.env.testing')
-);
+require_once $fileWpInstallations;
+require_once $fileCliAutoLoad;

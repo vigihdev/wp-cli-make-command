@@ -10,11 +10,12 @@ final class StringValidator
 {
     public function __construct(
         private readonly int|string|null $string,
+        private readonly string $attribute = '',
     ) {}
 
-    public static function validate(int|string|null $string): self
+    public static function validate(int|string|null $string, string $attribute = ''): self
     {
-        return new self($string);
+        return new self($string, $attribute);
     }
 
     /**
@@ -40,7 +41,7 @@ final class StringValidator
         $actualLength = strlen($string);
 
         if ($actualLength < $min) {
-            throw StringException::tooShort($min, $string);
+            throw StringException::tooShort($min, $string, $this->attribute);
         }
 
         return $this;
@@ -55,7 +56,7 @@ final class StringValidator
         $actualLength = strlen($string);
 
         if ($actualLength > $max) {
-            throw StringException::tooLong($max, $string);
+            throw StringException::tooLong($max, $string, $this->attribute);
         }
 
         return $this;

@@ -4,24 +4,12 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Exceptions;
 
-final class PostFactoryException extends \Exception
+final class PostFactoryException extends WpCliMakeException
 {
 
     protected array $context = [];
 
     protected array $solutions = [];
-
-    public function __construct(
-        string $message,
-        array $context = [],
-        int $code = 0,
-        \Throwable $previous = null,
-        array $solutions = []
-    ) {
-        $this->context = $context;
-        $this->solutions = $solutions;
-        parent::__construct($message, $code, $previous);
-    }
 
     public static function invalidId(int $id): static
     {
@@ -73,7 +61,7 @@ final class PostFactoryException extends \Exception
     public static function invalidDateFormat(): static
     {
         return new self(
-            message: 'Post date must be a valid date format.',
+            message: 'Post date not valid date format.',
             context: [],
             solutions: [
                 'Use valid date format (e.g., Y-m-d H:i:s)',
@@ -168,7 +156,7 @@ final class PostFactoryException extends \Exception
     public static function invalidStatus(): static
     {
         return new self(
-            message: 'Post status must be valid.',
+            message: 'Post post_status not valid.',
             context: [],
             solutions: [
                 'Use one of the valid WordPress post statuses: draft, publish, pending, private, trash, auto-draft, inherit'
