@@ -5,26 +5,15 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliMake\Commands\Post\Post;
 
 use Vigihdev\WpCliMake\Commands\Post\Base_Post_Command;
-use Vigihdev\Support\Collection;
-use Vigihdev\WpCliMake\DTOs\PostDto;
-use Vigihdev\WpCliMake\Support\DtoJsonTransformer;
 use Vigihdev\WpCliMake\Validators\CategoryValidator;
 use Vigihdev\WpCliMake\Validators\PostFactoryValidator;
-use Vigihdev\WpCliMake\Validators\PostTypeValidator;
 use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\WpCliModels\Enums\PostStatus;
 use Vigihdev\WpCliModels\Enums\PostType;
-use WP_CLI\Fetchers\Post;
 use WP_CLI\Utils;
 
 final class Post_Make_Command extends Base_Post_Command
 {
-
-    /**
-     * @var Collection<PostDto> $collection
-     */
-    private ?Collection $collection = null;
-
     public function __construct()
     {
         parent::__construct(name: 'make:post');
@@ -160,7 +149,9 @@ final class Post_Make_Command extends Base_Post_Command
             $data = ['post_title' => $this->title, 'post_content' => $this->post_content];
             $this->postData = array_merge($this->mapPostData(), $assoc_args, $data);
 
-            PostFactoryValidator::validate($this->postData)->validateCreate();
+            PostFactoryValidator::validate($this->postData)
+                ->validateCreate()
+                ->mustTypeEqual(PostType::POST->value);
             array_map(fn($value) => CategoryValidator::validate($value)->mustExist(), $this->post_category);
             if ($dryRun) {
                 $this->dryRun();

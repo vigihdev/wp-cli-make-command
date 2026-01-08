@@ -7,11 +7,10 @@ namespace Vigihdev\WpCliMake\Commands\Post\Post;
 use Vigihdev\WpCliMake\Commands\Post\Base_Post_Command;
 use Vigihdev\Support\Collection;
 use Vigihdev\WpCliMake\DTOs\PostDto;
-use Vigihdev\WpCliMake\Support\DtoJsonTransformer;
+use Vigihdev\WpCliMake\Support\{DtoJsonTransformer, ImportSummary};
+use Vigihdev\WpCliMake\Validators\{CategoryValidator, PostFactoryValidator};
 use Vigihdev\WpCliModels\Entities\PostEntity;
-use Vigihdev\WpCliModels\Enums\PostStatus;
-use Vigihdev\WpCliModels\Enums\PostType;
-use Vigihdev\WpCliModels\Validators\PostCreationValidator;
+use Vigihdev\WpCliModels\Enums\{PostStatus, PostType};
 use WP_CLI\Utils;
 
 final class Post_Import_Make_Command extends Base_Post_Command
@@ -101,6 +100,7 @@ final class Post_Import_Make_Command extends Base_Post_Command
         $io = $this->io;
         $importIo = $this->importIo;
         $collection = $this->collection;
+        $summary = new ImportSummary(total: $collection->count());
 
         // Task
         $io->newLine();
@@ -112,19 +112,35 @@ final class Post_Import_Make_Command extends Base_Post_Command
             usleep(2000000);
 
             try {
-                PostCreationValidator::validate($post->toArray())
-                    ->mustHaveUniqueTitle($post->getTitle(), [PostType::NAV_MENU_ITEM->value]);
+
+                PostFactoryValidator::validate($postData)
+                    ->validateCreate()
+                    ->mustTypeEqual(PostType::POST->value);
+                if (!empty($post->getCategory())) {
+                    array_map(fn($value) => CategoryValidator::validate($value)->mustExist(), $post->getCategory());
+                }
 
                 $insert = PostEntity::create($postData);
                 if (is_wp_error($insert)) {
+                    $summary->addFailed();
                     $importIo->failed(sprintf("%s : %s", $post->getTitle(), $insert->get_error_message()));
                     continue;
                 }
+                $summary->addSuccess();
                 $importIo->success(sprintf("%s : ID %d", $post->getTitle(), $insert));
             } catch (\Throwable $e) {
-                $importIo->failed(sprintf("%s : %s", $post->getTitle(), $e->getMessage()));
+                if ($e->getCode() === 409) {
+                    $summary->addSkipped();
+                    $importIo->skipped(sprintf('%s', $e->getMessage()));
+                } else {
+                    $summary->addFailed();
+                    $importIo->failed(sprintf("%s", $e->getMessage()));
+                }
             }
         }
+
+        $io->newLine();
+        $io->definitionList("📊 Summary", $summary->getResults());
     }
 
     private function mapPostData(PostDto $post): array
@@ -132,12 +148,9 @@ final class Post_Import_Make_Command extends Base_Post_Command
         $postDefault = $this->loadDefaultPost($post->getTitle());
         $postData = array_merge(
             $postDefault->toArray(),
+            ['post_type' => PostType::POST->value],
             $post->toArray(),
-            [
-                'post_author' => $this->author,
-                'post_status'  => PostStatus::PUBLISH->value,
-                'post_type'    => PostType::POST->value,
-            ]
+            ['post_author' => $this->author, 'post_status' => PostStatus::PUBLISH->value]
         );
         return $postData;
     }

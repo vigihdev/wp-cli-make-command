@@ -160,9 +160,4 @@ abstract class Base_Post_Command extends WP_CLI_Command
             'post_status' => PostStatus::PUBLISH->value,
         ];
     }
-
-    private function getOneAuthor() {}
-    private function hasDuplicateTitle() {}
-    private function hasDuplicateUrl() {}
-    private function hasDuplicateName() {}
 }

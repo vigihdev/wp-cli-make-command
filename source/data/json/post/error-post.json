@@ -1,0 +1,37 @@
+[
+    {
+        "title": "",
+        "content": "Error post Empty Title",
+        "type": "post"
+    },
+    {
+        "title": "Test",
+        "content": "Error post Title Minimum 10 Character",
+        "type": "post"
+    },
+    {
+        "title": "Test Error Post Empty Content",
+        "content": "",
+        "type": "post"
+    },
+    {
+        "title": "Test create post from make post cli",
+        "content": "Test Skipped Post Title",
+        "type": "post"
+    },
+    {
+        "title": "Test Error Post Category Not Exist",
+        "content": "Test Skipped Post Title",
+        "type": "post",
+        "category": [
+            "tak-berkategori",
+            "kota"
+        ]
+    },
+    {
+        "title": "Test Error Post Type Not Post",
+        "content": "Content Error Post Type Not Post",
+        "type": "page",
+        "category": []
+    }
+]

@@ -24,6 +24,19 @@ final class PostFactoryException extends WpCliMakeException
         );
     }
 
+    public static function invalidType(string $type, string $expected): static
+    {
+        return new self(
+            message: sprintf('Post type "%s" is not valid. Expected "%s".', $type, $expected),
+            context: ['type' => $type, 'expected' => $expected],
+            code: 400,
+            solutions: [
+                'Check if the post type is supported',
+                'Verify the type matches the expected format'
+            ],
+        );
+    }
+
     public static function invalidAuthorFormat(): static
     {
         return new self(

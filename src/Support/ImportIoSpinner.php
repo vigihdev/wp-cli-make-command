@@ -48,7 +48,7 @@ final class ImportIoSpinner
         $message = implode(\PHP_EOL, $this->createBlocks(
             message: $message,
             type: self::TYPE_FAILED,
-            style: 'fg=red;options=bold'
+            style: 'fg=red'
         ));
         $this->io->spinnerStop($message);
     }

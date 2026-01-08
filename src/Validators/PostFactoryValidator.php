@@ -6,8 +6,7 @@ namespace Vigihdev\WpCliMake\Validators;
 
 use Vigihdev\WpCliMake\Exceptions\PostFactoryException;
 use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
-use Vigihdev\WpCliModels\Entities\PostEntity;
-use Vigihdev\WpCliModels\Entities\UserEntity;
+use Vigihdev\WpCliModels\Entities\{PostEntity, UserEntity};
 use Vigihdev\WpCliModels\Enums\{PostStatus, PostType};
 
 final class PostFactoryValidator
@@ -58,8 +57,8 @@ final class PostFactoryValidator
 
     public function mustBeValidAuthor(): self
     {
-        $author = $this->post->getAuthor();
-        if ($author !== null && !is_numeric($author)) {
+        $author = (int)$this->post->getAuthor();
+        if ($author <= 0) {
             throw PostFactoryException::invalidAuthorFormat();
         }
         $exist = UserEntity::get((int)$author);
@@ -155,6 +154,16 @@ final class PostFactoryValidator
         $type = $this->post->getType();
         if ($type === null || trim($type) === '') {
             throw PostFactoryException::missingType();
+        }
+        return $this;
+    }
+
+    public function mustTypeEqual(string $type): self
+    {
+        $this->mustHaveValidType();
+        $postType = $this->post->getType();
+        if ($postType !== $type) {
+            throw PostFactoryException::invalidType($postType, $type);
         }
         return $this;
     }

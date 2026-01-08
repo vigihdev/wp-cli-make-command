@@ -14,6 +14,7 @@ final class PostDto implements PostInterface, ArrayAbleInterface
         private readonly string $title,
         private readonly string $content,
         private readonly string $type,
+        private readonly array $category = [],
         private readonly array $taxInput = [],
         private readonly array $metaInput = [],
     ) {}
@@ -43,6 +44,11 @@ final class PostDto implements PostInterface, ArrayAbleInterface
         return $this->metaInput;
     }
 
+    public function getCategory(): array
+    {
+        return $this->category;
+    }
+
     public function toArray(): array
     {
         return array_filter([
@@ -51,6 +57,7 @@ final class PostDto implements PostInterface, ArrayAbleInterface
             'post_type' => $this->getType(),
             'tax_input' => $this->getTaxInput(),
             'meta_input' => $this->getMetaInput(),
+            'post_category' => $this->getCategory(),
         ], function ($value) {
             return $value !== null;
         });
