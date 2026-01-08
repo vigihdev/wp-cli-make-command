@@ -18,6 +18,14 @@ final class PostTypeValidator
         return new self($post);
     }
 
+    public function validateCreate(): self
+    {
+        return $this->mustHaveRegisteredPostType()
+            ->mustHaveRegisteredTaxonomies()
+            ->mustAllowTaxonomiesForPostType()
+            ->mustHaveExistingTerms();
+    }
+
     public function mustHaveRegisteredPostType(): self
     {
         $type = $this->post->getType();

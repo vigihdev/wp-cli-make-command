@@ -80,11 +80,8 @@ final class Post_Type_Make_Command extends Base_Post_Command
                 'post_content' => $this->post_content,
                 'post_type'    => $postType,
             ]);
-            PostTypeValidator::validate($postDto)
-                ->mustHaveRegisteredPostType()
-                ->mustHaveRegisteredTaxonomies()
-                ->mustAllowTaxonomiesForPostType()
-                ->mustHaveExistingTerms();
+
+            PostTypeValidator::validate($postDto)->validateCreate();
             PostFactoryValidator::validate($this->postData)->validateCreate();
 
             if ($dryRun) {
