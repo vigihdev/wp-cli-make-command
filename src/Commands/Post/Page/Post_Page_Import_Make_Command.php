@@ -79,7 +79,7 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
         $collection = $this->collection;
 
         $io->newLine();
-        $io->title("🔍 DRY RUN - Preview Data Insert Post Page");
+        $io->title("🔍 DRY RUN - Preview Data Insert Post Type Page");
         $io->note('Tidak ada perubahan ke database');
 
         $io->write(['<fg=cyan>Source File:</>', "<fg=yellow>{$this->filepath}</>"]);
@@ -115,12 +115,11 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
 
         // Task
         $io->newLine();
-        $io->section("Start Insert Post Page: {$collection->count()} items");
+        $io->section("Start Insert Post Type Page: {$collection->count()} items");
         foreach ($collection->getIterator() as $post) {
             $postData = $this->mapPostData($post);
 
             $importIo->start($post->getTitle());
-
             usleep(2000000);
             try {
 

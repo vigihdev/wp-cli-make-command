@@ -12,6 +12,7 @@ final class ImportIoSpinner
 
     private const TYPE_SUCCESS = ' ✔ SUCCESS ';
     private const TYPE_FAILED = '  FAILED   ';
+    private const TYPE_SKIPPED = ' SKIPPED ';
 
     public function __construct(
         private readonly WpCliStyle $io
@@ -28,6 +29,16 @@ final class ImportIoSpinner
             message: $message,
             type: self::TYPE_SUCCESS,
             style: 'fg=green;options=bold'
+        ));
+        $this->io->spinnerStop($message);
+    }
+
+    public function skipped(string $message): void
+    {
+        $message = implode(\PHP_EOL, $this->createBlocks(
+            message: $message,
+            type: self::TYPE_SKIPPED,
+            style: 'fg=white'
         ));
         $this->io->spinnerStop($message);
     }
@@ -77,7 +88,8 @@ final class ImportIoSpinner
     {
         $bg = [
             self::TYPE_SUCCESS => \sprintf("<fg=white;bg=green;options=bold>%s</>", self::TYPE_SUCCESS),
-            self::TYPE_FAILED => \sprintf("<fg=white;bg=red>%s</>", self::TYPE_FAILED),
+            self::TYPE_FAILED => \sprintf("<fg=white;bg=red;options=bold>%s</>", self::TYPE_FAILED),
+            self::TYPE_SKIPPED => \sprintf("<fg=white;bg=blue;options=bold>%s</>", self::TYPE_SKIPPED),
         ];
         return $bg[$type] ?? '';
     }

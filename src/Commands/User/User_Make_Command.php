@@ -111,7 +111,7 @@ final class User_Make_Command extends Base_User_Command
             // If validation passes, execute the command
             $this->process($io, $assoc_args);
         } catch (Throwable $e) {
-            $this->exceptionHandler->handle($io, $e);
+            $this->exceptionHandler->handle($e);
         }
     }
 

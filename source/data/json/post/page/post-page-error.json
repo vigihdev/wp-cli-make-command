@@ -10,5 +10,11 @@
         "type": "page",
         "content": "",
         "taxInput": {}
+    },
+    {
+        "title": "Harga Sewa Mobil Luar Kota",
+        "type": "page",
+        "content": "Duplikate Title",
+        "taxInput": {}
     }
 ]

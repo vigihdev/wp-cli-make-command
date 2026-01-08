@@ -104,6 +104,7 @@ final class Term_Import_Make_Command extends Base_Term_Command
 
         $io = $this->io;
         $collection = $this->collection;
+        $importIo = $this->importIo;
 
         // Task
         $io->newLine();
@@ -111,9 +112,7 @@ final class Term_Import_Make_Command extends Base_Term_Command
 
         foreach ($collection->getIterator() as $index => $term) {
 
-            $io->spinnerStart(
-                "<fg=yellow;options=bold>Process {$term->getTerm()}</>"
-            );
+            $importIo->start($term->getTerm());
 
             usleep(2000000);
             try {
@@ -122,19 +121,15 @@ final class Term_Import_Make_Command extends Base_Term_Command
 
                 $insert = TermEntity::create($term->getTerm(), $term->getTaxonomy(), $term->toArray());
                 if (is_wp_error($insert)) {
-                    $io->spinnerStop(
-                        "<fg=white;bg=red>   FAILED  </><fg=red;options=bold> {$term->getTerm()} : {$insert->get_error_message()}</>"
+                    $importIo->failed(
+                        sprintf("%s : %s", $term->getTerm(), $insert->get_error_message())
                     );
                     continue;
                 }
 
-                $io->spinnerStop(
-                    "<fg=white;bg=green;options=bold> ✔ SUCCESS </><fg=green;options=bold> {$term->getTerm()} : term_id {$insert['term_id']}</>"
-                );
+                $importIo->success(sprintf("Insert term: %s : term_id %s", $term->getTerm(), $insert['term_id']));
             } catch (\Throwable $e) {
-                $io->spinnerStop(
-                    "<fg=white;bg=red>   FAILED  </><fg=red;options=bold> {$term->getTerm()} : {$e->getMessage()}</>"
-                );
+                $importIo->skipped(sprintf("%s", $e->getMessage()));
             }
         }
     }

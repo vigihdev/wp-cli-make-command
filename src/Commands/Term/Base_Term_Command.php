@@ -9,6 +9,7 @@ use Vigihdev\WpCliMake\Exceptions\{MakeHandlerExceptionInterface, MakeHandlerExc
 use Vigihdev\WpCliModels\UI\WpCliStyle;
 use WP_CLI_Command;
 use Vigihdev\WpCliMake\DTOs\TermDto;
+use Vigihdev\WpCliMake\Support\ImportIoSpinner;
 use Vigihdev\WpCliModels\Validators\FileValidator;
 
 abstract class Base_Term_Command extends WP_CLI_Command
@@ -24,6 +25,9 @@ abstract class Base_Term_Command extends WP_CLI_Command
 
     protected MakeHandlerExceptionInterface $exceptionHandler;
     protected WpCliStyle $io;
+    protected ImportIoSpinner $importIo;
+
+
 
     public function __construct(
         protected readonly string $name
@@ -31,6 +35,7 @@ abstract class Base_Term_Command extends WP_CLI_Command
         parent::__construct();
         $this->exceptionHandler = new MakeHandlerException();
         $this->io = new WpCliStyle();
+        $this->importIo = new ImportIoSpinner($this->io);
     }
 
     public function __invoke(array $args, array $assoc_args) {}
