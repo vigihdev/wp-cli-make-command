@@ -132,7 +132,7 @@ final class Term_Import_Make_Command extends Base_Term_Command
                 if ($e->getCode() === 409) {
                     $importIo->skipped(sprintf("%s", $e->getMessage()));
                 } else {
-                    $importIo->skipped(sprintf("%s", $e->getMessage()));
+                    $importIo->failed(sprintf("%s", $e->getMessage()));
                 }
             }
         }

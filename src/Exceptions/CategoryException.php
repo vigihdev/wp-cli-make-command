@@ -12,6 +12,7 @@ final class CategoryException extends WpCliMakeException
         return new self(
             message: sprintf("Category not registered: %s", $category),
             context: ['category' => $category],
+            code: 404,
             solutions: [
                 "Check if the category '{$category}' is properly registered in WordPress.",
                 "Verify the category name spelling and ensure it's registered before use."
@@ -24,6 +25,7 @@ final class CategoryException extends WpCliMakeException
         return new self(
             message: sprintf("Category not found: %s", $category),
             context: ['category' => $category],
+            code: 404,
             solutions: [
                 "Verify the category name is correct.",
                 "Check if the category exists in WordPress."
@@ -36,6 +38,7 @@ final class CategoryException extends WpCliMakeException
         return new self(
             message: sprintf("Invalid category name: %s", $category),
             context: ['category' => $category],
+            code: 400,
             solutions: [
                 "Category names must be between 1 and 32 characters.",
                 "Use only lowercase alphanumeric characters, underscores, or hyphens.",
@@ -49,6 +52,7 @@ final class CategoryException extends WpCliMakeException
         return new self(
             message: sprintf("Category already exists: %s", $category),
             context: ['category' => $category],
+            code: 409,
             solutions: [
                 "Use a different category name.",
                 "Check if the category is being created multiple times."
@@ -61,6 +65,7 @@ final class CategoryException extends WpCliMakeException
         return new self(
             message: sprintf("Invalid parent category '%s' for category '%s'", $parent, $category),
             context: ['category' => $category, 'parent' => $parent],
+            code: 400,
             solutions: [
                 "Verify the parent category exists and is valid.",
                 "Check if the parent category is properly registered in WordPress."
@@ -73,6 +78,7 @@ final class CategoryException extends WpCliMakeException
         return new self(
             message: sprintf("Failed to create category '%s': %s", $category, $reason),
             context: ['category' => $category, 'reason' => $reason],
+            code: 500,
             solutions: [
                 "Check the WordPress error logs for more details.",
                 "Verify that all required parameters are provided correctly.",
@@ -86,6 +92,7 @@ final class CategoryException extends WpCliMakeException
         return new self(
             message: sprintf("Invalid arguments for category '%s': %s", $category, $issue),
             context: ['category' => $category, 'issue' => $issue],
+            code: 400,
             solutions: [
                 "Check the arguments passed when creating the category.",
                 "Verify all required parameters are provided correctly."
@@ -98,6 +105,7 @@ final class CategoryException extends WpCliMakeException
         return new self(
             message: sprintf("Category '%s' is not allowed for post type '%s'", $category, $postType),
             context: ['category' => $category, 'postType' => $postType],
+            code: 403,
             solutions: [
                 "Check if the post type supports categories.",
                 "Verify that the category taxonomy is registered for the specified post type."
