@@ -6,6 +6,7 @@ namespace Vigihdev\WpCliMake\Validators;
 
 use Vigihdev\WpCliMake\Contracts\PostInterface;
 use Vigihdev\WpCliMake\Exceptions\PostTypeException;
+use WP_Post_Type;
 
 final class PostTypeValidator
 {
@@ -24,6 +25,24 @@ final class PostTypeValidator
             ->mustHaveRegisteredTaxonomies()
             ->mustAllowTaxonomiesForPostType()
             ->mustHaveExistingTerms();
+    }
+
+    public function mustBeAllowPostType(): self
+    {
+
+        $type = $this->post->getType();
+        $notAllowPostTypes = ['attachment', 'revision', 'nav_menu_item', 'custom_css', 'customize_changeset'];
+        if (in_array($type, $notAllowPostTypes, true)) {
+            throw PostTypeException::notAllowPostType($type);
+        }
+
+        /** @var WP_Post_Type $postType  */
+        $postType = get_post_type_object($type);
+        if (! $postType) {
+            throw PostTypeException::notRegisteredPostType($type);
+        }
+
+        return $this;
     }
 
     public function mustHaveRegisteredPostType(): self
