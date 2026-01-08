@@ -11,7 +11,7 @@ final class ImportIoSpinner
     private int $lineLength = 80;
 
     private const TYPE_SUCCESS = ' ✔ SUCCESS ';
-    private const TYPE_FAILED = '  FAILED   ';
+    private const TYPE_FAILED = ' FAILED ';
     private const TYPE_SKIPPED = ' SKIPPED ';
 
     public function __construct(

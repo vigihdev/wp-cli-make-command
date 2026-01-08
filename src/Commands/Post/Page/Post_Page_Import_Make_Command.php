@@ -9,6 +9,7 @@ use Vigihdev\WpCliMake\DTOs\PostDto;
 use Vigihdev\WpCliMake\Support\DtoJsonTransformer;
 use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\Support\Collection;
+use Vigihdev\WpCliMake\Support\ImportSummary;
 use Vigihdev\WpCliMake\Validators\PostFactoryValidator;
 use Vigihdev\WpCliModels\Enums\{PostStatus, PostType};
 use WP_CLI\Utils;
@@ -112,6 +113,7 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
         $io = $this->io;
         $collection = $this->collection;
         $importIo = $this->importIo;
+        $summary = new ImportSummary(total: $collection->count());
 
         // Task
         $io->newLine();
@@ -129,14 +131,25 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
 
                 $insert = PostEntity::create($postData);
                 if (is_wp_error($insert)) {
+                    $summary->addFailed();
                     $importIo->failed(sprintf("%s : %s", $post->getTitle(), $insert->get_error_message()));
                     continue;
                 }
+                $summary->addSuccess();
                 $importIo->success(sprintf("%s : ID %d", $post->getTitle(), $insert));
             } catch (\Throwable $e) {
-                $importIo->failed(sprintf("%s : %s", $post->getTitle(), $e->getMessage()));
+                if ($e->getCode() === 409) {
+                    $summary->addSkipped();
+                    $importIo->skipped(sprintf("%s", $e->getMessage()));
+                } else {
+                    $summary->addFailed();
+                    $importIo->failed(sprintf("%s : %s", $post->getTitle(), $e->getMessage()));
+                }
             }
         }
+
+        $io->newLine();
+        $io->definitionList("📊 Summary", $summary->getResults());
     }
 
     private function mapPostData(PostDto $post): array

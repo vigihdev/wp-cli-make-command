@@ -9,6 +9,7 @@ use Vigihdev\Support\Collection;
 use Vigihdev\WpCliMake\Commands\Term\Base_Term_Command;
 use Vigihdev\WpCliMake\DTOs\TermDto;
 use Vigihdev\WpCliMake\Support\DtoJsonTransformer;
+use Vigihdev\WpCliMake\Support\ImportSummary;
 use Vigihdev\WpCliMake\Validators\TermValidator;
 use Vigihdev\WpCliModels\Entities\TermEntity;
 use WP_CLI\Utils;
@@ -105,6 +106,7 @@ final class Term_Import_Make_Command extends Base_Term_Command
         $io = $this->io;
         $collection = $this->collection;
         $importIo = $this->importIo;
+        $summary = new ImportSummary(total: $collection->count());
 
         // Task
         $io->newLine();
@@ -121,20 +123,27 @@ final class Term_Import_Make_Command extends Base_Term_Command
 
                 $insert = TermEntity::create($term->getTerm(), $term->getTaxonomy(), $term->toArray());
                 if (is_wp_error($insert)) {
+                    $summary->addFailed();
                     $importIo->failed(
                         sprintf("%s : %s", $term->getTerm(), $insert->get_error_message())
                     );
                     continue;
                 }
 
+                $summary->addSuccess();
                 $importIo->success(sprintf("Insert term: %s : term_id %s", $term->getTerm(), $insert['term_id']));
             } catch (\Throwable $e) {
                 if ($e->getCode() === 409) {
+                    $summary->addSkipped();
                     $importIo->skipped(sprintf("%s", $e->getMessage()));
                 } else {
+                    $summary->addFailed();
                     $importIo->failed(sprintf("%s", $e->getMessage()));
                 }
             }
         }
+
+        $io->newLine();
+        $io->definitionList("📊 Summary", $summary->getResults());
     }
 }
