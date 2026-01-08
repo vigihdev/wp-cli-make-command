@@ -4,10 +4,31 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Exceptions;
 
-use Exception;
 
 final class PostTypeException extends WpCliMakeException
 {
+
+    public static function invalidFormatTaxonomies(): self
+    {
+        return new self(
+            message: 'Taxonomies must be provided as an array format',
+            context: ['taxonomy' => 'not array'],
+            solutions: [
+                'Ensure taxonomies are passed as an array (e.g., ["category", "post_tag"])',
+            ],
+        );
+    }
+
+    public static function emptyTaxonomies(): self
+    {
+        return new self(
+            message: 'Taxonomies array cannot be empty',
+            context: ['taxonomies' => 'empty array'],
+            solutions: [
+                'Provide at least one valid taxonomy in the array',
+            ],
+        );
+    }
 
     public static function notRegisteredPostType(string $postType): self
     {

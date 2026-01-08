@@ -32,6 +32,16 @@
     {
         "title": "",
         "content": "Menguji jika judul kosong",
+        "type": "kota",
+        "taxInput": {
+            "kota_category": [
+                "malang"
+            ]
+        }
+    },
+    {
+        "title": "",
+        "content": "Menguji jika judul kosong",
         "type": "post",
         "taxInput": {}
     },

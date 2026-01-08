@@ -25,8 +25,25 @@ final class PostTypeValidator
             ->mustHaveRegisteredTaxonomies()
             ->mustAllowTaxonomiesForPostType()
             ->mustHaveExistingTerms()
+            ->mustBeNotEmptyTaxonomies()
             ->mustBeAllowPostType()
             ->validateIsCustomPostType();
+    }
+
+    public function mustBeNotEmptyTaxonomies(): self
+    {
+
+        $taxonomies = $this->post->getTaxInput();
+
+        if (! is_array($taxonomies)) {
+            throw PostTypeException::invalidFormatTaxonomies();
+        }
+
+        if (empty($taxonomies)) {
+            throw PostTypeException::emptyTaxonomies();
+        }
+
+        return $this;
     }
 
     public function mustBeAllowPostType(): self
