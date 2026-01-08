@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Exceptions;
 
-use Exception;
-
 final class StringException extends WpCliMakeException
 {
     protected array $context = [];

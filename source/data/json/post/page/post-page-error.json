@@ -1,0 +1,14 @@
+[
+    {
+        "title": "",
+        "type": "page",
+        "content": "Error: Title is required",
+        "taxInput": {}
+    },
+    {
+        "title": "Error Content is required",
+        "type": "page",
+        "content": "",
+        "taxInput": {}
+    }
+]

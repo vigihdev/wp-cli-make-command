@@ -9,9 +9,8 @@ use Vigihdev\WpCliMake\DTOs\PostDto;
 use Vigihdev\WpCliMake\Support\DtoJsonTransformer;
 use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\Support\Collection;
-use Vigihdev\WpCliModels\Enums\PostStatus;
-use Vigihdev\WpCliModels\Enums\PostType;
-use Vigihdev\WpCliModels\Validators\PostCreationValidator;
+use Vigihdev\WpCliMake\Validators\PostFactoryValidator;
+use Vigihdev\WpCliModels\Enums\{PostStatus, PostType};
 use WP_CLI\Utils;
 
 final class Post_Page_Import_Make_Command extends Base_Post_Command
@@ -117,15 +116,17 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
         // Task
         $io->newLine();
         $io->section("Start Insert Post Page: {$collection->count()} items");
-        foreach ($collection->getIterator() as $index => $post) {
+        foreach ($collection->getIterator() as $post) {
             $postData = $this->mapPostData($post);
 
             $importIo->start($post->getTitle());
 
             usleep(2000000);
             try {
-                PostCreationValidator::validate($post->toArray())
-                    ->mustHaveUniqueTitle($post->getTitle(), [PostType::NAV_MENU_ITEM->value]);
+
+                PostFactoryValidator::validate($postData)->validateCreate();
+                if (!empty($post->getTaxInput())) {
+                }
 
                 $insert = PostEntity::create($postData);
                 if (is_wp_error($insert)) {
@@ -138,7 +139,6 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
             }
         }
     }
-
 
     private function mapPostData(PostDto $post): array
     {

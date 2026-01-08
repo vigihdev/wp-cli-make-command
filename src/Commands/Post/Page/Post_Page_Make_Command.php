@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliMake\Commands\Post\Page;
 
 use Vigihdev\WpCliMake\Commands\Post\Base_Post_Command;
-use Vigihdev\WpCliMake\Validators\CategoryValidator;
-use Vigihdev\WpCliMake\Validators\PostFactoryValidator;
+use Vigihdev\WpCliMake\Validators\{CategoryValidator, PostFactoryValidator};
 use Vigihdev\WpCliModels\Entities\PostEntity;
-use Vigihdev\WpCliModels\Enums\PostStatus;
-use Vigihdev\WpCliModels\Enums\PostType;
+use Vigihdev\WpCliModels\Enums\{PostStatus, PostType};
 use WP_CLI\Utils;
 
 final class Post_Page_Make_Command extends Base_Post_Command
@@ -146,6 +144,7 @@ final class Post_Page_Make_Command extends Base_Post_Command
 
             $this->postData = array_merge($this->postData, $this->mapPostData(), $assoc_args, [
                 'post_content' => $this->post_content,
+                'post_type' => PostType::PAGE->value,
             ]);
 
             PostFactoryValidator::validate($this->postData)->validateCreate();
