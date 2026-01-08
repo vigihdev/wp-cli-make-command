@@ -4,41 +4,16 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Exceptions;
 
-use Exception;
 
-final class TermException extends Exception
+final class TermException extends WpCliMakeException
 {
-
-    protected array $context = [];
-    protected array $solutions = [];
-
-    public function __construct(
-        string $message,
-        array $context = [],
-        int $code = 0,
-        \Throwable $previous = null,
-        array $solutions = []
-    ) {
-        $this->context = $context;
-        $this->solutions = $solutions;
-        parent::__construct($message, $code, $previous);
-    }
-
-    public function getContext(): array
-    {
-        return $this->context;
-    }
-
-    public function getSolutions(): array
-    {
-        return $this->solutions;
-    }
 
     public static function notFound(string $taxonomy, string $term): self
     {
         return new self(
             message: "Term {$term} not exist in taxonomy {$taxonomy}.",
             context: compact('taxonomy', 'term'),
+            code: 404,
             solutions: [
                 "Create the term '{$term}' in taxonomy '{$taxonomy}' first."
             ]
@@ -50,6 +25,7 @@ final class TermException extends Exception
         return new self(
             message: "Taxonomy '{$taxonomy}' is not valid.",
             context: compact('taxonomy'),
+            code: 400,
             solutions: [
                 "Check if the taxonomy '{$taxonomy}' is registered in WordPress.",
                 "Verify the taxonomy name spelling."
@@ -62,6 +38,7 @@ final class TermException extends Exception
         return new self(
             message: "Term '{$term}' already exists in taxonomy '{$taxonomy}' with ID {$termId}.",
             context: compact('taxonomy', 'term', 'termId'),
+            code: 409,
             solutions: [
                 "Use the existing term ID {$termId} instead of creating a new one.",
                 "Choose a different term name."
@@ -74,6 +51,7 @@ final class TermException extends Exception
         return new self(
             message: "Failed to create term '{$term}' in taxonomy '{$taxonomy}': {$reason}",
             context: compact('taxonomy', 'term', 'reason'),
+            code: 500,
             solutions: [
                 "Check the WordPress error logs for more details.",
                 "Verify that the taxonomy '{$taxonomy}' is properly registered.",
@@ -87,6 +65,7 @@ final class TermException extends Exception
         return new self(
             message: "Invalid term data: {$issue}.",
             context: compact('data', 'issue'),
+            code: 400,
             solutions: [
                 "Check the required fields in the term data.",
                 "Ensure all mandatory fields are present and valid."

@@ -129,7 +129,11 @@ final class Term_Import_Make_Command extends Base_Term_Command
 
                 $importIo->success(sprintf("Insert term: %s : term_id %s", $term->getTerm(), $insert['term_id']));
             } catch (\Throwable $e) {
-                $importIo->skipped(sprintf("%s", $e->getMessage()));
+                if ($e->getCode() === 409) {
+                    $importIo->skipped(sprintf("%s", $e->getMessage()));
+                } else {
+                    $importIo->skipped(sprintf("%s", $e->getMessage()));
+                }
             }
         }
     }
