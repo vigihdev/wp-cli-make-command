@@ -24,14 +24,25 @@ final class PostTypeValidator
         return $this->mustHaveRegisteredPostType()
             ->mustHaveRegisteredTaxonomies()
             ->mustAllowTaxonomiesForPostType()
-            ->mustHaveExistingTerms();
+            ->mustHaveExistingTerms()
+            ->mustBeAllowPostType()
+            ->validateIsCustomPostType();
     }
 
     public function mustBeAllowPostType(): self
     {
 
         $type = $this->post->getType();
-        $notAllowPostTypes = ['attachment', 'revision', 'nav_menu_item', 'custom_css', 'customize_changeset'];
+        $notAllowPostTypes = [
+            'attachment',
+            'revision',
+            'nav_menu_item',
+            'custom_css',
+            'customize_changeset',
+            'post',
+            'page'
+        ];
+
         if (in_array($type, $notAllowPostTypes, true)) {
             throw PostTypeException::notAllowPostType($type);
         }
@@ -40,6 +51,24 @@ final class PostTypeValidator
         $postType = get_post_type_object($type);
         if (! $postType) {
             throw PostTypeException::notRegisteredPostType($type);
+        }
+
+        if ($postType->capability_type !== 'post') {
+            throw PostTypeException::notAllowPostType($type);
+        }
+
+        return $this;
+    }
+
+    public function validateIsCustomPostType(): self
+    {
+        $type = $this->post->getType();
+
+        $builtIn = get_post_types(['_builtin' => true]);
+
+        // Jika yang diinput adalah bawaan WP, tolak! 
+        if (isset($builtIn[$type])) {
+            throw PostTypeException::notAllowPostType($type);
         }
 
         return $this;

@@ -33,6 +33,18 @@ final class PostTypeException extends WpCliMakeException
         );
     }
 
+    public static function notAllowPostType(string $postType): self
+    {
+        return new self(
+            message: sprintf("Post type '%s' not allowed", $postType),
+            context: ['postType' => $postType],
+            code: 400,
+            solutions: [
+                "Post type '%s' not allowed. Please use another post type.",
+            ]
+        );
+    }
+
     public static function notFoundTermInTaxonomy(string $term, string $taxonomy): self
     {
         return new self(
