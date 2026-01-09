@@ -6,6 +6,8 @@ namespace Vigihdev\WpCliMake\Commands\Menu;
 
 use Vigihdev\WpCliMake\Exceptions\{MakeHandlerException, MakeHandlerExceptionInterface};
 use Vigihdev\WpCliModels\DTOs\Args\Menu\CustomItemMenuArgsDto;
+use Vigihdev\WpCliModels\Enums\PostStatus;
+use Vigihdev\WpCliModels\Fields\MenuItemCustomField;
 use Vigihdev\WpCliModels\UI\WpCliStyle;
 use WP_CLI_Command;
 
@@ -42,5 +44,15 @@ abstract class Base_Menu_Item_Command extends WP_CLI_Command
             'title' => $this->title,
             'link' => $this->link,
         ]));
+    }
+
+    public function transformMenuItemData(array $assoc_args): array
+    {
+        $data = array_merge($assoc_args, [
+            'title' => $this->title,
+            'url' => $this->link,
+            'status' => PostStatus::PUBLISH->value
+        ]);
+        return (new MenuItemCustomField())->transform($data);
     }
 }

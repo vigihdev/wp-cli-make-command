@@ -4,21 +4,36 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Validators;
 
-use Vigihdev\WpCliMake\Contracts\MenuItemCustomInterface;
 use Vigihdev\WpCliMake\Exceptions\{MenuException, MenuItemCustomException};
-use Vigihdev\WpCliModels\Entities\{MenuEntity};
+use Vigihdev\WpCliModels\Entities\{MenuEntity, MenuItemEntity};
+use Vigihdev\WpCliModels\DTOs\Entities\Menu\MenuEntityDto;
 use Vigihdev\WpCliModels\Contracts\Args\Menu\CustomItemMenuArgsInterface;
 
 final class MenuItemCustomValidator
 {
 
+    private ?MenuEntityDto $menuEntity = null;
+
     public function __construct(
         private readonly CustomItemMenuArgsInterface $menuItem,
-    ) {}
+    ) {
+
+        $menuName = $this->menuItem->getMenu();
+        if ($this->menuEntity === null) {
+            $this->menuEntity = MenuEntity::get((string)$menuName);
+        }
+    }
 
     public static function validate(CustomItemMenuArgsInterface $menuItem): self
     {
         return new self($menuItem);
+    }
+
+    public function validateCreate(): self
+    {
+        return $this->mustBeExistMenu()
+            ->mustBeValidTitle()
+            ->mustBeValidUrl();
     }
 
     public function mustBeExistMenu(): self
@@ -28,8 +43,7 @@ final class MenuItemCustomValidator
             throw MenuException::missingMenu((string)$menuName);
         }
 
-        $menu = MenuEntity::get($menuName);
-        if (! $menu) {
+        if (! $this->menuEntity) {
             throw MenuException::notFound((string)$menuName);
         }
 
@@ -43,8 +57,21 @@ final class MenuItemCustomValidator
             throw MenuItemCustomException::missingLabel();
         }
 
+        if (preg_match('/[^a-z-A-Z-0-9\s]+/', $title)) {
+            throw MenuItemCustomException::invalidCharactersLabel($title);
+        }
+
         if (!preg_match('/^[a-zA-Z0-9\s\-]+$/', $title)) {
-            throw MenuItemCustomException::invalidLabel($title);
+            throw MenuItemCustomException::invalidCharactersLabel($title);
+        }
+
+        if (strlen($title) > 50) {
+            throw MenuItemCustomException::labelTooLong($title, 50);
+        }
+
+        $menu = $this->menuItem->getMenu();
+        if (MenuItemEntity::existsByLabel($menu, $title)) {
+            throw MenuItemCustomException::duplicateLabel($title);
         }
 
         return $this;
@@ -53,8 +80,22 @@ final class MenuItemCustomValidator
     public function mustBeValidUrl(): self
     {
         $url = $this->menuItem->getLink();
+
+        if (trim($url) === '') {
+            throw MenuItemCustomException::missingUrl($url);
+        }
+
+        if (trim($url) === '#') {
+            return $this;
+        }
+
         if (filter_var($url, FILTER_VALIDATE_URL) === false) {
             throw MenuItemCustomException::invalidUrl($url);
+        }
+
+        $menu = $this->menuItem->getMenu();
+        if (MenuItemEntity::existsByUrl($menu, $url)) {
+            throw MenuItemCustomException::duplicateUrl($url);
         }
 
         return $this;

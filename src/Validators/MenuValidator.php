@@ -27,7 +27,7 @@ final class MenuValidator
 
     public function mustBeValidName(): self
     {
-        // Salah Cok ai bodoh
+
         $name = trim($this->name);
         if (empty($name)) {
             throw MenuException::missingMenu($name);
@@ -50,6 +50,7 @@ final class MenuValidator
         if ($menu) {
             throw MenuException::duplicateName($this->name);
         }
+
         return $this;
     }
 }

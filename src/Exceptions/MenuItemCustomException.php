@@ -7,6 +7,31 @@ namespace Vigihdev\WpCliMake\Exceptions;
 final class MenuItemCustomException extends WpCliMakeException
 {
 
+    public static function labelTooLong(string $label, int $maxLength): static
+    {
+        return new self(
+            message: sprintf('Menu item label "%s" is too long. Maximum length is %d characters.', $label, $maxLength),
+            code: 400,
+            context: ['label' => $label, 'maxLength' => $maxLength],
+            solutions: [
+                'Shorten the label to fit within the maximum length limit.',
+                'Verify the label does not exceed the allowed length.',
+            ]
+        );
+    }
+    public static function invalidCharactersLabel(string $label): static
+    {
+        return new self(
+            message: sprintf('Menu item label "%s" contains invalid characters.', $label),
+            code: 400,
+            context: ['label' => $label],
+            solutions: [
+                'Replace invalid characters with valid ones.',
+                'Check the label format and ensure it is valid.',
+            ]
+        );
+    }
+
     public static function invalidLabel(string $label): static
     {
         return new self(

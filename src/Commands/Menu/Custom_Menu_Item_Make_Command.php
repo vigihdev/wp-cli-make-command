@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliMake\Commands\Menu;
 
 use Vigihdev\WpCliMake\Validators\MenuItemCustomValidator;
-use Vigihdev\WpCliMake\Validators\MenuValidator;
 use Vigihdev\WpCliModels\DTOs\Args\Menu\CustomItemMenuArgsDto;
 use Vigihdev\WpCliModels\Entities\{MenuEntity, MenuItemEntity, MenuItemCustomEntity};
 use WP_CLI\Utils;
@@ -14,6 +13,9 @@ final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
 {
 
     private CustomItemMenuArgsDto $itemMenu;
+
+    private array $menuItemData = [];
+
     public function __construct()
     {
         parent::__construct(name: 'make:menu-item-custom');
@@ -78,9 +80,12 @@ final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
         $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         $this->itemMenu = $this->instanceCustomMenuItem($assoc_args);
+        $this->menuItemData = $this->transformMenuItemData($assoc_args);
 
         try {
-            // MenuItemCustomValidator::validate($this->itemMenu);
+
+            MenuItemCustomValidator::validate($this->itemMenu)->validateCreate();
+
             if ($dryRun) {
                 $this->dryRun();
                 return;
@@ -100,6 +105,11 @@ final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
         $io->note('Tidak ada perubahan ke database');
 
         $io->newLine();
+        $io->definitionList("Detail Menu Item", [
+            'Menu' => $this->menu,
+            'Title' => $this->title,
+            'Link' => $this->link,
+        ]);
 
         $io->success('Dry run selesai!');
         $io->infoBlock('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.');
@@ -108,19 +118,18 @@ final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
 
     private function process()
     {
+
         $io = $this->io;
 
-        // $insert = MenuEntity::create($this->menu, $this->mapMenuData());
-        // if (is_wp_error($insert)) {
-        //     $io->errorBlock(sprintf("Failed created menu with name: %s : %s", $this->menu, $insert->get_error_message()));
-        // } else {
-        //     $io->successBlock(sprintf("Success created menu with ID: %d and name: %s", $insert, $this->menu));
-        // }
-    }
-
-    private function mapMenuData(): array
-    {
-        $menuData = [];
-        return $menuData;
+        $insert = MenuItemEntity::create($this->menu, $this->menuItemData);
+        if (is_wp_error($insert)) {
+            $io->errorBlock(
+                sprintf("Failed created menu item custom with name: %s : %s", $this->menu, $insert->get_error_message())
+            );
+            $io->newLine();
+            return;
+        }
+        $io->successBlock(sprintf("Menu Item Custom created successfully with ID: %d menu: %s title: %s", $insert, $this->menu, $this->title));
+        $io->newLine();
     }
 }
