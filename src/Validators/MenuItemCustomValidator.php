@@ -7,15 +7,16 @@ namespace Vigihdev\WpCliMake\Validators;
 use Vigihdev\WpCliMake\Contracts\MenuItemCustomInterface;
 use Vigihdev\WpCliMake\Exceptions\{MenuException, MenuItemCustomException};
 use Vigihdev\WpCliModels\Entities\{MenuEntity};
+use Vigihdev\WpCliModels\Contracts\Args\Menu\CustomItemMenuArgsInterface;
 
 final class MenuItemCustomValidator
 {
 
     public function __construct(
-        private readonly MenuItemCustomInterface $menuItem,
+        private readonly CustomItemMenuArgsInterface $menuItem,
     ) {}
 
-    public static function validate(MenuItemCustomInterface $menuItem): self
+    public static function validate(CustomItemMenuArgsInterface $menuItem): self
     {
         return new self($menuItem);
     }

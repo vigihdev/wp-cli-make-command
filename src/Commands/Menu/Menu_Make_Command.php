@@ -35,9 +35,6 @@ final class Menu_Make_Command extends Base_Menu_Command
      * [--description=<description>]
      * : Description for the menu. Appears in admin interface.
      *
-     * [--force]
-     * : Overwrite existing menu if name conflicts.
-     *
      * [--dry-run]
      * : Preview changes without actually creating the menu.
      *
@@ -48,9 +45,6 @@ final class Menu_Make_Command extends Base_Menu_Command
      *
      *     # Create footer menu with description
      *     $ wp make:menu "Footer Links" --location=footer --description="Footer navigation links"
-     *
-     *     # Force create menu even if name exists
-     *     $ wp make:menu "Header Menu" --force
      *
      *     # Preview menu creation
      *     $ wp make:menu "Test Menu" --dry-run
