@@ -19,7 +19,7 @@ final class UserException extends WpCliMakeException
             ]
         );
     }
-    
+
     public static function userNotFound(string $identifier): static
     {
         return new self(
@@ -33,7 +33,7 @@ final class UserException extends WpCliMakeException
             ]
         );
     }
-    
+
     public static function invalidUserData(array $data, string $reason): static
     {
         return new self(
@@ -50,7 +50,7 @@ final class UserException extends WpCliMakeException
             ]
         );
     }
-    
+
     public static function duplicateUserEmail(string $email): static
     {
         return new self(
@@ -64,7 +64,7 @@ final class UserException extends WpCliMakeException
             ]
         );
     }
-    
+
     public static function duplicateUsername(string $username): static
     {
         return new self(
@@ -78,7 +78,22 @@ final class UserException extends WpCliMakeException
             ]
         );
     }
-    
+
+    public static function duplicateEmail(string $email): static
+    {
+        return new self(
+            message: sprintf('A user with email address "%s" already exists.', $email),
+            code: 409,
+            context: ['email' => $email],
+            solutions: [
+                'Use a different email address for the new user.',
+                'Find and update the existing user instead.',
+                'Check if the email was mistyped or already in use.',
+            ]
+        );
+    }
+
+
     public static function unauthorizedUserOperation(string $operation): static
     {
         return new self(
@@ -92,7 +107,7 @@ final class UserException extends WpCliMakeException
             ]
         );
     }
-    
+
     public static function failedToCreateUser(string $reason): static
     {
         return new self(
@@ -106,7 +121,7 @@ final class UserException extends WpCliMakeException
             ]
         );
     }
-    
+
     public static function failedToUpdateUser(string $userId, string $reason): static
     {
         return new self(
@@ -123,7 +138,7 @@ final class UserException extends WpCliMakeException
             ]
         );
     }
-    
+
     public static function invalidPassword(string $reason): static
     {
         return new self(
@@ -134,6 +149,34 @@ final class UserException extends WpCliMakeException
                 'Ensure the password meets the minimum security requirements.',
                 'Check that the password policy is followed.',
                 'Verify the password length and complexity rules.',
+            ]
+        );
+    }
+
+    public static function invalidEmail(string $email): static
+    {
+        return new self(
+            message: sprintf('Invalid email address provided: %s', $email),
+            code: 400,
+            context: ['email' => $email],
+            solutions: [
+                'Verify that the email address is properly formatted.',
+                'Check for any typos or errors in the email address.',
+                'Ensure the email domain is valid and exists.',
+            ]
+        );
+    }
+
+    public static function invalidUsername(string $username): static
+    {
+        return new self(
+            message: sprintf('Invalid username provided: %s', $username),
+            code: 400,
+            context: ['username' => $username],
+            solutions: [
+                'Ensure the username only contains letters, numbers, and underscores.',
+                'Check that the username does not start with a number.',
+                'Verify the username length is within the allowed range.',
             ]
         );
     }
