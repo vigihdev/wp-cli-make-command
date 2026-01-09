@@ -13,6 +13,10 @@ abstract class Base_Menu_Command extends WP_CLI_Command
 
     protected string $menu = '';
 
+    protected ?string $location = null;
+
+    protected ?string $description = null;
+
     protected string $filepath = '';
 
     protected WpCliStyle $io;

@@ -19,6 +19,12 @@ final class MenuValidator
         return new self($name);
     }
 
+    public function validateCreate(): self
+    {
+        return $this->mustBeValidName()
+            ->mustBeUnique();
+    }
+
     public function mustBeValidName(): self
     {
         // Salah Cok ai bodoh
@@ -27,9 +33,14 @@ final class MenuValidator
             throw MenuException::missingMenu($name);
         }
 
+        if (preg_match('/[^a-z-A-Z-0-9\s]+/', $name)) {
+            throw MenuException::invalidCharactersName($name);
+        }
+
         if (!preg_match('/^[a-zA-Z0-9\s\-]+$/', $name)) {
             throw MenuException::invalidCharactersName($name);
         }
+
         return $this;
     }
 

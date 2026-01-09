@@ -17,6 +17,9 @@ use Vigihdev\WpCliMake\Commands\Menu\Item\{
     Menu_Item_Import_Make_Command,
     Menu_Item_Make_Command,
     Menu_Item_PostType_Make_Command,
+};
+
+use Vigihdev\WpCliMake\Commands\Menu\{
     Menu_Make_Command,
 };
 
