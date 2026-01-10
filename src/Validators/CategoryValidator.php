@@ -19,6 +19,10 @@ final class CategoryValidator
     ) {}
 
 
+    /**
+     * 
+     * @return self
+     */
     public static function validate(int|string|null $term): self
     {
         return new self($term);
