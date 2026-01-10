@@ -20,6 +20,7 @@ final class CategoryValidator
 
 
     /**
+     * Validate that the category term is not null
      * 
      * @return self
      */
