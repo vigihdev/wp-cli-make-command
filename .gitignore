@@ -6,7 +6,7 @@
 .git
 .vscode
 .lingma
-.grok
+.marscode
 .phpunit.cache
 GEMINI.md
 composer.lock

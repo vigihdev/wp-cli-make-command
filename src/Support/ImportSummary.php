@@ -38,6 +38,16 @@ final class ImportSummary
         return $this->total;
     }
 
+    /**
+     * Get the summary results.
+     * 
+     * @return array{
+     *     'Total Items': int,
+     *     'Success': int,
+     *     'Failed': int,
+     *     'Skipped': int,
+     * } The summary results.
+     */
     public function getResults(): array
     {
         return [

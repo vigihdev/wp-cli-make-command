@@ -10,6 +10,14 @@ use Vigihdev\WpCliMake\Contracts\TermInterface;
 
 final class TermDto implements TermInterface, ArrayAbleInterface
 {
+    /**
+     * The term data transfer object.
+     * 
+     * @param string $taxonomy The taxonomy of the term.
+     * @param string $term The term name.
+     * @param ?string $slug The term slug.
+     * @param ?string $description The term description.
+     */
     public function __construct(
         private readonly string $taxonomy,
         private readonly string $term,
@@ -17,11 +25,21 @@ final class TermDto implements TermInterface, ArrayAbleInterface
         private readonly ?string $description = null,
     ) {}
 
+    /**
+     * The taxonomy of the term.
+     * 
+     * @return string
+     */
     public function getTaxonomy(): string
     {
         return $this->taxonomy;
     }
 
+    /**
+     * The term name.
+     * 
+     * @return string
+     */
     public function getTerm(): string
     {
         return $this->term;
@@ -37,6 +55,16 @@ final class TermDto implements TermInterface, ArrayAbleInterface
         return $this->description;
     }
 
+    /**
+     * Convert the term data transfer object to an array.
+     * 
+     * @return array{
+     *     name: string,
+     *     taxonomy: string,
+     *     slug: ?string,
+     *     description: ?string,
+     * }
+     */
     public function toArray(): array
     {
         return array_filter([

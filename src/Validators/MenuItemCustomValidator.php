@@ -100,4 +100,24 @@ final class MenuItemCustomValidator
 
         return $this;
     }
+
+    public function ensureValidParentIdIfDefined(): self
+    {
+
+        $parentId = $this->menuItem->getParentId();
+        if ($parentId === null) {
+            return $this;
+        }
+
+        if (!is_numeric($parentId)) {
+            throw MenuItemCustomException::notNumber('parent-id');
+        }
+
+        $post = get_post($parentId);
+        if ($post === null) {
+            throw MenuItemCustomException::notFoundParentId($parentId);
+        }
+
+        return $this;
+    }
 }

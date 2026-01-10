@@ -7,6 +7,31 @@ namespace Vigihdev\WpCliMake\Exceptions;
 final class MenuItemCustomException extends WpCliMakeException
 {
 
+    public static function notFoundParentId(int $parentId): static
+    {
+        return new self(
+            message: sprintf('Menu item parent ID "%d" not found.', $parentId),
+            code: 400,
+            context: ['parentId' => $parentId],
+            solutions: [
+                'Verify the parent ID exists in the database.',
+                'Check if the parent ID is a valid menu item ID.',
+            ]
+        );
+    }
+
+    public static function invalidParentId(int $parentId): static
+    {
+        return new self(
+            message: sprintf('Menu item parent ID "%d" is invalid.', $parentId),
+            code: 400,
+            context: ['parentId' => $parentId],
+            solutions: [
+                'Verify the parent ID exists in the database.',
+                'Check if the parent ID is a valid menu item ID.',
+            ]
+        );
+    }
     public static function labelTooLong(string $label, int $maxLength): static
     {
         return new self(
@@ -108,6 +133,19 @@ final class MenuItemCustomException extends WpCliMakeException
             solutions: [
                 'Check the URL format and ensure it is valid.',
                 'Verify the URL does not contain any special characters.',
+            ]
+        );
+    }
+
+    public static function notNumber(string $field): static
+    {
+        return new self(
+            message: sprintf('%s must be a number.', $field),
+            code: 400,
+            context: [],
+            solutions: [
+                sprintf('Verify the %s is a valid number.', $field),
+                sprintf('Check if the %s is not empty.', $field),
             ]
         );
     }

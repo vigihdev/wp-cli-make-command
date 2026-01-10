@@ -7,19 +7,39 @@ namespace Vigihdev\WpCliMake\Validators;
 use Vigihdev\WpCliMake\Contracts\TermInterface;
 use Vigihdev\WpCliMake\Exceptions\TermException;
 
+/**
+ * Validator for term data transfer objects.
+ * 
+ * This validator ensures that the term data transfer object (DTO) meets the required criteria
+ * for term creation or update operations in WordPress.
+ */
 final class TermValidator
 {
+    /**
+     * Constructor for TermValidator.
+     * 
+     * @param TermInterface $term The term data transfer object to validate.
+     */
     public function __construct(
         private readonly TermInterface $term
     ) {}
 
+    /**
+     * Create a new instance of TermValidator.
+     * 
+     * @param TermInterface $term The term data transfer object to validate.
+     * @return self A new instance of TermValidator.
+     */
     public static function validate(TermInterface $term): self
     {
         return new self($term);
     }
 
     /**
-     * Pastikan taxonomy sudah terdaftar di WordPress
+     * Validate that the taxonomy is registered in WordPress.
+     * 
+     * @return self The current instance of TermValidator.
+     * @throws TermException If the taxonomy is not registered.
      */
     public function mustHaveRegisteredTaxonomy(): self
     {
@@ -32,7 +52,10 @@ final class TermValidator
     }
 
     /**
-     * Pastikan term sudah ada di taxonomy
+     * Validate that the term exists in the specified taxonomy.
+     * 
+     * @return self The current instance of TermValidator.
+     * @throws TermException If the term does not exist in the taxonomy.
      */
     public function mustHaveExistingTerm(): self
     {
@@ -45,9 +68,11 @@ final class TermValidator
 
         return $this;
     }
-
     /**
-     * Pastikan slug valid (tidak kosong jika diisi)
+     * Validate that the term slug is valid.
+     * 
+     * @return self The current instance of TermValidator.
+     * @throws TermException If the slug is invalid.
      */
     public function mustHaveValidSlug(): self
     {
@@ -71,7 +96,10 @@ final class TermValidator
     }
 
     /**
-     * Pastikan description valid
+     * Validate that the term description is valid.
+     * 
+     * @return self The current instance of TermValidator.
+     * @throws TermException If the description is invalid.
      */
     public function mustHaveValidDescription(): self
     {
@@ -88,7 +116,10 @@ final class TermValidator
     }
 
     /**
-     * Pastikan term belum ada (untuk operasi create)
+     * Validate that the term does not already exist in the specified taxonomy.
+     * 
+     * @return self The current instance of TermValidator.
+     * @throws TermException If the term already exists in the taxonomy.
      */
     public function mustNotAlreadyExists(): self
     {
@@ -106,7 +137,10 @@ final class TermValidator
     }
 
     /**
-     * Validasi semua field term
+     * Validate all fields of the term for creation.
+     * 
+     * @return self The current instance of TermValidator.
+     * @throws TermException If any of the validation checks fail.
      */
     public function validateCreate(): self
     {
