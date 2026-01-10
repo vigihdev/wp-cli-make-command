@@ -11,7 +11,6 @@ use WP_CLI\Utils;
 
 final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
 {
-
     private CustomItemMenuArgsDto $itemMenu;
 
     private array $menuItemData = [];
@@ -25,47 +24,47 @@ final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
      * Membuat item menu custom WordPress
      *
      * ## OPTIONS
-     * 
+     *
      * <menu>
      * : The name, slug, or term ID for the menu.
-     * 
+     *
      * <title>
      * : Title for the link.
-     * 
+     *
      * <link>
      * : Target URL for the link.
-     * 
+     *
      * [--description=<description>]
      * : Set a custom description for the menu item.
-     * 
+     *
      * [--attr-title=<attr-title>]
      * : Set a custom title attribute for the menu item.
-     * 
+     *
      * [--target=<target>]
      * : Set a custom link target for the menu item.
-     * 
+     *
      * [--classes=<classes>]
      * : Set a custom link classes for the menu item.
-     * 
+     *
      * [--position=<position>]
      * : Specify the position of this menu item.
-     * 
+     *
      * [--parent-id=<parent-id>]
      * : Make this menu item a child of another menu item.
-     * 
+     *
      * [--dry-run]
-     * : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun. 
-     *  
+     * : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun.
+     *
      * ## EXAMPLES
      *
      *     # Membuat item menu custom dari argumen
      *     wp make:menu-item-custom primary Example https://example.com
-     * 
+     *
      *     # Membuat item menu custom dari argumen dengan dry run
      *     wp make:menu-item-custom primary Example https://example.com --dry-run
      *
      * @when after_wp_load
-     * 
+     *
      * @param array $args Argumen
      * @param array $assoc_args Argumen asosiatif
      * @return void
@@ -74,12 +73,12 @@ final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
     {
 
         parent::__invoke($args, $assoc_args);
-        $this->menu = $args[0] ?? '';
+        $this->menu  = $args[0] ?? '';
         $this->title = $args[1] ?? '';
-        $this->link = $args[2] ?? '';
-        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $this->link  = $args[2] ?? '';
+        $dryRun      = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
-        $this->itemMenu = $this->instanceCustomMenuItem($assoc_args);
+        $this->itemMenu     = $this->instanceCustomMenuItem($assoc_args);
         $this->menuItemData = $this->transformMenuItemData($assoc_args);
 
         try {
@@ -106,9 +105,9 @@ final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
 
         $io->newLine();
         $io->definitionList("Detail Menu Item", [
-            'Menu' => $this->menu,
+            'Menu'  => $this->menu,
             'Title' => $this->title,
-            'Link' => $this->link,
+            'Link'  => $this->link,
         ]);
 
         $io->success('Dry run selesai!');

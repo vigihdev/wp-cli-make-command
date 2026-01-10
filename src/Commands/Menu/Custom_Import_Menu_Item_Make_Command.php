@@ -14,7 +14,6 @@ use WP_CLI\Utils;
 
 final class Custom_Import_Menu_Item_Make_Command extends Base_Menu_Item_Command
 {
-
     /**
      * @var Collection<CustomItemMenuArgsDto> $collection
      */
@@ -29,24 +28,24 @@ final class Custom_Import_Menu_Item_Make_Command extends Base_Menu_Item_Command
      * Create Menu Item Custom Import from file JSON
      *
      * ## OPTIONS
-     * 
+     *
      * <file>
      * : Path to the file containing menu item data.
-     * 
+     *
      * [--dry-run]
      * : Run the command in dry-run mode to preview changes without applying them.
-     *  
+     *
      * ## EXAMPLES
-     * 
+     *
      * # Import Menu Item Custom from JSON file
      * wp make:menu-item-custom-import ./data/json/menu/erorr-item-custom.json --dry-run
-     * 
+     *
      * # Import Menu Item Custom from JSON file without dry-run
      * wp make:menu-item-custom-import ./data/json/menu/erorr-item-custom.json
      *
      * @when after_wp_load
-     * 
-     * @param array $args 
+     *
+     * @param array $args
      * @param array $assoc_args
      * @return void
      */
@@ -55,7 +54,7 @@ final class Custom_Import_Menu_Item_Make_Command extends Base_Menu_Item_Command
 
         parent::__invoke($args, $assoc_args);
         $this->filepath = $args[0];
-        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $dryRun         = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         try {
 
@@ -76,7 +75,7 @@ final class Custom_Import_Menu_Item_Make_Command extends Base_Menu_Item_Command
     private function dryRun()
     {
 
-        $io = $this->io;
+        $io         = $this->io;
         $collection = $this->collection;
 
         $io->newLine();
@@ -104,10 +103,10 @@ final class Custom_Import_Menu_Item_Make_Command extends Base_Menu_Item_Command
     private function process()
     {
 
-        $io = $this->io;
-        $importIo = $this->importIo;
+        $io         = $this->io;
+        $importIo   = $this->importIo;
         $collection = $this->collection;
-        $summary = new ImportSummary(total: $collection->count());
+        $summary    = new ImportSummary(total: $collection->count());
 
         // Task
         $io->newLine();

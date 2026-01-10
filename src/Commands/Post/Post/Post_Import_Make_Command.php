@@ -15,7 +15,6 @@ use WP_CLI\Utils;
 
 final class Post_Import_Make_Command extends Base_Post_Command
 {
-
     /**
      * @var Collection<PostDto> $collection
      */
@@ -27,21 +26,21 @@ final class Post_Import_Make_Command extends Base_Post_Command
     }
 
     /**
-     * 
+     *
      * Create post from JSON file import.
-     * 
+     *
      * ## OPTIONS
      *
      * <file>
      * : Path file JSON yang berisi data post.
-     * 
+     *
      * [--dry-run]
      * : Jalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun.
-     *  
+     *
      * ## EXAMPLES
-     * 
+     *
      * @when after_wp_load
-     * 
+     *
      * @param array $args
      * @param array $assoc_args
      */
@@ -50,7 +49,7 @@ final class Post_Import_Make_Command extends Base_Post_Command
 
         parent::__invoke($args, $assoc_args);
         $this->filepath = $args[0];
-        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $dryRun         = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         $io = $this->io;
         try {
@@ -72,7 +71,7 @@ final class Post_Import_Make_Command extends Base_Post_Command
     private function dryRun(): void
     {
 
-        $io = $this->io;
+        $io         = $this->io;
         $collection = $this->collection;
 
         $io->newLine();
@@ -82,7 +81,7 @@ final class Post_Import_Make_Command extends Base_Post_Command
         $io->newLine();
         $io->table(
             headers: ['Title', 'Type', 'Taxonomy'],
-            rows: $collection->map(fn(PostDto $post) => [
+            rows: $collection->map(fn (PostDto $post) => [
                 $post->getTitle(),
                 $post->getType(),
                 implode(', ', $post->getTaxInput()),
@@ -97,10 +96,10 @@ final class Post_Import_Make_Command extends Base_Post_Command
     private function process(): void
     {
 
-        $io = $this->io;
-        $importIo = $this->importIo;
+        $io         = $this->io;
+        $importIo   = $this->importIo;
         $collection = $this->collection;
-        $summary = new ImportSummary(total: $collection->count());
+        $summary    = new ImportSummary(total: $collection->count());
 
         // Task
         $io->newLine();
@@ -117,7 +116,7 @@ final class Post_Import_Make_Command extends Base_Post_Command
                     ->validateCreate()
                     ->mustTypeEqual(PostType::POST->value);
                 if (!empty($post->getCategory())) {
-                    array_map(fn($value) => CategoryValidator::validate($value)->mustExist(), $post->getCategory());
+                    array_map(fn ($value) => CategoryValidator::validate($value)->mustExist(), $post->getCategory());
                 }
 
                 $insert = PostEntity::create($postData);
@@ -146,11 +145,16 @@ final class Post_Import_Make_Command extends Base_Post_Command
     private function mapPostData(PostDto $post): array
     {
         $postDefault = $this->loadDefaultPost($post->getTitle());
-        $postData = array_merge(
+        $postData    = array_merge(
             $postDefault->toArray(),
-            ['post_type' => PostType::POST->value],
+            [
+                'post_type' => PostType::POST->value
+            ],
             $post->toArray(),
-            ['post_author' => $this->author, 'post_status' => PostStatus::PUBLISH->value]
+            [
+                'post_author' => $this->author,
+                'post_status' => PostStatus::PUBLISH->value
+            ]
         );
         return $postData;
     }

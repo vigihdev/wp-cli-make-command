@@ -16,7 +16,6 @@ use WP_CLI_Command;
 
 abstract class Base_Menu_Item_Command extends WP_CLI_Command
 {
-
     protected ?string $menu = null;
 
     protected ?string $title = null;
@@ -38,21 +37,23 @@ abstract class Base_Menu_Item_Command extends WP_CLI_Command
     ) {
 
         parent::__construct();
-        $this->io = new WpCliStyle();
+        $this->io               = new WpCliStyle();
         $this->exceptionHandler = new MakeHandlerException();
-        $this->field = new MenuItemCustomField();
-        $this->importIo = new ImportIoSpinner($this->io);
+        $this->field            = new MenuItemCustomField();
+        $this->importIo         = new ImportIoSpinner($this->io);
     }
 
-    public function __invoke(array $args, array $assoc_args) {}
+    public function __invoke(array $args, array $assoc_args)
+    {
+    }
 
     protected function instanceCustomMenuItem(array $assoc_args): CustomItemMenuArgsDto
     {
 
         $defaults = [
-            'menu' => $this->menu,
+            'menu'  => $this->menu,
             'title' => $this->title,
-            'link' => $this->link,
+            'link'  => $this->link,
         ];
         $data = array_merge($assoc_args, $defaults);
         return CustomItemMenuArgsDto::fromArray($this->field->dtotransform($data));
@@ -61,8 +62,8 @@ abstract class Base_Menu_Item_Command extends WP_CLI_Command
     public function transformMenuItemData(array $assoc_args): array
     {
         $data = array_merge($assoc_args, [
-            'title' => $this->title,
-            'url' => $this->link,
+            'title'  => $this->title,
+            'url'    => $this->link,
             'status' => PostStatus::PUBLISH->value
         ]);
         return (new MenuItemCustomField())->transform($data);
