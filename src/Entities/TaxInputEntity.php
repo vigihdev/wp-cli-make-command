@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Entities;
 
-
 final class TaxInputEntity
 {
-
     public function __construct(
         private readonly array $taxInput,
-    ) {}
+    ) {
+    }
 
 
     public function getTaxInput(): array

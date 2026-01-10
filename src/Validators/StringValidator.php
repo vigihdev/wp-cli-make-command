@@ -11,7 +11,8 @@ final class StringValidator
     public function __construct(
         private readonly int|string|null $string,
         private readonly string $attribute = '',
-    ) {}
+    ) {
+    }
 
     public static function validate(int|string|null $string, string $attribute = ''): self
     {
@@ -37,7 +38,7 @@ final class StringValidator
      */
     public function minLength(int $min): self
     {
-        $string = (string) $this->string;
+        $string       = (string) $this->string;
         $actualLength = strlen($string);
 
         if ($actualLength < $min) {
@@ -52,7 +53,7 @@ final class StringValidator
      */
     public function maxLength(int $max): self
     {
-        $string = (string) $this->string;
+        $string       = (string) $this->string;
         $actualLength = strlen($string);
 
         if ($actualLength > $max) {
@@ -106,7 +107,7 @@ final class StringValidator
      */
     public function alphanumeric(): self
     {
-        $string = (string) $this->string;
+        $string  = (string) $this->string;
         $pattern = '/^[a-zA-Z0-9]+$/';
 
         if (!preg_match($pattern, $string)) {
@@ -121,7 +122,7 @@ final class StringValidator
      */
     public function alphabetic(): self
     {
-        $string = (string) $this->string;
+        $string  = (string) $this->string;
         $pattern = '/^[a-zA-Z]+$/';
 
         if (!preg_match($pattern, $string)) {

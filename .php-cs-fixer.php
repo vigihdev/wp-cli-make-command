@@ -1,5 +1,6 @@
 <?php
 
+
 $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__);
 
@@ -17,7 +18,7 @@ return (new PhpCsFixer\Config())
         ],
 
         // array pendek & rapi
-        'array_syntax' => ['syntax' => 'short'],
+        'array_syntax'      => ['syntax' => 'short'],
         'trim_array_spaces' => true,
     ])
     ->setFinder($finder);

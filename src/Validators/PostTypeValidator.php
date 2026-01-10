@@ -12,7 +12,8 @@ final class PostTypeValidator
 {
     public function __construct(
         private readonly PostInterface $post
-    ) {}
+    ) {
+    }
 
     public static function validate(PostInterface $post): self
     {
@@ -49,7 +50,7 @@ final class PostTypeValidator
     public function mustBeAllowPostType(): self
     {
 
-        $type = $this->post->getType();
+        $type              = $this->post->getType();
         $notAllowPostTypes = [
             'attachment',
             'revision',
@@ -83,7 +84,7 @@ final class PostTypeValidator
 
         $builtIn = get_post_types(['_builtin' => true]);
 
-        // Jika yang diinput adalah bawaan WP, tolak! 
+        // Jika yang diinput adalah bawaan WP, tolak!
         if (isset($builtIn[$type])) {
             throw PostTypeException::notAllowPostType($type);
         }

@@ -8,20 +8,20 @@ use Vigihdev\WpCliMake\Exceptions\CategoryException;
 
 final class CategoryValidator
 {
-
     /**
      * Validate that the category exists in WordPress
-     * 
+     *
      * @param int|string|null $term The category term to validate (ID or name)
      */
     public function __construct(
         private readonly int|string|null $term,
-    ) {}
+    ) {
+    }
 
 
     /**
      * Validate that the category term is not null
-     * 
+     *
      * @return self
      */
     public static function validate(int|string|null $term): self
@@ -31,7 +31,7 @@ final class CategoryValidator
 
     /**
      * Validate that the category exists in WordPress
-     * 
+     *
      * @return self
      * @throws CategoryException If the category does not exist
      */
@@ -55,7 +55,7 @@ final class CategoryValidator
 
     /**
      * Validate that the category name is valid according to WordPress standards
-     * 
+     *
      * @return self
      * @throws CategoryException If the category name is invalid
      */
@@ -82,7 +82,7 @@ final class CategoryValidator
 
     /**
      * Validate that the category doesn't already exist (for creation operations)
-     * 
+     *
      * @return self
      * @throws CategoryException If the category already exists
      */
@@ -111,7 +111,7 @@ final class CategoryValidator
 
     /**
      * Validate that the category slug is valid according to WordPress standards
-     * 
+     *
      * @return self
      * @throws CategoryException If the category slug is invalid
      */
@@ -138,7 +138,7 @@ final class CategoryValidator
 
     /**
      * Validate that the parent category is valid according to WordPress standards
-     * 
+     *
      * @return self
      * @throws CategoryException If the parent category is invalid
      */
@@ -167,7 +167,7 @@ final class CategoryValidator
 
     /**
      * Validate that the category is allowed for a specific post type according to WordPress standards
-     * 
+     *
      * @return self
      * @throws CategoryException If the category is not allowed for the post type
      */
@@ -208,7 +208,7 @@ final class CategoryValidator
 
     /**
      * Helper method to get category ID from various input types (name, slug, or ID)
-     * 
+     *
      * @return ?int The category ID if found, null otherwise
      */
     private function getCategoryId(int|string $term): ?int

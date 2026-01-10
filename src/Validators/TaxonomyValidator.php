@@ -10,7 +10,8 @@ final class TaxonomyValidator
 {
     public function __construct(
         private readonly int|string|null $taxonomy,
-    ) {}
+    ) {
+    }
 
     public static function validate(int|string|null $taxonomy): self
     {

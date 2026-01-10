@@ -10,10 +10,10 @@ use Vigihdev\WpCliMake\DTOs\UserDto;
 
 final class UserValidator
 {
-
     public function __construct(
         private readonly UserInterface $user,
-    ) {}
+    ) {
+    }
 
     public function mustUniqueUsername(): self
     {

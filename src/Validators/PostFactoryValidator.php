@@ -11,7 +11,6 @@ use Vigihdev\WpCliModels\Enums\{PostStatus, PostType};
 
 final class PostFactoryValidator
 {
-
     private ?PostEntityDto $post = null;
 
     public function __construct(
@@ -132,7 +131,7 @@ final class PostFactoryValidator
 
     public function mustBeValidStatus(): self
     {
-        $status = $this->post->getStatus();
+        $status        = $this->post->getStatus();
         $validStatuses = [
             PostStatus::DRAFT->value,
             PostStatus::PUBLISH->value,

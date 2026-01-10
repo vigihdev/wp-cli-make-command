@@ -9,10 +9,10 @@ use Vigihdev\WpCliModels\Entities\MenuEntity;
 
 final class MenuValidator
 {
-
     public function __construct(
         private readonly string $name
-    ) {}
+    ) {
+    }
 
     public static function validate(string $name): self
     {

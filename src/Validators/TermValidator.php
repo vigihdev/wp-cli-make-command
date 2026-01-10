@@ -9,7 +9,7 @@ use Vigihdev\WpCliMake\Exceptions\TermException;
 
 /**
  * Validator for term data transfer objects.
- * 
+ *
  * This validator ensures that the term data transfer object (DTO) meets the required criteria
  * for term creation or update operations in WordPress.
  */
@@ -17,16 +17,17 @@ final class TermValidator
 {
     /**
      * Constructor for TermValidator.
-     * 
+     *
      * @param TermInterface $term The term data transfer object to validate.
      */
     public function __construct(
         private readonly TermInterface $term
-    ) {}
+    ) {
+    }
 
     /**
      * Create a new instance of TermValidator.
-     * 
+     *
      * @param TermInterface $term The term data transfer object to validate.
      * @return self A new instance of TermValidator.
      */
@@ -37,7 +38,7 @@ final class TermValidator
 
     /**
      * Validate that the taxonomy is registered in WordPress.
-     * 
+     *
      * @return self The current instance of TermValidator.
      * @throws TermException If the taxonomy is not registered.
      */
@@ -53,14 +54,14 @@ final class TermValidator
 
     /**
      * Validate that the term exists in the specified taxonomy.
-     * 
+     *
      * @return self The current instance of TermValidator.
      * @throws TermException If the term does not exist in the taxonomy.
      */
     public function mustHaveExistingTerm(): self
     {
         $taxonomy = $this->term->getTaxonomy();
-        $term = $this->term->getTerm();
+        $term     = $this->term->getTerm();
 
         if (! term_exists($term, $taxonomy)) {
             throw TermException::notFound($taxonomy, $term);
@@ -70,7 +71,7 @@ final class TermValidator
     }
     /**
      * Validate that the term slug is valid.
-     * 
+     *
      * @return self The current instance of TermValidator.
      * @throws TermException If the slug is invalid.
      */
@@ -97,7 +98,7 @@ final class TermValidator
 
     /**
      * Validate that the term description is valid.
-     * 
+     *
      * @return self The current instance of TermValidator.
      * @throws TermException If the description is invalid.
      */
@@ -117,14 +118,14 @@ final class TermValidator
 
     /**
      * Validate that the term does not already exist in the specified taxonomy.
-     * 
+     *
      * @return self The current instance of TermValidator.
      * @throws TermException If the term already exists in the taxonomy.
      */
     public function mustNotAlreadyExists(): self
     {
         $taxonomy = $this->term->getTaxonomy();
-        $term = $this->term->getTerm();
+        $term     = $this->term->getTerm();
 
         $existingTerm = term_exists($term, $taxonomy);
 
@@ -138,7 +139,7 @@ final class TermValidator
 
     /**
      * Validate all fields of the term for creation.
-     * 
+     *
      * @return self The current instance of TermValidator.
      * @throws TermException If any of the validation checks fail.
      */

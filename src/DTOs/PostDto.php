@@ -9,7 +9,6 @@ use Vigihdev\WpCliMake\Contracts\PostInterface;
 
 final class PostDto implements PostInterface, ArrayAbleInterface
 {
-
     public function __construct(
         private readonly string $title,
         private readonly string $content,
@@ -17,7 +16,8 @@ final class PostDto implements PostInterface, ArrayAbleInterface
         private readonly array $category = [],
         private readonly array $taxInput = [],
         private readonly array $metaInput = [],
-    ) {}
+    ) {
+    }
 
     public function getType(): string
     {
@@ -52,11 +52,11 @@ final class PostDto implements PostInterface, ArrayAbleInterface
     public function toArray(): array
     {
         return array_filter([
-            'post_title' => sanitize_text_field($this->getTitle()),
-            'post_content' => wp_kses_post($this->getContent()),
-            'post_type' => $this->getType(),
-            'tax_input' => $this->getTaxInput(),
-            'meta_input' => $this->getMetaInput(),
+            'post_title'    => sanitize_text_field($this->getTitle()),
+            'post_content'  => wp_kses_post($this->getContent()),
+            'post_type'     => $this->getType(),
+            'tax_input'     => $this->getTaxInput(),
+            'meta_input'    => $this->getMetaInput(),
             'post_category' => $this->getCategory(),
         ], function ($value) {
             return $value !== null;

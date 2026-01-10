@@ -11,7 +11,6 @@ use Vigihdev\WpCliModels\Contracts\Args\Menu\CustomItemMenuArgsInterface;
 
 final class MenuItemCustomValidator
 {
-
     private ?MenuEntityDto $menuEntity = null;
 
     public function __construct(
