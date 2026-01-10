@@ -8,7 +8,6 @@ use Exception;
 
 abstract class WpCliMakeException extends Exception
 {
-
     protected array $context = [];
 
     protected array $solutions = [];
@@ -20,7 +19,7 @@ abstract class WpCliMakeException extends Exception
         \Throwable $previous = null,
         array $solutions = []
     ) {
-        $this->context = $context;
+        $this->context   = $context;
         $this->solutions = $solutions;
         parent::__construct($message, $code, $previous);
     }

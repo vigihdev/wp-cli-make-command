@@ -6,7 +6,6 @@ namespace Vigihdev\WpCliMake\Exceptions;
 
 final class MenuException extends WpCliMakeException
 {
-
     public static function missingMenu(string $name): static
     {
         return new self(

@@ -6,7 +6,6 @@ namespace Vigihdev\WpCliMake\Exceptions;
 
 final class PostFactoryException extends WpCliMakeException
 {
-
     protected array $context = [];
 
     protected array $solutions = [];

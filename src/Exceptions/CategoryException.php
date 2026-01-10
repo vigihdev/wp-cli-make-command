@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Exceptions;
 
-
 final class CategoryException extends WpCliMakeException
 {
     public static function notRegistered(string $category): self

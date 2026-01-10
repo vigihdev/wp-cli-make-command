@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Exceptions;
 
-
 final class PostTypeException extends WpCliMakeException
 {
-
     public static function invalidFormatTaxonomies(): self
     {
         return new self(

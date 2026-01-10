@@ -9,7 +9,6 @@ use Vigihdev\WpCliModels\UI\WpCliStyle;
 
 final class MakeHandlerException implements MakeHandlerExceptionInterface
 {
-
     private ?WpCliStyle $io = null;
 
     public function __construct()

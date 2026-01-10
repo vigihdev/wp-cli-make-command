@@ -13,7 +13,12 @@ final class StringException extends WpCliMakeException
     {
         return new self(
             message: sprintf('String %s is too short. Minimum length is %d characters', $attribute, $min),
-            context: ['min' => $min, 'actual' => strlen($actual), 'attribute' => $attribute, 'value' => $actual],
+            context: [
+                'min'       => $min,
+                'actual'    => strlen($actual),
+                'attribute' => $attribute,
+                'value'     => $actual
+            ],
             code: 400,
             solutions: ['Extend the string to at least ' . $min . ' characters'],
         );
@@ -26,7 +31,11 @@ final class StringException extends WpCliMakeException
     {
         return new self(
             message: sprintf('String is too long. Maximum length is %d characters', $max),
-            context: ['max' => $max, 'actual' => strlen($actual), 'value' => $actual],
+            context: [
+                'max'       => $max,
+                'actual'    => strlen($actual),
+                'value'     => $actual
+            ],
             code: 400,
             solutions: ['Shorten the string to maximum ' . $max . ' characters'],
         );
@@ -39,7 +48,10 @@ final class StringException extends WpCliMakeException
     {
         return new self(
             message: sprintf('String does not match the expected value. Expected: %s', $expected),
-            context: ['expected' => $expected, 'actual' => $actual],
+            context: [
+                'expected' => $expected,
+                'actual'   => $actual
+            ],
             code: 400,
             solutions: [
                 'Ensure the string matches the expected format: ' . $expected,
@@ -55,7 +67,10 @@ final class StringException extends WpCliMakeException
     {
         return new self(
             message: sprintf('String does not match the expected pattern. Expected: %s', $pattern),
-            context: ['pattern' => $pattern, 'actual' => $actual],
+            context: [
+                'pattern' => $pattern,
+                'actual'  => $actual
+            ],
             code: 400,
             solutions: [
                 'Ensure the string matches the pattern: ' . $pattern,
@@ -87,7 +102,10 @@ final class StringException extends WpCliMakeException
     {
         return new self(
             message: sprintf('String contains invalid characters. Invalid: %s', $invalidChars),
-            context: ['invalid_chars' => $invalidChars, 'actual' => $actual],
+            context: [
+                'invalid_chars' => $invalidChars,
+                'actual'        => $actual
+            ],
             code: 400,
             solutions: [
                 'Remove invalid characters: ' . $invalidChars,
@@ -103,7 +121,10 @@ final class StringException extends WpCliMakeException
     {
         return new self(
             message: sprintf('String does not contain required characters. Required: %s', $required),
-            context: ['required' => $required, 'actual' => $actual],
+            context: [
+                'required' => $required,
+                'actual'   => $actual
+            ],
             code: 400,
             solutions: [
                 'Add required characters: ' . $required,
@@ -119,7 +140,10 @@ final class StringException extends WpCliMakeException
     {
         return new self(
             message: sprintf('String failed validation rule. Rule: %s', $rule),
-            context: ['rule' => $rule, 'actual' => $actual],
+            context: [
+                'rule'   => $rule,
+                'actual' => $actual
+            ],
             code: 400,
             solutions: [
                 'Review the validation rule: ' . $rule,
@@ -136,7 +160,10 @@ final class StringException extends WpCliMakeException
         $allowedStr = implode(', ', $allowed);
         return new self(
             message: sprintf('String is not in the allowed list. Allowed: %s', $allowedStr),
-            context: ['allowed' => $allowed, 'actual' => $actual],
+            context: [
+                'allowed' => $allowed,
+                'actual'  => $actual
+            ],
             code: 400,
             solutions: [
                 'Use one of the following values: ' . $allowedStr,
@@ -152,7 +179,9 @@ final class StringException extends WpCliMakeException
     {
         return new self(
             message: sprintf('Invalid email address. Email: %s', $email),
-            context: ['email' => $email],
+            context: [
+                'email' => $email
+            ],
             code: 400,
             solutions: [
                 'Ensure email format is correct (example@domain.com)',
@@ -168,7 +197,9 @@ final class StringException extends WpCliMakeException
     {
         return new self(
             message: sprintf('Invalid URL. URL: %s', $url),
-            context: ['url' => $url],
+            context: [
+                'url' => $url
+            ],
             code: 400,
             solutions: [
                 'Ensure URL has correct format (http:// or https://)',

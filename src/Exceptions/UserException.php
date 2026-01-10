@@ -6,7 +6,6 @@ namespace Vigihdev\WpCliMake\Exceptions;
 
 final class UserException extends WpCliMakeException
 {
-
     public static function notAllowUserRole(string $role): static
     {
         return new self(
@@ -41,7 +40,7 @@ final class UserException extends WpCliMakeException
             code: 400,
             context: [
                 'user_data' => $data,
-                'reason' => $reason
+                'reason'    => $reason
             ],
             solutions: [
                 'Verify all required user fields are properly filled.',
@@ -129,7 +128,7 @@ final class UserException extends WpCliMakeException
             code: 500,
             context: [
                 'user_id' => $userId,
-                'reason' => $reason
+                'reason'  => $reason
             ],
             solutions: [
                 'Check the WordPress error logs for more details.',

@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Exceptions;
 
-
 final class TermException extends WpCliMakeException
 {
-
     public static function notFound(string $taxonomy, string $term): self
     {
         return new self(

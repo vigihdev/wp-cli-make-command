@@ -6,7 +6,6 @@ namespace Vigihdev\WpCliMake\Exceptions;
 
 final class MenuItemCustomException extends WpCliMakeException
 {
-
     public static function notFoundParentId(int $parentId): static
     {
         return new self(
