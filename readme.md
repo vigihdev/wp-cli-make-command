@@ -96,7 +96,21 @@ wp make:post <title> [--<option>=<value>]
 | `--parent`           | Parent post ID                   | `0`            | `--parent=123`                              |
 | `--unique_title`     | Auto-modify if duplicate         | `false`        | `--unique_title`                            |
 
-### Examples
+### Usage Examples
+
+#### Creating a Simple Post
+
+To create a basic post with title and content:
+
+```bash
+wp make:post "Hello World!" \
+  --post_content="Simple test" \
+  --post_status="publish" \
+  --post_category="Vigh Dev" \
+  --dry-run
+```
+
+The `--dry-run` flag allows you to preview the data insertion without actually executing it.
 
 #### Create a Published Post
 

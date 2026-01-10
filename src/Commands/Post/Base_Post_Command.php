@@ -12,9 +12,10 @@ use Vigihdev\Support\Collection;
 use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliMake\Exceptions\{MakeHandlerException, MakeHandlerExceptionInterface};
 use Vigihdev\WpCliMake\Support\ImportIoSpinner;
-use Vigihdev\WpCliModels\Contracts\Fields\FieldInterface;
+use Vigihdev\WpCliModels\DTOs\Args\Post\CreatePostArgsDto;
 use Vigihdev\WpCliModels\DTOs\Fields\DefaultPostFieldDto;
 use Vigihdev\WpCliModels\Entities\UserEntity;
+use Vigihdev\WpCliModels\Fields\PostField;
 use Vigihdev\WpCliModels\Enums\PostStatus;
 use Vigihdev\WpCliModels\Support\Transformers\FilepathDtoTransformer;
 use Vigihdev\WpCliModels\UI\WpCliStyle;
@@ -41,7 +42,7 @@ abstract class Base_Post_Command extends WP_CLI_Command
 
     protected string $fields = '';
 
-    protected FieldInterface $field;
+    protected PostField $field;
 
     protected WpCliStyle $io;
 
@@ -57,6 +58,7 @@ abstract class Base_Post_Command extends WP_CLI_Command
         $this->io = new WpCliStyle();
         $this->exceptionHandler = new MakeHandlerException();
         $this->importIo = new ImportIoSpinner($this->io);
+        $this->field = new PostField();
     }
 
     public function __invoke(array $args, array $assoc_args)
@@ -129,6 +131,49 @@ abstract class Base_Post_Command extends WP_CLI_Command
             throw new RuntimeException($e->getMessage());
             return $post_content;
         }
+    }
+
+    protected function inspectAassocArgument(array $assoc_args)
+    {
+        $data = [];
+        if (isset($assoc_args['post_category'])) {
+            $data['post_category'] = explode(',', $assoc_args['post_category']);
+        }
+
+        if (isset($assoc_args['tags_input'])) {
+            $data['tags_input'] = explode(',', $assoc_args['tags_input']);
+        }
+
+        if (isset($assoc_args['tax_input'])) {
+            $data['tax_input'] = json_decode($assoc_args['tax_input'], true);
+        }
+
+        if (isset($assoc_args['meta_input'])) {
+            $data['meta_input'] = json_decode($assoc_args['meta_input'], true);
+        }
+
+        return $data;
+    }
+
+    protected function transformAassocArgumentToDto(array $assoc_args): CreatePostArgsDto
+    {
+
+        $authorStatus = $this->loadAuthorStatus();
+        $loadDefaultPost = $this->loadDefaultPost($this->title);
+        $inspectData = $this->inspectAassocArgument($assoc_args);
+        $assoc_args = array_merge($loadDefaultPost->toArray(), $authorStatus, $assoc_args, $inspectData);
+        $assoc_args = array_merge($assoc_args, [
+            'post_title' => $this->title,
+        ]);
+
+        array_map(function ($value, $key) use (&$assoc_args) {
+            if (in_array($key, ['post_author', 'post_parent'])) {
+                $assoc_args[$key] = (int)$value;
+            }
+        }, $assoc_args, array_keys($assoc_args));
+
+        $data = $this->field->dtoTransform($assoc_args);
+        return CreatePostArgsDto::fromArray($data);
     }
 
     /**

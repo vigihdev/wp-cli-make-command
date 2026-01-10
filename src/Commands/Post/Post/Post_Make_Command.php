@@ -140,8 +140,8 @@ final class Post_Make_Command extends Base_Post_Command
         $this->post_content = Utils\get_flag_value($assoc_args, 'post_content');
         $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
+        $postData = $this->transformAassocArgumentToDto($assoc_args);
 
-        $io = $this->io;
         try {
 
             // Process Data
@@ -149,7 +149,7 @@ final class Post_Make_Command extends Base_Post_Command
             $data = ['post_title' => $this->title, 'post_content' => $this->post_content];
             $this->postData = array_merge($this->mapPostData(), $assoc_args, $data);
 
-            PostFactoryValidator::validate($this->postData)
+            PostFactoryValidator::validate($postData->toArray())
                 ->validateCreate()
                 ->mustTypeEqual(PostType::POST->value);
             array_map(fn($value) => CategoryValidator::validate($value)->mustExist(), $this->post_category);
