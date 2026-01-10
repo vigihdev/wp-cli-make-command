@@ -16,7 +16,6 @@ use WP_CLI\Utils;
 
 final class Post_Page_Import_Make_Command extends Base_Post_Command
 {
-
     /**
      * @var Collection<PostDto> $collection
      */
@@ -34,11 +33,11 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
      *
      * <file>
      * : File post yang akan diimpor dengan format .json.
-     * 
+     *
      * [--dry-run]
      * : Melakukan simulasi tanpa benar-benar membuat post
-     * 
-     * 
+     *
+     *
      * @param array $args Argumen posisi
      * @param array $assoc_args Argumen opsional
      * @return void
@@ -48,9 +47,8 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
 
         parent::__invoke($args, $assoc_args);
         $this->filepath = $args[0];
-        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $dryRun         = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
-        $io = $this->io;
         try {
 
             $this->normalizeFilePath();
@@ -76,7 +74,7 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
     private function dryRun(): void
     {
 
-        $io = $this->io;
+        $io         = $this->io;
         $collection = $this->collection;
 
         $io->newLine();
@@ -103,17 +101,17 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
     }
 
     /**
-     * Process the post creation. 
+     * Process the post creation.
      *
-     * @return void 
+     * @return void
      */
     private function process(): void
     {
 
-        $io = $this->io;
+        $io         = $this->io;
         $collection = $this->collection;
-        $importIo = $this->importIo;
-        $summary = new ImportSummary(total: $collection->count());
+        $importIo   = $this->importIo;
+        $summary    = new ImportSummary(total: $collection->count());
 
         // Task
         $io->newLine();
@@ -155,13 +153,13 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
     private function mapPostData(PostDto $post): array
     {
         $postDefault = $this->loadDefaultPost($post->getTitle());
-        $postData = array_merge(
+        $postData    = array_merge(
             $postDefault->toArray(),
             $post->toArray(),
             [
                 'post_author' => $this->author,
-                'post_status'  => PostStatus::PUBLISH->value,
-                'post_type'    => PostType::PAGE->value,
+                'post_status' => PostStatus::PUBLISH->value,
+                'post_type'   => PostType::PAGE->value,
             ]
         );
         return $postData;

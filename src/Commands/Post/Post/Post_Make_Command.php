@@ -12,13 +12,14 @@ use Vigihdev\WpCliModels\Enums\PostStatus;
 use Vigihdev\WpCliModels\Enums\PostType;
 use WP_CLI\Utils;
 
+
 final class Post_Make_Command extends Base_Post_Command
 {
+
     public function __construct()
     {
         parent::__construct(name: 'make:post');
     }
-
 
     /**
      * 
@@ -176,9 +177,9 @@ final class Post_Make_Command extends Base_Post_Command
 
         $io->newLine();
         $io->definitionList("Detail Post", [
-            'Title' => $this->title,
+            'Title'  => $this->title,
             'Status' => $this->postData['post_status'] ?? 'N/A',
-            'Type' => $this->postData['post_type'] ?? 'N/A',
+            'Type'   => $this->postData['post_type'] ?? 'N/A',
             'Author' => $this->postData['post_author'] ?? 'N/A',
         ]);
 
@@ -215,8 +216,8 @@ final class Post_Make_Command extends Base_Post_Command
             $postDefault->toArray(),
             [
                 'post_author' => $this->author,
-                'post_status'  => PostStatus::PUBLISH->value,
-                'post_type'    => PostType::POST->value,
+                'post_status' => PostStatus::PUBLISH->value,
+                'post_type'   => PostType::POST->value,
             ]
         );
         return $postData;

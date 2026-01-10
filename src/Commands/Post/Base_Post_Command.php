@@ -23,7 +23,6 @@ use Vigihdev\WpCliTools\Validators\FileValidator;
 
 abstract class Base_Post_Command extends WP_CLI_Command
 {
-
     protected const ALLOW_EXTENSION_EXPORT = ['json'];
 
     protected int $author = 0;
@@ -55,20 +54,32 @@ abstract class Base_Post_Command extends WP_CLI_Command
     ) {
 
         parent::__construct();
-        $this->io = new WpCliStyle();
+        $this->io               = new WpCliStyle();
         $this->exceptionHandler = new MakeHandlerException();
-        $this->importIo = new ImportIoSpinner($this->io);
-        $this->field = new PostField();
+        $this->importIo         = new ImportIoSpinner($this->io);
+        $this->field            = new PostField();
     }
 
+    /**
+     * Run command and create post
+     *
+     * @param array $args
+     * @param array $assoc_args
+     * @return void
+     */
     public function __invoke(array $args, array $assoc_args)
     {
-        $this->author = UserEntity::findOne()?->getId() ?? 0;
-        $post_category = Utils\get_flag_value($assoc_args, 'post_category');
+        $this->author        = UserEntity::findOne()?->getId() ?? 0;
+        $post_category       = Utils\get_flag_value($assoc_args, 'post_category');
         $this->post_category = $post_category ?
-            array_map(fn($value) => $value, explode(',', $post_category)) : [];
+            array_map(fn ($value) => $value, explode(',', $post_category)) : [];
     }
 
+    /**
+     * Normalize filepath to absolute path
+     *
+     * @return self
+     */
     protected function normalizeFilePath(): self
     {
 
@@ -77,6 +88,11 @@ abstract class Base_Post_Command extends WP_CLI_Command
         return $this;
     }
 
+    /**
+     * Validate filepath json file
+     *
+     * @return void
+     */
     protected function validateFilepathJson(): void
     {
         FileValidator::validate($this->filepath)
@@ -86,6 +102,11 @@ abstract class Base_Post_Command extends WP_CLI_Command
             ->mustBeValidJson();
     }
 
+    /**
+     * Validate filepath txt file
+     *
+     * @return void
+     */
     protected function validateFilepathTxt(): void
     {
         FileValidator::validate($this->filepath)
@@ -94,6 +115,11 @@ abstract class Base_Post_Command extends WP_CLI_Command
             ->mustBeReadable();
     }
 
+    /**
+     * Set post content from filepath or content
+     *
+     * @return void
+     */
     protected function setPostContent(): void
     {
         $post_content = $this->post_content;
@@ -106,6 +132,12 @@ abstract class Base_Post_Command extends WP_CLI_Command
         }
     }
 
+    /**
+     * Read file post content
+     *
+     * @param string $filepath
+     * @return string
+     */
     protected function readFilePostContent(string $filepath): string
     {
 
@@ -133,7 +165,13 @@ abstract class Base_Post_Command extends WP_CLI_Command
         }
     }
 
-    protected function inspectAassocArgument(array $assoc_args)
+    /**
+     * Inspect assoc arguments
+     *
+     * @param array $assoc_args
+     * @return array<string, mixed>
+     */
+    protected function inspectAassocArgument(array $assoc_args): array
     {
         $data = [];
         if (isset($assoc_args['post_category'])) {
@@ -155,14 +193,20 @@ abstract class Base_Post_Command extends WP_CLI_Command
         return $data;
     }
 
+    /**
+     * Transform assoc arguments to dto
+     *
+     * @param array $assoc_args
+     * @return CreatePostArgsDto
+     */
     protected function transformAassocArgumentToDto(array $assoc_args): CreatePostArgsDto
     {
 
-        $authorStatus = $this->loadAuthorStatus();
+        $authorStatus    = $this->loadAuthorStatus();
         $loadDefaultPost = $this->loadDefaultPost($this->title);
-        $inspectData = $this->inspectAassocArgument($assoc_args);
-        $assoc_args = array_merge($loadDefaultPost->toArray(), $authorStatus, $assoc_args, $inspectData);
-        $assoc_args = array_merge($assoc_args, [
+        $inspectData     = $this->inspectAassocArgument($assoc_args);
+        $assoc_args      = array_merge($loadDefaultPost->toArray(), $authorStatus, $assoc_args, $inspectData);
+        $assoc_args      = array_merge($assoc_args, [
             'post_title' => $this->title,
         ]);
 
@@ -193,11 +237,22 @@ abstract class Base_Post_Command extends WP_CLI_Command
         }
     }
 
-    protected function loadDefaultPost(string $title)
+    /**
+     * Load default post field dto
+     *
+     * @param string $title
+     * @return DefaultPostFieldDto
+     */
+    protected function loadDefaultPost(string $title): DefaultPostFieldDto
     {
         return new DefaultPostFieldDto(title: $title);
     }
 
+    /**
+     * Load author status
+     *
+     * @return array
+     */
     protected function loadAuthorStatus(): array
     {
         return [
