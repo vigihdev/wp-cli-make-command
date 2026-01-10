@@ -1,0 +1,54 @@
+[
+    {
+        "menu": "primarys",
+        "title": "Label Menu",
+        "link": "https://okkarent.com",
+        "parentId": 1
+    },
+    {
+        "menu": "primary",
+        "title": "",
+        "link": "https://okkarent.com",
+        "parentId": 1
+    },
+    {
+        "menu": "primary",
+        "title": "Label @ Menu",
+        "link": "https://okkarent.com",
+        "parentId": 1
+    },
+    {
+        "menu": "primary",
+        "title": "Label â€ Menu",
+        "link": "https://okkarent.com",
+        "parentId": 1
+    },
+    {
+        "menu": "primary",
+        "title": "Link Error Label Menu",
+        "link": "",
+        "parentId": 1
+    },
+    {
+        "menu": "primary",
+        "title": "Parent 0",
+        "link": "https://okkarent.com",
+        "parentId": 0
+    },
+    {
+        "menu": "primary",
+        "title": "Harga Sewa Mobil Dalam Kota",
+        "link": "https://omahtrans.id/harga-sewa-mobil-dalam-kota/"
+    },
+    {
+        "menu": "primary",
+        "title": "Url Harga Sewa Mobil Dalam Kota",
+        "link": "https://omahtrans.id/harga-sewa-mobil-dalam-kota/"
+    },
+    {
+        "menu": "primary",
+        "title": "Parent Not Found Label Menu",
+        "link": "https://okkarent.com",
+        "parentId": 1222222222222
+    }
+]

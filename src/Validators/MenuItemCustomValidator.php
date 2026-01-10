@@ -33,7 +33,8 @@ final class MenuItemCustomValidator
     {
         return $this->mustBeExistMenu()
             ->mustBeValidTitle()
-            ->mustBeValidUrl();
+            ->mustBeValidUrl()
+            ->ensureValidParentIdIfDefined();
     }
 
     public function mustBeExistMenu(): self

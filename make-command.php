@@ -21,6 +21,7 @@ use Vigihdev\WpCliMake\Commands\Menu\Item\{
 use Vigihdev\WpCliMake\Commands\Menu\{
     Menu_Make_Command,
     Custom_Menu_Item_Make_Command,
+    Custom_Import_Menu_Item_Make_Command,
 };
 
 use Vigihdev\WpCliMake\Commands\Post\Post\{
@@ -59,9 +60,9 @@ WP_CLI::add_command('make:post-type-import', new Post_Type_Import_Make_Command()
 // Block Menu
 WP_CLI::add_command('make:menu', new Menu_Make_Command());
 WP_CLI::add_command('make:menu-item-custom', new Custom_Menu_Item_Make_Command());
+WP_CLI::add_command('make:menu-item-custom-import', new Custom_Import_Menu_Item_Make_Command());
 
 WP_CLI::add_command('make:menu-item', new Menu_Item_Make_Command());
-WP_CLI::add_command('make:menu-item-import', new Menu_Item_Import_Make_Command());
 WP_CLI::add_command('make:menu-item-post-type', new Menu_Item_PostType_Make_Command());
 WP_CLI::add_command('make:menu-item-children', new Menu_Item_Children_Make_Command());
 WP_CLI::add_command('make:menu-item-children-import', new Menu_Item_Children_Import_Make_Command());

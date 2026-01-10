@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands\Menu;
 
+use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliMake\Exceptions\{MakeHandlerException, MakeHandlerExceptionInterface};
+use Vigihdev\WpCliMake\Support\ImportIoSpinner;
 use Vigihdev\WpCliModels\DTOs\Args\Menu\CustomItemMenuArgsDto;
 use Vigihdev\WpCliModels\Enums\PostStatus;
 use Vigihdev\WpCliModels\Fields\MenuItemCustomField;
 use Vigihdev\WpCliModels\UI\WpCliStyle;
+use Vigihdev\WpCliModels\Validators\FileValidator;
 use WP_CLI_Command;
 
 abstract class Base_Menu_Item_Command extends WP_CLI_Command
@@ -22,7 +25,11 @@ abstract class Base_Menu_Item_Command extends WP_CLI_Command
 
     protected string $filepath = '';
 
+    protected MenuItemCustomField $field;
+
     protected WpCliStyle $io;
+
+    protected ImportIoSpinner $importIo;
 
     protected MakeHandlerExceptionInterface $exceptionHandler;
 
@@ -33,17 +40,22 @@ abstract class Base_Menu_Item_Command extends WP_CLI_Command
         parent::__construct();
         $this->io = new WpCliStyle();
         $this->exceptionHandler = new MakeHandlerException();
+        $this->field = new MenuItemCustomField();
+        $this->importIo = new ImportIoSpinner($this->io);
     }
 
     public function __invoke(array $args, array $assoc_args) {}
 
     protected function instanceCustomMenuItem(array $assoc_args): CustomItemMenuArgsDto
     {
-        return CustomItemMenuArgsDto::fromArray(array_merge($assoc_args, [
+
+        $defaults = [
             'menu' => $this->menu,
             'title' => $this->title,
             'link' => $this->link,
-        ]));
+        ];
+        $data = array_merge($assoc_args, $defaults);
+        return CustomItemMenuArgsDto::fromArray($this->field->dtotransform($data));
     }
 
     public function transformMenuItemData(array $assoc_args): array
@@ -54,5 +66,22 @@ abstract class Base_Menu_Item_Command extends WP_CLI_Command
             'status' => PostStatus::PUBLISH->value
         ]);
         return (new MenuItemCustomField())->transform($data);
+    }
+
+    protected function normalizeFilePath(): self
+    {
+
+        $this->filepath = Path::isAbsolute($this->filepath) ?
+            $this->filepath : Path::join(getcwd() ?? '', $this->filepath);
+        return $this;
+    }
+
+    protected function validateFilepathJson(): void
+    {
+        FileValidator::validate($this->filepath)
+            ->mustExist()
+            ->mustBeExtension('json')
+            ->mustBeReadable()
+            ->mustBeValidJson();
     }
 }
