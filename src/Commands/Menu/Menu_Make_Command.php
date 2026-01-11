@@ -11,7 +11,6 @@ use WP_CLI\Utils;
 
 final class Menu_Make_Command extends Base_Menu_Command
 {
-
     public function __construct()
     {
         parent::__construct(name: 'make:menu');
@@ -50,13 +49,12 @@ final class Menu_Make_Command extends Base_Menu_Command
      *     $ wp make:menu "Test Menu" --dry-run
      *
      * @param array $args
-     * @param array $assoc_args 
+     * @param array $assoc_args
      * @return void
      *
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-
         parent::__invoke($args, $assoc_args);
         $this->menu = $args[0];
         $this->location = Utils\get_flag_value($assoc_args, 'location');
@@ -64,7 +62,6 @@ final class Menu_Make_Command extends Base_Menu_Command
         $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         try {
-
             MenuValidator::validate($this->menu)
                 ->validateCreate();
 

@@ -33,7 +33,6 @@ final class PostTypeValidator
 
     public function mustBeNotEmptyTaxonomies(): self
     {
-
         $taxonomies = $this->post->getTaxInput();
 
         if (! is_array($taxonomies)) {
@@ -49,8 +48,7 @@ final class PostTypeValidator
 
     public function mustBeAllowPostType(): self
     {
-
-        $type              = $this->post->getType();
+        $type = $this->post->getType();
         $notAllowPostTypes = [
             'attachment',
             'revision',
@@ -104,7 +102,6 @@ final class PostTypeValidator
 
     public function mustHaveRegisteredTaxonomies(): self
     {
-
         foreach ($this->post->getTaxInput() as $taxonomy => $_) {
             if (! taxonomy_exists($taxonomy)) {
                 throw PostTypeException::notRegisteredTaxonomies($taxonomy);

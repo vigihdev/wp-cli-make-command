@@ -12,10 +12,8 @@ use Vigihdev\WpCliModels\Contracts\Fields\FieldInterface;
 use Vigihdev\WpCliModels\UI\WpCliStyle;
 use Vigihdev\WpCliTools\Validators\FileValidator;
 
-
 abstract class Base_User_Command extends WP_CLI_Command
 {
-
     protected string $fields = '';
 
     protected FieldInterface $field;
@@ -39,7 +37,9 @@ abstract class Base_User_Command extends WP_CLI_Command
         $this->importIo = new ImportIoSpinner($this->io);
     }
 
-    public function __invoke(array $args, array $assoc_args) {}
+    public function __invoke(array $args, array $assoc_args)
+    {
+    }
 
     protected function normalizeFilePath(): self
     {

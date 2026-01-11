@@ -46,14 +46,12 @@ final class Post_Import_Make_Command extends Base_Post_Command
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-
         parent::__invoke($args, $assoc_args);
         $this->filepath = $args[0];
-        $dryRun         = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         $io = $this->io;
         try {
-
             $this->normalizeFilePath();
             $this->validateFilepathJson();
             $this->collection = DtoJsonTransformer::fromFile($this->filepath, PostDto::class);
@@ -70,8 +68,7 @@ final class Post_Import_Make_Command extends Base_Post_Command
 
     private function dryRun(): void
     {
-
-        $io         = $this->io;
+        $io = $this->io;
         $collection = $this->collection;
 
         $io->newLine();
@@ -95,11 +92,10 @@ final class Post_Import_Make_Command extends Base_Post_Command
 
     private function process(): void
     {
-
-        $io         = $this->io;
-        $importIo   = $this->importIo;
+        $io = $this->io;
+        $importIo = $this->importIo;
         $collection = $this->collection;
-        $summary    = new ImportSummary(total: $collection->count());
+        $summary = new ImportSummary(total: $collection->count());
 
         // Task
         $io->newLine();
@@ -111,7 +107,6 @@ final class Post_Import_Make_Command extends Base_Post_Command
             usleep(2000000);
 
             try {
-
                 PostFactoryValidator::validate($postData)
                     ->validateCreate()
                     ->mustTypeEqual(PostType::POST->value);
@@ -145,7 +140,7 @@ final class Post_Import_Make_Command extends Base_Post_Command
     private function mapPostData(PostDto $post): array
     {
         $postDefault = $this->loadDefaultPost($post->getTitle());
-        $postData    = array_merge(
+        $postData = array_merge(
             $postDefault->toArray(),
             [
                 'post_type' => PostType::POST->value

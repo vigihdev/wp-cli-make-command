@@ -13,8 +13,8 @@ final class DtoJsonTransformer
     {
         try {
             $transformer = JsonTransformerFactory::create($dtoClass);
-            $objects     = $transformer->transformWithFile($filepath);
-            $data        = is_array($objects) ? $objects : [$objects];
+            $objects = $transformer->transformWithFile($filepath);
+            $data = is_array($objects) ? $objects : [$objects];
             return new Collection($data);
         } catch (\Throwable $e) {
             throw new \RuntimeException("Error reading file {$filepath}: {$e->getMessage()}");

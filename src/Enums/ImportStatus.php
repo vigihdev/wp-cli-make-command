@@ -14,7 +14,7 @@ enum ImportStatus: string
     /**
      * The import failed.
      */
-    case FAILED  = 'failed';
+    case FAILED = 'failed';
 
     /**
      * The import was skipped.

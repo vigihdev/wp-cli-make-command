@@ -6,7 +6,6 @@ namespace Vigihdev\WpCliMake\Contracts;
 
 interface UserInterface
 {
-
     public function password(): string;
     public function username(): string;
     public function email(): string;

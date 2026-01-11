@@ -8,10 +8,8 @@ use Vigihdev\WpCliMake\Validators\TermValidator;
 use Vigihdev\WpCliModels\Entities\TermEntity;
 use WP_CLI\Utils;
 
-
 final class Term_Make_Command extends Base_Term_Command
 {
-
     public function __construct()
     {
         parent::__construct(name: 'make:term');
@@ -41,7 +39,7 @@ final class Term_Make_Command extends Base_Term_Command
      * [--dry-run]
      * : Preview data without creating
      * default: false
-     * 
+     *
      * ## EXAMPLES
      *
      *     # Single term
@@ -79,7 +77,6 @@ final class Term_Make_Command extends Base_Term_Command
 
     private function dryRun()
     {
-
         $io = $this->io;
         $io->newLine();
         $io->title("🔍 DRY RUN - Preview Data Term");
@@ -103,7 +100,7 @@ final class Term_Make_Command extends Base_Term_Command
 
     /**
      * Process the term creation
-     * 
+     *
      * @return void
      */
     private function process()

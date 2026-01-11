@@ -29,67 +29,66 @@ final class User_Make_Command extends Base_User_Command
      *
      * <user-login>
      * : The login of the user to create.
-     * 
+     *
      * <user-email>
      * : The email address of the user to create.
-     * 
+     *
      * [--role=<role>]
      * : The role of the user to create. Default: default role. Possible values
      * include 'administrator', 'editor', 'author', 'contributor', 'subscriber'.
      * ---
-     * 
+     *
      * [--user_pass=<password>]
      * : The user password. Default: randomly generated.
      * ---
-     * 
+     *
      * [--user_registered=<yyyy-mm-dd-hh-ii-ss>]
      * : The date the user registered. Default: current date.
      * ---
-     * 
+     *
      * [--display_name=<name>]
      * : The display name.
-     * 
+     *
      * [--user_nicename=<nice_name>]
      * : A string that contains a URL-friendly name for the user. The default is the user's username.
      * ---
-     * 
+     *
      * [--user_url=<url>]
      * : A string containing the user's URL for the user's web site.
      * ---
-     * 
+     *
      * [--nickname=<nickname>]
      * : The user's nickname, defaults to the user's username.
      * ---
-     * 
+     *
      * [--first_name=<first_name>]
      * : The user's first name.
-     * 
+     *
      * [--last_name=<last_name>]
      * : The user's last name.
-     * 
+     *
      * [--description=<description>]
      * : A string containing content about the user.
      * ---
-     * 
+     *
      * [--dry-run]
      * : Run the command in dry-run mode
      * default: false
      * ---
-     * 
+     *
      * ## EXAMPLES
      *
      *     # Create a new user
      *     wp make:user demo admin@example.com --password=123456 --role=administrator
-     * 
+     *
      *     # Create a new user in dry-run mode
      *     wp make:user demo admin@example.com --password=123456 --role=administrator --dry-run
-     * 
+     *
      * @param array $args
      * @param array $assoc_args
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-
         $this->username = $args[0] ?? null;
         $this->email = $args[1] ?? null;
         $this->password = Utils\get_flag_value($assoc_args, 'password', 'auto');
@@ -117,7 +116,6 @@ final class User_Make_Command extends Base_User_Command
 
     private function processDryRun(CliStyle $io, array $assoc_args)
     {
-
         $dryRun = $io->renderDryRunPreset("New User");
 
         $assoc_args = array_filter($assoc_args, function ($key) {
@@ -138,7 +136,6 @@ final class User_Make_Command extends Base_User_Command
 
     private function process(CliStyle $io, array $assoc_args)
     {
-
         $userdata = [
             'user_login' => $this->username,
             'user_email' => $this->email,

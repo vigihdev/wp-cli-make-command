@@ -4,4 +4,6 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\DTOs;
 
-final class MenuItemDto {}
+final class MenuItemDto
+{
+}

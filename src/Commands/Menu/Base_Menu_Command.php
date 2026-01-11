@@ -10,7 +10,6 @@ use WP_CLI_Command;
 
 abstract class Base_Menu_Command extends WP_CLI_Command
 {
-
     protected string $menu = '';
 
     protected ?string $location = null;
@@ -26,12 +25,13 @@ abstract class Base_Menu_Command extends WP_CLI_Command
     public function __construct(
         private readonly string $name
     ) {
-
         parent::__construct();
 
         $this->io = new WpCliStyle();
         $this->exceptionHandler = new MakeHandlerException();
     }
 
-    public function __invoke(array $args, array $assoc_args) {}
+    public function __invoke(array $args, array $assoc_args)
+    {
+    }
 }

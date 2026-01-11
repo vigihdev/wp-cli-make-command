@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Commands\Term;
 
-
 use Vigihdev\Support\Collection;
 use Vigihdev\WpCliMake\Commands\Term\Base_Term_Command;
 use Vigihdev\WpCliMake\DTOs\TermDto;
@@ -16,8 +15,6 @@ use WP_CLI\Utils;
 
 final class Term_Import_Make_Command extends Base_Term_Command
 {
-
-
     /**
      * @var Collection<TermDto> $collection
      */
@@ -36,10 +33,10 @@ final class Term_Import_Make_Command extends Base_Term_Command
      *
      * <file>
      * : Path to CSV or JSON file.
-     * 
+     *
      * [--dry-run]
-     * : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun. 
-     *  
+     * : Menjalankan perintah dalam mode simulasi tanpa membuat perubahan apa pun.
+     *
      * ## EXAMPLES
      *
      *     wp make:term-import kota.csv
@@ -55,7 +52,6 @@ final class Term_Import_Make_Command extends Base_Term_Command
 
         $io = $this->io;
         try {
-
             $this->normalizeFilePath();
             $this->validateFilepathJson();
             $this->collection = DtoJsonTransformer::fromFile($this->filepath, TermDto::class);
@@ -72,7 +68,6 @@ final class Term_Import_Make_Command extends Base_Term_Command
 
     private function dryRun(): void
     {
-
         $io = $this->io;
         $collection = $this->collection;
 
@@ -102,7 +97,6 @@ final class Term_Import_Make_Command extends Base_Term_Command
 
     private function process(): void
     {
-
         $io = $this->io;
         $collection = $this->collection;
         $importIo = $this->importIo;
@@ -113,7 +107,6 @@ final class Term_Import_Make_Command extends Base_Term_Command
         $io->section("Start Insert Term: {$collection->count()} items");
 
         foreach ($collection->getIterator() as $index => $term) {
-
             $importIo->start($term->getTerm());
 
             usleep(2000000);

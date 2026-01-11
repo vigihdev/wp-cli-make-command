@@ -49,11 +49,10 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
     {
         parent::__invoke($args, $assoc_args);
         $this->filepath = $args[0];
-        $dryRun         = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         $io = $this->io;
         try {
-
             $this->normalizeFilePath();
             $this->validateFilepathJson();
             $this->collection = DtoJsonTransformer::fromFile($this->filepath, PostDto::class);
@@ -70,8 +69,7 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
 
     private function dryRun(): void
     {
-
-        $io         = $this->io;
+        $io = $this->io;
         $collection = $this->collection;
 
         $io->newLine();
@@ -99,10 +97,9 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
 
     private function process(): void
     {
-
-        $io         = $this->io;
+        $io = $this->io;
         $collection = $this->collection;
-        $importIo   = $this->importIo;
+        $importIo = $this->importIo;
 
         // Task
         $io->newLine();
@@ -114,7 +111,6 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
             $importIo->start($post->getTitle());
             usleep(2000000);
             try {
-
                 PostTypeValidator::validate($post)->validateCreate();
                 PostFactoryValidator::validate($postData)->validateCreate();
 
@@ -135,7 +131,7 @@ final class Post_Type_Import_Make_Command extends Base_Post_Command
     private function mapPostData(PostDto $post): array
     {
         $postDefault = $this->loadDefaultPost($post->getTitle());
-        $postData    = array_merge(
+        $postData = array_merge(
             $postDefault->toArray(),
             $post->toArray(),
             $this->loadAuthorStatus()

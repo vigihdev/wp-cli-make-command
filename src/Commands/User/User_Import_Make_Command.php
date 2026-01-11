@@ -9,7 +9,6 @@ use WP_CLI\Utils;
 
 final class User_Import_Make_Command extends Base_User_Command
 {
-
     /**
      * @var Collection<PostDto> $collection
      */
@@ -27,16 +26,16 @@ final class User_Import_Make_Command extends Base_User_Command
      *
      * <file>
      * : Path to CSV or JSON file.
-     * 
+     *
      * [--dry-run]
      * : Process import without creating any user.
-     * 
+     *
      * ## EXAMPLES
-     * 
+     *
      *     wp make:user-import kota.csv --dry-run
      *     wp make:user-import kota.json --dry-run
      * @when after_wp_load
-     * 
+     *
      * @param array $args
      * @param array $assoc_args
      */

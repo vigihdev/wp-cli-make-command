@@ -51,13 +51,11 @@ final class Custom_Import_Menu_Item_Make_Command extends Base_Menu_Item_Command
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-
         parent::__invoke($args, $assoc_args);
         $this->filepath = $args[0];
-        $dryRun         = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         try {
-
             $this->normalizeFilePath();
             $this->validateFilepathJson();
             $this->collection = DtoJsonTransformer::fromFile($this->filepath, CustomItemMenuArgsDto::class);
@@ -74,8 +72,7 @@ final class Custom_Import_Menu_Item_Make_Command extends Base_Menu_Item_Command
 
     private function dryRun()
     {
-
-        $io         = $this->io;
+        $io = $this->io;
         $collection = $this->collection;
 
         $io->newLine();
@@ -102,11 +99,10 @@ final class Custom_Import_Menu_Item_Make_Command extends Base_Menu_Item_Command
 
     private function process()
     {
-
-        $io         = $this->io;
-        $importIo   = $this->importIo;
+        $io = $this->io;
+        $importIo = $this->importIo;
         $collection = $this->collection;
-        $summary    = new ImportSummary(total: $collection->count());
+        $summary = new ImportSummary(total: $collection->count());
 
         // Task
         $io->newLine();
@@ -118,7 +114,6 @@ final class Custom_Import_Menu_Item_Make_Command extends Base_Menu_Item_Command
             usleep(2000000);
 
             try {
-
                 MenuItemCustomValidator::validate($post)->validateCreate();
 
                 $insert = MenuItemEntity::create($post->getMenu(), $postData);

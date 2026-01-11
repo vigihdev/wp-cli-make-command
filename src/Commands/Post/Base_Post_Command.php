@@ -52,12 +52,11 @@ abstract class Base_Post_Command extends WP_CLI_Command
     public function __construct(
         private readonly string $name
     ) {
-
         parent::__construct();
-        $this->io               = new WpCliStyle();
+        $this->io = new WpCliStyle();
         $this->exceptionHandler = new MakeHandlerException();
-        $this->importIo         = new ImportIoSpinner($this->io);
-        $this->field            = new PostField();
+        $this->importIo = new ImportIoSpinner($this->io);
+        $this->field = new PostField();
     }
 
     /**
@@ -69,8 +68,8 @@ abstract class Base_Post_Command extends WP_CLI_Command
      */
     public function __invoke(array $args, array $assoc_args)
     {
-        $this->author        = UserEntity::findOne()?->getId() ?? 0;
-        $post_category       = Utils\get_flag_value($assoc_args, 'post_category');
+        $this->author = UserEntity::findOne()?->getId() ?? 0;
+        $post_category = Utils\get_flag_value($assoc_args, 'post_category');
         $this->post_category = $post_category ?
             array_map(fn ($value) => $value, explode(',', $post_category)) : [];
     }
@@ -82,7 +81,6 @@ abstract class Base_Post_Command extends WP_CLI_Command
      */
     protected function normalizeFilePath(): self
     {
-
         $this->filepath = Path::isAbsolute($this->filepath) ?
             $this->filepath : Path::join(getcwd() ?? '', $this->filepath);
         return $this;
@@ -140,7 +138,6 @@ abstract class Base_Post_Command extends WP_CLI_Command
      */
     protected function readFilePostContent(string $filepath): string
     {
-
         $post_content = '';
         try {
             $filepath = ltrim($filepath, '@');
@@ -201,12 +198,11 @@ abstract class Base_Post_Command extends WP_CLI_Command
      */
     protected function transformAassocArgumentToDto(array $assoc_args): CreatePostArgsDto
     {
-
-        $authorStatus    = $this->loadAuthorStatus();
+        $authorStatus = $this->loadAuthorStatus();
         $loadDefaultPost = $this->loadDefaultPost($this->title);
-        $inspectData     = $this->inspectAassocArgument($assoc_args);
-        $assoc_args      = array_merge($loadDefaultPost->toArray(), $authorStatus, $assoc_args, $inspectData);
-        $assoc_args      = array_merge($assoc_args, [
+        $inspectData = $this->inspectAassocArgument($assoc_args);
+        $assoc_args = array_merge($loadDefaultPost->toArray(), $authorStatus, $assoc_args, $inspectData);
+        $assoc_args = array_merge($assoc_args, [
             'post_title' => $this->title,
         ]);
 

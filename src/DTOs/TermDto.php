@@ -68,9 +68,9 @@ final class TermDto implements TermInterface, ArrayAbleInterface
     public function toArray(): array
     {
         return array_filter([
-            'name'        => sanitize_text_field($this->getTerm()),
-            'taxonomy'    => $this->getTaxonomy(),
-            'slug'        => $this->getSlug() ?? sanitize_title($this->getTerm()),
+            'name' => sanitize_text_field($this->getTerm()),
+            'taxonomy' => $this->getTaxonomy(),
+            'slug' => $this->getSlug() ?? sanitize_title($this->getTerm()),
             'description' => $this->getDescription(),
         ], function ($value) {
             return $value !== null;

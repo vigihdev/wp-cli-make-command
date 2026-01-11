@@ -73,7 +73,7 @@ final class PostFactoryValidator
         if ($date !== null && $date !== '') {
             $d = \DateTime::createFromFormat('Y-m-d H:i:s', $date);
             if (!$d || $d->format('Y-m-d H:i:s') !== $date) {
-                throw PostFactoryException::invalidDateFormat();
+                throw PostFactoryException::invalidDateFormat('post_date', $date);
             }
         }
         return $this;
@@ -135,7 +135,7 @@ final class PostFactoryValidator
 
     public function mustBeValidStatus(): self
     {
-        $status        = $this->post->getStatus();
+        $status = $this->post->getStatus();
         $validStatuses = [
             PostStatus::DRAFT->value,
             PostStatus::PUBLISH->value,

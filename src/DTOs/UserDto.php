@@ -70,16 +70,16 @@ final class UserDto implements UserInterface, ArrayAbleInterface
     public function toArray(): array
     {
         return array_filter([
-            'user_pass'     => $this->password(),
-            'user_login'    => $this->username(),
+            'user_pass' => $this->password(),
+            'user_login' => $this->username(),
             'user_nicename' => $this->nickname() ?? $this->username(),
-            'user_email'    => $this->email(),
-            'display_name'  => $this->displayName() ?? $this->username(),
-            'nickname'      => $this->nickname() ?? $this->username(),
-            'first_name'    => $this->firstName(),
-            'last_name'     => $this->lastName(),
-            'description'   => $this->description(),
-            'role'          => $this->role(),
+            'user_email' => $this->email(),
+            'display_name' => $this->displayName() ?? $this->username(),
+            'nickname' => $this->nickname() ?? $this->username(),
+            'first_name' => $this->firstName(),
+            'last_name' => $this->lastName(),
+            'description' => $this->description(),
+            'role' => $this->role(),
         ], function ($value) {
             return $value !== null;
         });

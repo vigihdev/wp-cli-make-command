@@ -13,7 +13,7 @@ final class ImportIoSpinner
     private int $lineLength = 80;
 
     private const TYPE_SUCCESS = ' ✔ SUCCESS ';
-    private const TYPE_FAILED  = ' FAILED ';
+    private const TYPE_FAILED = ' FAILED ';
     private const TYPE_SKIPPED = ' SKIPPED ';
 
 
@@ -107,14 +107,13 @@ final class ImportIoSpinner
      */
     private function createBlocks(string $message, string $type, string $style): array
     {
-
-        $lines           = [];
-        $type            = \sprintf('%s', $type);
-        $indentLength    = Helper::width($type);
+        $lines = [];
+        $type = \sprintf('%s', $type);
+        $indentLength = Helper::width($type);
         $lineIndentation = str_repeat(' ', $indentLength);
 
         $outputWrapper = new OutputWrapper();
-        $lines         = explode(\PHP_EOL, $outputWrapper->wrap(
+        $lines = explode(\PHP_EOL, $outputWrapper->wrap(
             $message,
             $this->lineLength - $indentLength,
             \PHP_EOL
@@ -141,7 +140,7 @@ final class ImportIoSpinner
     {
         $bg = [
             self::TYPE_SUCCESS => \sprintf("<fg=white;bg=green;options=bold>%s</>", self::TYPE_SUCCESS),
-            self::TYPE_FAILED  => \sprintf("<fg=white;bg=red;options=bold>%s</>", self::TYPE_FAILED),
+            self::TYPE_FAILED => \sprintf("<fg=white;bg=red;options=bold>%s</>", self::TYPE_FAILED),
             self::TYPE_SKIPPED => \sprintf("<fg=white;bg=blue;options=bold>%s</>", self::TYPE_SKIPPED),
         ];
         return $bg[$type] ?? '';

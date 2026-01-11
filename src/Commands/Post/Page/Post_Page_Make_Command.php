@@ -129,20 +129,18 @@ final class Post_Page_Make_Command extends Base_Post_Command
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-
         parent::__invoke($args, $assoc_args);
-        $this->title        = $args[0];
+        $this->title = $args[0];
         $this->post_content = Utils\get_flag_value($assoc_args, 'post_content');
-        $dryRun             = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         try {
-
             // Process Data
             $this->setPostContent();
 
             $this->postData = array_merge($this->postData, $this->mapPostData(), $assoc_args, [
                 'post_content' => $this->post_content,
-                'post_type'    => PostType::PAGE->value,
+                'post_type' => PostType::PAGE->value,
             ]);
 
             PostFactoryValidator::validate($this->postData)->validateCreate();
@@ -169,9 +167,9 @@ final class Post_Page_Make_Command extends Base_Post_Command
 
         $io->newLine();
         $io->definitionList("Detail Post Page", [
-            'Title'  => $this->title,
+            'Title' => $this->title,
             'Status' => $this->postData['post_status'] ?? 'N/A',
-            'Type'   => $this->postData['post_type'] ?? 'N/A',
+            'Type' => $this->postData['post_type'] ?? 'N/A',
             'Author' => $this->postData['post_author'] ?? 'N/A',
         ]);
 
@@ -200,12 +198,12 @@ final class Post_Page_Make_Command extends Base_Post_Command
     private function mapPostData(): array
     {
         $postDefault = $this->loadDefaultPost($this->title);
-        $postData    = array_merge(
+        $postData = array_merge(
             $postDefault->toArray(),
             [
-                'post_author'  => $this->author,
-                'post_status'  => PostStatus::PUBLISH->value,
-                'post_type'    => PostType::PAGE->value,
+                'post_author' => $this->author,
+                'post_status' => PostStatus::PUBLISH->value,
+                'post_type' => PostType::PAGE->value,
             ]
         );
         return $postData;

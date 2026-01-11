@@ -56,15 +56,14 @@ final class Post_Type_Make_Command extends Base_Post_Command
     public function __invoke(array $args, array $assoc_args): void
     {
         parent::__invoke($args, $assoc_args);
-        $this->title        = $args[0];
+        $this->title = $args[0];
         $this->post_content = Utils\get_flag_value($assoc_args, 'post_content');
-        $postType           = Utils\get_flag_value($assoc_args, 'post_type');
-        $taxInput           = Utils\get_flag_value($assoc_args, 'tax_input');
-        $taxInput           = json_decode($taxInput, true) ?? [];
-        $dryRun             = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $postType = Utils\get_flag_value($assoc_args, 'post_type');
+        $taxInput = Utils\get_flag_value($assoc_args, 'tax_input');
+        $taxInput = json_decode($taxInput, true) ?? [];
+        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         try {
-
             // Process Data
             $this->setPostContent();
             $postDto = new PostDto(
@@ -76,7 +75,7 @@ final class Post_Type_Make_Command extends Base_Post_Command
 
             $this->postData = array_merge($this->postData, $this->mapPostData(), $assoc_args, [
                 'post_content' => $this->post_content,
-                'post_type'    => $postType,
+                'post_type' => $postType,
             ]);
 
             PostTypeValidator::validate($postDto)->validateCreate();
@@ -94,7 +93,6 @@ final class Post_Type_Make_Command extends Base_Post_Command
 
     private function dryRun(): void
     {
-
         $io = $this->io;
 
         $io->newLine();
@@ -105,7 +103,7 @@ final class Post_Type_Make_Command extends Base_Post_Command
         $io->definitionList(
             'Detail Post Type',
             [
-                'Title'     => $this->title,
+                'Title' => $this->title,
                 'Post Type' => $this->postData['post_type'],
                 'Tax Input' => 'category[event]',
             ]
@@ -118,7 +116,6 @@ final class Post_Type_Make_Command extends Base_Post_Command
 
     private function process(): void
     {
-
         $io = $this->io;
 
         // Task
@@ -136,11 +133,11 @@ final class Post_Type_Make_Command extends Base_Post_Command
     private function mapPostData(): array
     {
         $postDefault = $this->loadDefaultPost($this->title);
-        $postData    = array_merge(
+        $postData = array_merge(
             $postDefault->toArray(),
             [
-                'post_author'  => $this->author,
-                'post_status'  => PostStatus::PUBLISH->value,
+                'post_author' => $this->author,
+                'post_status' => PostStatus::PUBLISH->value,
             ]
         );
         return $postData;

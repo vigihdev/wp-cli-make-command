@@ -6,7 +6,6 @@ namespace Vigihdev\WpCliMake\Contracts;
 
 interface TermInterface
 {
-
     public function getTaxonomy(): string;
 
     public function getTerm(): string;

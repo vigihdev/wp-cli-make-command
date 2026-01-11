@@ -61,7 +61,7 @@ final class TermValidator
     public function mustHaveExistingTerm(): self
     {
         $taxonomy = $this->term->getTaxonomy();
-        $term     = $this->term->getTerm();
+        $term = $this->term->getTerm();
 
         if (! term_exists($term, $taxonomy)) {
             throw TermException::notFound($taxonomy, $term);
@@ -125,7 +125,7 @@ final class TermValidator
     public function mustNotAlreadyExists(): self
     {
         $taxonomy = $this->term->getTaxonomy();
-        $term     = $this->term->getTerm();
+        $term = $this->term->getTerm();
 
         $existingTerm = term_exists($term, $taxonomy);
 

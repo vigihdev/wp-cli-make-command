@@ -6,4 +6,6 @@ namespace Vigihdev\WpCliMake\Contracts;
 
 use Vigihdev\WpCliModels\Contracts\Args\Menu\CustomItemMenuArgsInterface;
 
-interface MenuItemCustomInterface extends CustomItemMenuArgsInterface {}
+interface MenuItemCustomInterface extends CustomItemMenuArgsInterface
+{
+}

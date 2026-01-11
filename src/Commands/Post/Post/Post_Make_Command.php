@@ -134,19 +134,17 @@ final class Post_Make_Command extends Base_Post_Command
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-
         parent::__invoke($args, $assoc_args);
-        $this->title        = $args[0];
+        $this->title = $args[0];
         $this->post_content = Utils\get_flag_value($assoc_args, 'post_content');
-        $dryRun             = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         $postData = $this->transformAassocArgumentToDto($assoc_args);
 
         try {
-
             // Process Data
             $this->setPostContent();
-            $data           = ['post_title' => $this->title, 'post_content' => $this->post_content];
+            $data = ['post_title' => $this->title, 'post_content' => $this->post_content];
             $this->postData = array_merge($this->mapPostData(), $assoc_args, $data);
 
             PostFactoryValidator::validate($postData->toArray())
@@ -167,7 +165,6 @@ final class Post_Make_Command extends Base_Post_Command
 
     private function dryRun(): void
     {
-
         // Task
         $io = $this->io;
 
@@ -177,9 +174,9 @@ final class Post_Make_Command extends Base_Post_Command
 
         $io->newLine();
         $io->definitionList("Detail Post", [
-            'Title'  => $this->title,
+            'Title' => $this->title,
             'Status' => $this->postData['post_status'] ?? 'N/A',
-            'Type'   => $this->postData['post_type'] ?? 'N/A',
+            'Type' => $this->postData['post_type'] ?? 'N/A',
             'Author' => $this->postData['post_author'] ?? 'N/A',
         ]);
 
@@ -190,13 +187,12 @@ final class Post_Make_Command extends Base_Post_Command
 
     private function process(): void
     {
-
         $io = $this->io;
 
         $io->newLine();
         $io->section("Start Insert Post");
         $postData = $this->postData;
-        $insert   = PostEntity::create($postData);
+        $insert = PostEntity::create($postData);
         if (is_wp_error($insert)) {
             $io->errorBlock(
                 sprintf("Failed Post created with title: %s, error: %s", $this->title, $insert->get_error_message())
@@ -210,12 +206,12 @@ final class Post_Make_Command extends Base_Post_Command
     private function mapPostData(): array
     {
         $postDefault = $this->loadDefaultPost($this->title);
-        $postData    = array_merge(
+        $postData = array_merge(
             $postDefault->toArray(),
             [
                 'post_author' => $this->author,
                 'post_status' => PostStatus::PUBLISH->value,
-                'post_type'   => PostType::POST->value,
+                'post_type' => PostType::POST->value,
             ]
         );
         return $postData;

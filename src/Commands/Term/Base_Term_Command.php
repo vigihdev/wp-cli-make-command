@@ -14,7 +14,6 @@ use Vigihdev\WpCliModels\Validators\FileValidator;
 
 abstract class Base_Term_Command extends WP_CLI_Command
 {
-
     protected string $fields = '';
     protected ?string $term = null;
     protected ?string $taxonomy = null;
@@ -27,8 +26,6 @@ abstract class Base_Term_Command extends WP_CLI_Command
     protected WpCliStyle $io;
     protected ImportIoSpinner $importIo;
 
-
-
     public function __construct(
         protected readonly string $name
     ) {
@@ -38,7 +35,9 @@ abstract class Base_Term_Command extends WP_CLI_Command
         $this->importIo = new ImportIoSpinner($this->io);
     }
 
-    public function __invoke(array $args, array $assoc_args) {}
+    public function __invoke(array $args, array $assoc_args)
+    {
+    }
 
     protected function setSlug()
     {
@@ -59,7 +58,6 @@ abstract class Base_Term_Command extends WP_CLI_Command
 
     protected function normalizeFilePath(): self
     {
-
         $this->filepath = Path::isAbsolute($this->filepath) ?
             $this->filepath : Path::join(getcwd() ?? '', $this->filepath);
         return $this;

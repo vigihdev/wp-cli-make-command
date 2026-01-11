@@ -7,7 +7,7 @@ namespace Vigihdev\WpCliMake\Support;
 final class ImportSummary
 {
     private int $success = 0;
-    private int $failed  = 0;
+    private int $failed = 0;
     private int $skipped = 0;
 
     /**
@@ -52,9 +52,9 @@ final class ImportSummary
     {
         return [
             'Total Items' => $this->total,
-            'Success'     => $this->success,
-            'Failed'      => $this->failed,
-            'Skipped'     => $this->skipped,
+            'Success' => $this->success,
+            'Failed' => $this->failed,
+            'Skipped' => $this->skipped,
         ];
     }
 }

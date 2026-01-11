@@ -71,18 +71,16 @@ final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-
         parent::__invoke($args, $assoc_args);
-        $this->menu  = $args[0] ?? '';
+        $this->menu = $args[0] ?? '';
         $this->title = $args[1] ?? '';
-        $this->link  = $args[2] ?? '';
-        $dryRun      = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $this->link = $args[2] ?? '';
+        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
-        $this->itemMenu     = $this->instanceCustomMenuItem($assoc_args);
+        $this->itemMenu = $this->instanceCustomMenuItem($assoc_args);
         $this->menuItemData = $this->transformMenuItemData($assoc_args);
 
         try {
-
             MenuItemCustomValidator::validate($this->itemMenu)->validateCreate();
 
             if ($dryRun) {
@@ -105,9 +103,9 @@ final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
 
         $io->newLine();
         $io->definitionList("Detail Menu Item", [
-            'Menu'  => $this->menu,
+            'Menu' => $this->menu,
             'Title' => $this->title,
-            'Link'  => $this->link,
+            'Link' => $this->link,
         ]);
 
         $io->success('Dry run selesai!');
@@ -117,7 +115,6 @@ final class Custom_Menu_Item_Make_Command extends Base_Menu_Item_Command
 
     private function process()
     {
-
         $io = $this->io;
 
         $insert = MenuItemEntity::create($this->menu, $this->menuItemData);

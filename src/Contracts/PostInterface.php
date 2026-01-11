@@ -6,7 +6,6 @@ namespace Vigihdev\WpCliMake\Contracts;
 
 interface PostInterface
 {
-
     public function getTitle(): string;
 
     public function getContent(): string;

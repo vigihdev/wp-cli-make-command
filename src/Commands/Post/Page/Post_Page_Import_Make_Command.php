@@ -44,13 +44,11 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
      */
     public function __invoke(array $args, array $assoc_args): void
     {
-
         parent::__invoke($args, $assoc_args);
         $this->filepath = $args[0];
-        $dryRun         = Utils\get_flag_value($assoc_args, 'dry-run', false);
+        $dryRun = Utils\get_flag_value($assoc_args, 'dry-run', false);
 
         try {
-
             $this->normalizeFilePath();
             $this->validateFilepathJson();
 
@@ -73,8 +71,7 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
      */
     private function dryRun(): void
     {
-
-        $io         = $this->io;
+        $io = $this->io;
         $collection = $this->collection;
 
         $io->newLine();
@@ -107,11 +104,10 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
      */
     private function process(): void
     {
-
-        $io         = $this->io;
+        $io = $this->io;
         $collection = $this->collection;
-        $importIo   = $this->importIo;
-        $summary    = new ImportSummary(total: $collection->count());
+        $importIo = $this->importIo;
+        $summary = new ImportSummary(total: $collection->count());
 
         // Task
         $io->newLine();
@@ -122,7 +118,6 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
             $importIo->start($post->getTitle());
             usleep(2000000);
             try {
-
                 PostFactoryValidator::validate($postData)->validateCreate();
                 if (!empty($post->getTaxInput())) {
                 }
@@ -153,13 +148,13 @@ final class Post_Page_Import_Make_Command extends Base_Post_Command
     private function mapPostData(PostDto $post): array
     {
         $postDefault = $this->loadDefaultPost($post->getTitle());
-        $postData    = array_merge(
+        $postData = array_merge(
             $postDefault->toArray(),
             $post->toArray(),
             [
                 'post_author' => $this->author,
                 'post_status' => PostStatus::PUBLISH->value,
-                'post_type'   => PostType::PAGE->value,
+                'post_type' => PostType::PAGE->value,
             ]
         );
         return $postData;

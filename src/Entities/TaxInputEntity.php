@@ -11,7 +11,6 @@ final class TaxInputEntity
     ) {
     }
 
-
     public function getTaxInput(): array
     {
         return $this->taxInput;
