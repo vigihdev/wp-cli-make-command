@@ -90,6 +90,10 @@ final class PostFactoryValidator
             throw StringValidator::validate($title, 'post_title')->minLength(10);
         }
 
+        if (preg_match('/[^a-z-A-Z-0-9\s\-]+/', $title)) {
+            throw PostFactoryException::invalidCharacters('post_title', $title);
+        }
+
         return $this;
     }
 

@@ -10,6 +10,22 @@ final class PostFactoryException extends WpCliMakeException
 
     protected array $solutions = [];
 
+
+    public static function invalidCharacters(string $field, string $value): static
+    {
+
+        return new self(
+            message: sprintf('Value "%s" for field "%s" contains invalid characters.', $value, $field),
+            context: ['field' => $field, 'value' => $value],
+            code: 400,
+            solutions: [
+                sprintf('Value "%s" for field "%s" must not contain special characters.', $value, $field),
+                sprintf('Check if the value "%s" matches the expected format for field "%s".', $value, $field)
+            ],
+        );
+
+    }
+
     public static function invalidId(int $id): static
     {
         return new self(

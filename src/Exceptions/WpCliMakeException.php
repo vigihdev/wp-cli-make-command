@@ -48,4 +48,69 @@ abstract class WpCliMakeException extends Exception
 
         return $message;
     }
+
+    public static function cannotBeEmpty(string $field): static
+    {
+        return new self(
+            message: sprintf('Field "%s" cannot be empty.', $field),
+            context: ['field' => $field],
+            code: 400,
+            solutions: [
+                sprintf('Provide a value for field "%s".', $field),
+                'Check if the field is required'
+            ],
+        );
+    }
+
+    public static function mustBeNumeric(string $field): static
+    {
+        return new self(
+            message: sprintf('Field "%s" must be numeric.', $field),
+            context: ['field' => $field],
+            code: 400,
+            solutions: [
+                sprintf('Ensure the value for field "%s" is a valid number.', $field),
+                'Check if the field is required'
+            ],
+        );
+    }
+
+    public static function mustBeString(string $field): static
+    {
+        return new self(
+            message: sprintf('Field "%s" must be a string.', $field),
+            context: ['field' => $field],
+            code: 400,
+            solutions: [
+                sprintf('Ensure the value for field "%s" is a string.', $field),
+                'Check if the field is required'
+            ],
+        );
+    }
+
+    public static function mustBeBoolean(string $field): static
+    {
+        return new self(
+            message: sprintf('Field "%s" must be a boolean.', $field),
+            context: ['field' => $field],
+            code: 400,
+            solutions: [
+                sprintf('Ensure the value for field "%s" is a boolean.', $field),
+                'Check if the field is required'
+            ],
+        );
+    }
+
+    public static function mustBeArray(string $field): static
+    {
+        return new self(
+            message: sprintf('Field "%s" must be an array.', $field),
+            context: ['field' => $field],
+            code: 400,
+            solutions: [
+                sprintf('Ensure the value for field "%s" is an array.', $field),
+                'Check if the field is required'
+            ],
+        );
+    }
 }
