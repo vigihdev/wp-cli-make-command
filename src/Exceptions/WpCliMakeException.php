@@ -113,4 +113,43 @@ abstract class WpCliMakeException extends Exception
             ],
         );
     }
+
+    public static function mustBeValidDate(string $field): static
+    {
+        return new self(
+            message: sprintf('Field "%s" must be a valid date.', $field),
+            context: ['field' => $field],
+            code: 400,
+            solutions: [
+                sprintf('Ensure the value for field "%s" is a valid date.', $field),
+                'Check if the field is required'
+            ],
+        );
+    }
+
+    public static function mustBeToLong(string $field, int $maxLength): static
+    {
+        return new self(
+            message: sprintf('Field "%s" must be a string with a maximum length of %d characters.', $field, $maxLength),
+            context: ['field' => $field, 'maxLength' => $maxLength],
+            code: 400,
+            solutions: [
+                sprintf('Ensure the value for field "%s" is a string with a maximum length of %d characters.', $field, $maxLength),
+                'Check if the field is required',
+            ],
+        );
+    }
+
+    public static function mustBeToShort(string $field, int $minLength): static
+    {
+        return new self(
+            message: sprintf('Field "%s" must be a string with a minimum length of %d characters.', $field, $minLength),
+            context: ['field' => $field, 'minLength' => $minLength],
+            code: 400,
+            solutions: [
+                sprintf('Ensure the value for field "%s" is a string with a minimum length of %d characters.', $field, $minLength),
+                'Check if the field is required',
+            ],
+        );
+    }
 }
