@@ -6,14 +6,12 @@ namespace Vigihdev\WpCliMake\Validators;
 
 use Vigihdev\WpCliMake\Contracts\UserInterface;
 use Vigihdev\WpCliMake\Exceptions\UserException;
-use Vigihdev\WpCliMake\DTOs\UserDto;
 
 final class UserValidator
 {
     public function __construct(
         private readonly UserInterface $user,
-    ) {
-    }
+    ) {}
 
     public function mustUniqueUsername(): self
     {
@@ -41,6 +39,7 @@ final class UserValidator
         }
         return $this;
     }
+
     public function mustBeValidUsername(): self
     {
         $username = $this->user->username();

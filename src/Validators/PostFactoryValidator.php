@@ -8,18 +8,15 @@ use Vigihdev\WpCliMake\Exceptions\{DateException, PostFactoryException};
 use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
 use Vigihdev\WpCliModels\Entities\{PostEntity, UserEntity};
 use Vigihdev\WpCliModels\Enums\{PostStatus, PostType};
-use Vigihdev\WpCliMake\Exceptions\{MakeHandlerException, MakeHandlerExceptionInterface};
 
 final class PostFactoryValidator
 {
     private ?PostEntityDto $post = null;
-    private MakeHandlerExceptionInterface $exceptionHandler;
 
     public function __construct(
         private readonly array $data
     ) {
         $this->post = PostEntityDto::fromArray(array_merge($data, ['ID' => 0]));
-        $this->exceptionHandler = new MakeHandlerException();
     }
 
     public static function validate(array $data): self
@@ -30,53 +27,26 @@ final class PostFactoryValidator
     public function validateCreate(): self
     {
         return $this
-            ->mustBeValidAuthor()
-            ->mustHaveValidDateFormat()
-            ->mustHaveTitle()
+            ->mustBeValidTitle()
             ->mustBeUniqueTitle()
-            ->mustHaveValidType()
+            ->mustBeValidAuthor()
+            ->mustBeValidName()
             ->mustHaveContent()
-            ->mustHaveStatus()
-            ->mustBeValidStatus()
-            ->mustHaveName()
-            ->mustBeUniqueName()
-            ->hasValidDateGmtFormat();
+            ->mustHaveValidType()
+            ->mustBeValidDate()
+            ->mustBeValidDateIfDefined()
+            ->mustBeValidStatus();
     }
 
-    public function getData(): PostEntityDto
-    {
-        return $this->post;
-    }
-
-    public function mustBeValidId(): self
-    {
-        $id = $this->post->getId();
-        if ($id !== null && (!is_numeric($id) || $id <= 0)) {
-            throw PostFactoryException::invalidIdValue((int)$id);
-        }
-        return $this;
-    }
-
-    public function mustValidTitle(): self
+    public function mustBeValidTitle(): self
     {
         $title = $this->post->getTitle();
         $field = 'post_title';
-        if ($title === null || trim($title) === '') {
-            throw PostFactoryException::missingTitle();
-        }
 
-        try {
-            StringValidator::validate($title, $field)->minLength(10);
-        } catch (\Throwable $e) {
-            $this->exceptionHandler->handle($e);
-            exit(1);
-        }
-        if (strlen($title) < 10) {
-        }
-
-        if (preg_match('/[^a-z-A-Z-0-9\s\-]+/', $title)) {
-            throw PostFactoryException::invalidCharacters($field, $title);
-        }
+        StringValidator::validate($title, $field)
+            ->notEmpty()
+            ->minLength(10)
+            ->notMatches('/[^a-z-A-Z-0-9\s\-]+/m');
 
         return $this;
     }
@@ -84,6 +54,7 @@ final class PostFactoryValidator
     public function mustBeValidAuthor(): self
     {
         $author = (int)$this->post->getAuthor();
+        $field = 'post_author';
 
         if ($author <= 0) {
             throw PostFactoryException::invalidAuthorFormat();
@@ -97,37 +68,23 @@ final class PostFactoryValidator
         return $this;
     }
 
-    public function mustHaveValidDateFormat(): self
+    public function mustBeValidDate(): ?self
     {
         $date = $this->post->getDate();
-        if ($date !== null && $date !== '') {
-            DateValidator::validate('post_date', $date);
-        }
-        return $this;
-    }
+        $field = 'post_date';
 
-    public function mustHaveTitle(): self
-    {
-        $title = $this->post->getTitle();
-        if ($title === null || trim($title) === '') {
-            throw PostFactoryException::missingTitle();
-        }
-
-        if (strlen($title) < 10) {
-            throw StringValidator::validate($title, 'post_title')->minLength(10);
-        }
-
-        if (preg_match('/[^a-z-A-Z-0-9\s\-]+/', $title)) {
-            throw PostFactoryException::invalidCharacters('post_title', $title);
-        }
+        DateValidator::validate($field, $date)
+            ->notEmpty()
+            ->dateTimeFormat();
 
         return $this;
     }
 
     public function mustBeUniqueTitle(): self
     {
-        $this->mustHaveTitle();
+        $this->mustBeValidTitle();
         $title = $this->post->getTitle();
+        $field = 'post_title';
 
         if (PostEntity::existsByTitle($title)) {
             $post = PostEntity::findByTitle($title);
@@ -153,18 +110,10 @@ final class PostFactoryValidator
         return $this;
     }
 
-    public function mustHaveStatus(): self
-    {
-        $status = $this->post->getStatus();
-        if ($status === null || trim($status) === '') {
-            throw PostFactoryException::missingStatus();
-        }
-        return $this;
-    }
-
     public function mustBeValidStatus(): self
     {
         $status = $this->post->getStatus();
+        $field = 'post_status';
         $validStatuses = [
             PostStatus::DRAFT->value,
             PostStatus::PUBLISH->value,
@@ -175,6 +124,10 @@ final class PostFactoryValidator
             PostStatus::INHERIT->value,
         ];
 
+        if ($status === null || trim($status) === '') {
+            throw PostFactoryException::missingStatus();
+        }
+
         if ($status !== null && !in_array($status, $validStatuses, true)) {
             throw PostFactoryException::invalidStatus();
         }
@@ -184,6 +137,8 @@ final class PostFactoryValidator
     public function mustHaveValidType(): self
     {
         $type = $this->post->getType();
+        $field = 'post_type';
+
         if ($type === null || trim($type) === '') {
             throw PostFactoryException::missingType();
         }
@@ -194,154 +149,44 @@ final class PostFactoryValidator
     {
         $this->mustHaveValidType();
         $postType = $this->post->getType();
+        $field = 'post_type';
         if ($postType !== $type) {
             throw PostFactoryException::invalidType($postType, $type);
         }
         return $this;
     }
 
-    public function mustHaveName(): self
+    public function mustBeValidName(): self
     {
         $name = $this->post->getName();
+        $field = 'post_name';
+
         if ($name === null || trim($name) === '') {
             throw PostFactoryException::missingName();
         }
-        return $this;
-    }
 
-    public function mustBeUniqueName(): self
-    {
-        $this->mustHaveName();
-        $name = $this->post->getName();
         if (PostEntity::existsByName($name)) {
             throw PostFactoryException::duplicatePostName($name);
         }
         return $this;
     }
 
-    public function hasValidDateGmtFormat(): self
+    public function mustBeValidDateIfDefined(): self
     {
-        $dateGmt = $this->post->getDateGmt();
-        if ($dateGmt !== null && $dateGmt !== '') {
-            DateValidator::validate('post_date_gmt', $dateGmt);
-        }
-        return $this;
-    }
+        $dateFields = [
+            'post_modified' => $this->post->getModified(),
+            'post_date_gmt' => $this->post->getDateGmt(),
+            'post_modified_gmt' => $this->post->getModifiedGmt(),
+        ];
 
-    private function mustHaveExcerpt(): self
-    {
-        return $this;
-    }
-
-    private function mustHaveValidCommentStatus(): self
-    {
-        $commentStatus = $this->post->getCommentStatus();
-        if ($commentStatus !== null && !in_array($commentStatus, ['open', 'closed'], true)) {
-            // Add appropriate exception if needed
-        }
-        return $this;
-    }
-
-    private function mustHaveValidPingStatus(): self
-    {
-        $pingStatus = $this->post->getPingStatus();
-        if ($pingStatus !== null && !in_array($pingStatus, ['open', 'closed'], true)) {
-            // Add appropriate exception if needed
-        }
-        return $this;
-    }
-
-    private function mustHavePassword(): self
-    {
-        // Add validation for password if required
-        return $this;
-    }
-
-    private function mustHaveToPing(): self
-    {
-        // Add validation for to_ping if required
-        return $this;
-    }
-
-    private function mustHavePinged(): self
-    {
-        // Add validation for pinged if required
-        return $this;
-    }
-
-    private function mustHaveValidModifiedDate(): self
-    {
-        $modified = $this->post->getModified();
-        if ($modified !== null && $modified !== '') {
-            $d = \DateTime::createFromFormat('Y-m-d H:i:s', $modified);
-            if (!$d || $d->format('Y-m-d H:i:s') !== $modified) {
-                // Add appropriate exception if needed
+        foreach ($dateFields as $key => $value) {
+            if ($value !== null && $value !== '') {
+                DateValidator::validate($key, $value)
+                    ->notEmpty()
+                    ->dateTimeFormat();
             }
         }
-        return $this;
-    }
 
-    private function mustHaveValidModifiedGmt(): self
-    {
-        $modifiedGmt = $this->post->getModifiedGmt();
-        if ($modifiedGmt !== null && $modifiedGmt !== '') {
-            $d = \DateTime::createFromFormat('Y-m-d H:i:s', $modifiedGmt);
-            if (!$d || $d->format('Y-m-d H:i:s') !== $modifiedGmt) {
-                // Add appropriate exception if needed
-            }
-        }
-        return $this;
-    }
-
-    private function mustHaveContentFiltered(): self
-    {
-        // Add validation for content_filtered if required
-        return $this;
-    }
-
-    private function mustHaveValidParent(): self
-    {
-        $parent = $this->post->getParent();
-        if ($parent !== null && (!is_numeric($parent) || $parent < 0)) {
-            // Add appropriate exception if needed
-        }
-        return $this;
-    }
-
-    private function mustHaveGuid(): self
-    {
-        // Add validation for guid if required
-        return $this;
-    }
-
-    private function mustHaveValidMenuOrder(): self
-    {
-        $menuOrder = $this->post->getMenuOrder();
-        if ($menuOrder !== null && !is_numeric($menuOrder)) {
-            // Add appropriate exception if needed
-        }
-        return $this;
-    }
-
-
-    private function mustHaveMimeType(): self
-    {
-        // Add validation for mime type if required
-        return $this;
-    }
-
-    private function mustHaveValidCommentCount(): self
-    {
-        $commentCount = $this->post->getCommentCount();
-        if ($commentCount !== null && (!is_numeric($commentCount) || $commentCount < 0)) {
-            // Add appropriate exception if needed
-        }
-        return $this;
-    }
-
-    private function mustHaveFilter(): self
-    {
-        // Add validation for filter if required
         return $this;
     }
 }

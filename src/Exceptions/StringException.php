@@ -6,6 +6,21 @@ namespace Vigihdev\WpCliMake\Exceptions;
 
 final class StringException extends WpCliMakeException
 {
+
+    public static function emptyValue(string $field): self
+    {
+        return new self(
+            message: sprintf('Field %s cannot be empty', $field),
+            context: [
+                'field' => $field
+            ],
+            code: 400,
+            solutions: [
+                sprintf('Add a value to the field %s', $field),
+            ],
+        );
+    }
+
     /**
      * Create exception for string that is too short
      */
@@ -103,13 +118,14 @@ final class StringException extends WpCliMakeException
     /**
      * Create exception for string that contains invalid characters
      */
-    public static function invalidCharacters(string $invalidChars, string $actual): self
+    public static function invalidCharacters(string $invalidChars, string $actual, string $field): self
     {
         return new self(
-            message: sprintf('String contains invalid characters. Invalid: %s', $invalidChars),
+            message: sprintf('Field %s contains invalid characters. Invalid: %s', $field, $invalidChars),
             context: [
                 'invalid_chars' => $invalidChars,
-                'actual' => $actual
+                'actual' => $actual,
+                'field' => $field,
             ],
             code: 400,
             solutions: [
@@ -173,42 +189,6 @@ final class StringException extends WpCliMakeException
             solutions: [
                 'Use one of the following values: ' . $allowedStr,
                 'Check if the value matches the allowed list'
-            ],
-        );
-    }
-
-    /**
-     * Create exception for string that is not a valid email
-     */
-    public static function invalidEmail(string $email): self
-    {
-        return new self(
-            message: sprintf('Invalid email address. Email: %s', $email),
-            context: [
-                'email' => $email
-            ],
-            code: 400,
-            solutions: [
-                'Ensure email format is correct (example@domain.com)',
-                'Check if email contains @ and a valid domain'
-            ],
-        );
-    }
-
-    /**
-     * Create exception for string that is not a valid URL
-     */
-    public static function invalidUrl(string $url): self
-    {
-        return new self(
-            message: sprintf('Invalid URL. URL: %s', $url),
-            context: [
-                'url' => $url
-            ],
-            code: 400,
-            solutions: [
-                'Ensure URL has correct format (http:// or https://)',
-                'Check if URL contains a valid domain'
             ],
         );
     }

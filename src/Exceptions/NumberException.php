@@ -4,4 +4,4 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Exceptions;
 
-class NumberException extends WpCliMakeException {}
+final class NumberException extends WpCliMakeException {}

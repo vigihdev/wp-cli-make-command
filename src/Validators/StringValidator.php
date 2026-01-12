@@ -10,7 +10,7 @@ final class StringValidator
 {
     public function __construct(
         private readonly int|string|null $string,
-        private readonly string $field = '',
+        private readonly string $field,
     ) {}
 
     public static function validate(int|string|null $string, string $field): self
@@ -26,7 +26,7 @@ final class StringValidator
         $string = $this->string;
 
         if ($string === null || $string === '') {
-            throw StringException::emptyNotAllowed($this->field);
+            throw StringException::emptyValue($this->field);
         }
 
         return $this;
@@ -87,6 +87,18 @@ final class StringValidator
         return $this;
     }
 
+    public function notMatches(string $pattern): self
+    {
+        $string = (string) $this->string;
+
+        if (preg_match_all($pattern, $string, $matches, PREG_SET_ORDER, 0)) {
+            $match = implode(' ', array_map(fn($arr) => implode(' ', $arr), $matches));
+            throw StringException::invalidCharacters($match, $string, $this->field);
+        }
+
+        return $this;
+    }
+
     /**
      * Validate that the string matches a regex pattern
      */
@@ -110,7 +122,7 @@ final class StringValidator
         $pattern = '/^[a-zA-Z0-9]+$/';
 
         if (!preg_match($pattern, $string)) {
-            throw StringException::invalidCharacters('Non-alphanumeric characters', $string);
+            throw StringException::invalidCharacters('Non-alphanumeric characters', $string, $this->field);
         }
 
         return $this;
@@ -125,35 +137,7 @@ final class StringValidator
         $pattern = '/^[a-zA-Z]+$/';
 
         if (!preg_match($pattern, $string)) {
-            throw StringException::invalidCharacters('Non-alphabetic characters', $string);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Validate that the string is a valid email
-     */
-    public function email(): self
-    {
-        $string = (string) $this->string;
-
-        if (!filter_var($string, FILTER_VALIDATE_EMAIL)) {
-            throw StringException::invalidEmail($string);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Validate that the string is a valid URL
-     */
-    public function url(): self
-    {
-        $string = (string) $this->string;
-
-        if (!filter_var($string, FILTER_VALIDATE_URL)) {
-            throw StringException::invalidUrl($string);
+            throw StringException::invalidCharacters('Non-alphabetic characters', $string, $this->field);
         }
 
         return $this;

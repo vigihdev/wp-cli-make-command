@@ -8,20 +8,21 @@ class DateException extends WpCliMakeException
 {
 
     public const DATE_FORMAT = 'Y-m-d';
+
     public const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 
-    public static function emptyDate(string $field, ?string $value = null): self
+    public static function emptyValue(string $field): self
     {
-        $value = $value ?? '';
         return new self(
-            message: sprintf("Date for field '%s' is empty. Value: '%s'", $field, $value),
+            message: sprintf("Field '%s' cannot be empty.", $field),
             code: 400,
             context: [
                 'field' => $field,
-                'value' => $value,
+                'value' => null,
             ],
             solutions: [
-                "Provide a valid date for field '%s'.",
+                sprintf("Ensure the date field '%s' has a value.", $field),
+                "Check the date format. It should be 'Y-m-d' or 'Y-m-d H:i:s'.",
             ],
         );
     }
