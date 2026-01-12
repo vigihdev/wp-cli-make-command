@@ -4,19 +4,22 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliMake\Validators;
 
-use Vigihdev\WpCliMake\Exceptions\PostFactoryException;
+use Vigihdev\WpCliMake\Exceptions\{DateException, PostFactoryException};
 use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
 use Vigihdev\WpCliModels\Entities\{PostEntity, UserEntity};
 use Vigihdev\WpCliModels\Enums\{PostStatus, PostType};
+use Vigihdev\WpCliMake\Exceptions\{MakeHandlerException, MakeHandlerExceptionInterface};
 
 final class PostFactoryValidator
 {
     private ?PostEntityDto $post = null;
+    private MakeHandlerExceptionInterface $exceptionHandler;
 
     public function __construct(
         private readonly array $data
     ) {
         $this->post = PostEntityDto::fromArray(array_merge($data, ['ID' => 0]));
+        $this->exceptionHandler = new MakeHandlerException();
     }
 
     public static function validate(array $data): self
@@ -54,16 +57,43 @@ final class PostFactoryValidator
         return $this;
     }
 
+    public function mustValidTitle(): self
+    {
+        $title = $this->post->getTitle();
+        $field = 'post_title';
+        if ($title === null || trim($title) === '') {
+            throw PostFactoryException::missingTitle();
+        }
+
+        try {
+            StringValidator::validate($title, $field)->minLength(10);
+        } catch (\Throwable $e) {
+            $this->exceptionHandler->handle($e);
+            exit(1);
+        }
+        if (strlen($title) < 10) {
+        }
+
+        if (preg_match('/[^a-z-A-Z-0-9\s\-]+/', $title)) {
+            throw PostFactoryException::invalidCharacters($field, $title);
+        }
+
+        return $this;
+    }
+
     public function mustBeValidAuthor(): self
     {
         $author = (int)$this->post->getAuthor();
+
         if ($author <= 0) {
             throw PostFactoryException::invalidAuthorFormat();
         }
+
         $exist = UserEntity::get((int)$author);
         if ($exist === null) {
             throw PostFactoryException::authorNotFound((int)$author);
         }
+
         return $this;
     }
 
@@ -71,10 +101,7 @@ final class PostFactoryValidator
     {
         $date = $this->post->getDate();
         if ($date !== null && $date !== '') {
-            $d = \DateTime::createFromFormat('Y-m-d H:i:s', $date);
-            if (!$d || $d->format('Y-m-d H:i:s') !== $date) {
-                throw PostFactoryException::invalidDateFormat('post_date', $date);
-            }
+            DateValidator::validate('post_date', $date);
         }
         return $this;
     }
@@ -112,6 +139,7 @@ final class PostFactoryValidator
             }
             return $this;
         }
+
         return $this;
     }
 
@@ -121,6 +149,7 @@ final class PostFactoryValidator
         if ($content === null || trim($content) === '') {
             throw PostFactoryException::missingContent();
         }
+
         return $this;
     }
 
@@ -194,17 +223,13 @@ final class PostFactoryValidator
     {
         $dateGmt = $this->post->getDateGmt();
         if ($dateGmt !== null && $dateGmt !== '') {
-            $d = \DateTime::createFromFormat('Y-m-d H:i:s', $dateGmt);
-            if (!$d || $d->format('Y-m-d H:i:s') !== $dateGmt) {
-                throw PostFactoryException::invalidDateGmtFormat();
-            }
+            DateValidator::validate('post_date_gmt', $dateGmt);
         }
         return $this;
     }
 
     private function mustHaveExcerpt(): self
     {
-        // Add validation for excerpt if required
         return $this;
     }
 

@@ -9,52 +9,57 @@ final class StringException extends WpCliMakeException
     /**
      * Create exception for string that is too short
      */
-    public static function tooShort(int $min, string $actual = '', string $attribute = ''): self
+    public static function tooShort(int $min, string $actual, string $field): self
     {
         return new self(
-            message: sprintf('String %s is too short. Minimum length is %d characters', $attribute, $min),
+            message: sprintf('Field %s is too short. Minimum length is %d characters', $field, $min),
             context: [
                 'min' => $min,
                 'actual' => strlen($actual),
-                'attribute' => $attribute,
+                'field' => $field,
                 'value' => $actual
             ],
             code: 400,
-            solutions: ['Extend the string to at least ' . $min . ' characters'],
+            solutions: [
+                sprintf('Extend the string %s to at least %d characters', $field, $min),
+            ],
         );
     }
 
     /**
      * Create exception for string that is too long
      */
-    public static function tooLong(int $max, string $actual = ''): self
+    public static function tooLong(int $max, string $actual, string $field): self
     {
         return new self(
-            message: sprintf('String is too long. Maximum length is %d characters', $max),
+            message: sprintf('Field %s is too long. Maximum length is %d characters', $field, $max),
             context: [
                 'max' => $max,
                 'actual' => strlen($actual),
+                'field' => $field,
                 'value' => $actual
             ],
             code: 400,
-            solutions: ['Shorten the string to maximum ' . $max . ' characters'],
+            solutions: [
+                sprintf('Shorten the string %s to maximum %d characters', $field, $max),
+            ],
         );
     }
 
     /**
      * Create exception for string that doesn't match expected value
      */
-    public static function notEqual(string $expected, string $actual): self
+    public static function notEqual(string $expected, string $actual, string $field): self
     {
         return new self(
-            message: sprintf('String does not match the expected value. Expected: %s', $expected),
+            message: sprintf('Field %s does not match the expected value. Expected: %s', $field, $expected),
             context: [
                 'expected' => $expected,
                 'actual' => $actual
             ],
             code: 400,
             solutions: [
-                'Ensure the string matches the expected format: ' . $expected,
+                sprintf('Ensure the string %s matches the expected format: %s', $field, $expected),
                 'Check for differences in case sensitivity or whitespace'
             ],
         );
