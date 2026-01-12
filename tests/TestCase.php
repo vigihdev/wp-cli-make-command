@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vigihdev\WpCliMake\Tests;
 
-abstract class TestCase extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\TestCase as BaseTestCase;
+
+abstract class TestCase extends BaseTestCase
 {
 
     /**

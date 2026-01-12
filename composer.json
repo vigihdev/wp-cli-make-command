@@ -82,6 +82,6 @@
     "scripts": {
         "test": "phpunit",
         "test:coverage": "phpunit --coverage-html coverage",
-        "dev": "php -S localhost:3172 dev.php"
+        "dev": "php -S localhost:3172 local-dev/index.php"
     }
 }

@@ -68,7 +68,7 @@ final class PostFactoryValidator
         return $this;
     }
 
-    public function mustBeValidDate(): ?self
+    public function mustBeValidDate(): self
     {
         $date = $this->post->getDate();
         $field = 'post_date';
@@ -103,9 +103,11 @@ final class PostFactoryValidator
     public function mustHaveContent(): self
     {
         $content = $this->post->getContent();
-        if ($content === null || trim($content) === '') {
-            throw PostFactoryException::missingContent();
-        }
+        $field = 'post_content';
+
+        StringValidator::validate($content, $field)
+            ->notEmpty()
+            ->minLength(500);
 
         return $this;
     }

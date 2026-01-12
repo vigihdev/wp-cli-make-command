@@ -12,7 +12,7 @@
 GEMINI.md
 composer.lock
 vendor
-dev.php
+local-dev
 dev.js
 node_modules
 package.json

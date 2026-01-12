@@ -10,6 +10,9 @@ use Vigihdev\WpCliMake\Validators\PostFactoryValidator;
 
 final class PostFactoryValidatorTest extends TestCase
 {
+
+    private $post_content_valid = 'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.';
+
     /**
      * @return void
      */
@@ -143,7 +146,7 @@ final class PostFactoryValidatorTest extends TestCase
     {
         $data = [
             'post_title' => 'Test Post Title That Is Long Enough',
-            'post_content' => 'This is valid content',
+            'post_content' => $this->post_content_valid,
             'post_status' => 'publish',
             'post_type' => 'post',
             'post_author' => 1,

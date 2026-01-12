@@ -17,6 +17,7 @@ final class StringException extends WpCliMakeException
             code: 400,
             solutions: [
                 sprintf('Add a value to the field %s', $field),
+                sprintf("she also needs to check the length of the allowed text value from %s", $field),
             ],
         );
     }
@@ -37,6 +38,7 @@ final class StringException extends WpCliMakeException
             code: 400,
             solutions: [
                 sprintf('Extend the string %s to at least %d characters', $field, $min),
+                sprintf('Check the allowed text value length from %s', $field),
             ],
         );
     }
